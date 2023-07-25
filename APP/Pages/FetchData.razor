@@ -1,0 +1,108 @@
+﻿@page "/fetchdata"
+
+@using APP.Data
+@using APP.Data.services.Interfaces;
+@using static APP.Data.models.models;
+@inject IUserService userService;
+
+<h1>Weather forecast</h1>
+
+<p>This component demonstrates fetching data from a service.</p>
+
+@if (users == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    if (users.Count != 0) { 
+    <table class="table">
+        <thead>
+            <tr>
+                <th>username</th>
+                <th>First Name</th>
+                <th>Surname</th>
+                <th>Phone number</th>
+                <th>Email</th>
+                <th>Suburb</th>
+                <th>Postcode</th>
+                <th>webpageAnimalPreference</th>
+                <th>Pets</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in users)
+            {
+                <tr>
+                    <td>@user.LoginUsername</td>
+                    <td>@user.FirstName</td>
+                    <td>@user.Surname</td>
+                    <td>@user.PhoneNumber</td>
+                    <td>@user.Email</td>
+                    <td>@user.Suburb</td>
+                    <td>@user.Postcode</td>
+                    <td>@user.WebpageAnimalPreference</td>
+                    @if (user.Pets != null && user.Pets.Count != 0)
+                    {
+                        <td>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Pet Name</th>
+                                        <th>Pet Breed</th>
+                                        <th>Pet Age</th>
+                                        <th>Pet Gender</th>
+                                        <th>Pet discoverability</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (Pet pet in user.Pets)
+                                    {
+
+                                        <tr>
+                                            <td>
+                                                @pet.PetName
+                                            </td>
+                                            <td>
+                                                @pet.PetBreed
+                                            </td>
+                                            <td>
+                                                @pet.PetAge
+                                            </td>
+                                            <td>
+                                                @pet.PetGender
+                                            </td>
+                                            <td>
+                                                @pet.PetDiscoverability
+                                            </td>
+                                        </tr>
+
+                                    }
+                                </tbody>
+                            </table>
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+        </table>
+    }else
+    {
+        <p>Retrieved nothing</p>
+        <button @onclick=LoadDataAsync>Try again</button>
+    }
+}
+
+@code {
+    private List<User> users;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    public async Task LoadDataAsync()
+    {
+        users = await userService.GetAllUsersList();
+    }
+}
