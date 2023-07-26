@@ -36,11 +36,14 @@ builder.Services.AddDbContext<VETDBContext>(options => options.UseSqlServer(buil
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+//if (app.Environment.IsDevelopment())
+//{
+//    app.UseSwagger();
+//    app.UseSwaggerUI();
+//}
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
@@ -48,4 +51,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+// UseUrls to specify the URL where the API should listen
+/// 192.168.0.14
+//var url = "http://localhost:192.168.0.14:5000"; // Replace with your desired URL and port
 app.Run();

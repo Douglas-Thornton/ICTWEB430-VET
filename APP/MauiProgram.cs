@@ -1,5 +1,6 @@
 ﻿using APP.Data;
 using APP.Data.services.Interfaces;
+using APP.States;
 using Microsoft.Extensions.Logging;
 using VETAPP.Data.services;
 
@@ -25,6 +26,8 @@ namespace APP
 #endif
 
             builder.Services.AddSingleton<IUserService, UserService>();
+            builder.Services.AddSingleton<LoggedUserState>();
+            builder.Services.AddSingleton<App>();
 
             return builder.Build();
         }

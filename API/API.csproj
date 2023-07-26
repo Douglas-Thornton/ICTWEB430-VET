@@ -6,7 +6,15 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
+    <Target Name="BeforePublish">
+        <!-- Add your pre-publish commands or scripts here to stop the IIS website -->
+        <Exec Command="iisreset /stop /site VET-API" />
+    </Target>
 
+    <Target Name="AfterPublish">
+        <!-- Add your post-publish commands or scripts here to start the IIS website -->
+        <Exec Command="iisreset /start /site VET-API" />
+    </Target>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.9" />

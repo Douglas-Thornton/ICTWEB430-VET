@@ -8,7 +8,7 @@ namespace VETAPP.Data.services
 {
     public class UserService : IUserService
     {
-        private string _baseUrl = "https://localhost:7020/";
+        private string _baseUrl = "http://192.168.0.14:90/";
         async Task<List<models.User>> IUserService.GetAllUsersList()
         {
             try { 
