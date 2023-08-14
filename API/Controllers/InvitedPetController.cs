@@ -80,6 +80,123 @@ namespace VETAPPAPI.Controllers
                 return response;
             }
 
+            [HttpPost]
+            public async Task<MainResponse> CreateInvitedPet(InvitedPet invitedPet)
+            {
+                var response = new MainResponse();
+                try
+                {
+                    if (!ModelState.IsValid)
+                    {
+                        response.ErrorMessage = "Invalid input data.";
+                        response.IsSuccess = false;
+                        return response;
+                    }
+
+                    _dbContext.InvitedPets.Add(invitedPet);
+                    await _dbContext.SaveChangesAsync();
+
+                    response.Content = invitedPet;
+                    response.IsSuccess = true;
+                }
+                catch (Exception ex)
+                {
+                    response.ErrorMessage = ex.Message;
+                    response.IsSuccess = false;
+                }
+
+                return response;
+            }
+
+            [HttpPut("{id:int}")]
+            public async Task<MainResponse> UpdateInvitedPet(int id, InvitedPet invitedPet)
+            {
+                var response = new MainResponse();
+                try
+                {
+                    if (!ModelState.IsValid)
+                    {
+                        response.ErrorMessage = "Invalid input data.";
+                        response.IsSuccess = false;
+                        return response;
+                    }
+
+                    var existingInvitedPet = await _dbContext.InvitedPets.FindAsync(id);
+                    if (existingInvitedPet == null)
+                    {
+                        response.ErrorMessage = $"Invited pet with ID {id} not found.";
+                        response.IsSuccess = false;
+                        return response;
+                    }
+
+                    // Update properties of existingInvitedPet based on invitedPet
+
+                    await _dbContext.SaveChangesAsync();
+
+                    response.Content = existingInvitedPet;
+                    response.IsSuccess = true;
+                }
+                catch (Exception ex)
+                {
+                    response.ErrorMessage = ex.Message;
+                    response.IsSuccess = false;
+                }
+
+                return response;
+            }
+
+            [HttpDelete("{id:int}")]
+            public async Task<MainResponse> DeleteInvitedPet(int id)
+            {
+                var response = new MainResponse();
+                try
+                {
+                    var invitedPet = await _dbContext.InvitedPets.FindAsync(id);
+                    if (invitedPet == null)
+                    {
+                        response.ErrorMessage = $"Invited pet with ID {id} not found.";
+                        response.IsSuccess = false;
+                        return response;
+                    }
+
+                    _dbContext.InvitedPets.Remove(invitedPet);
+                    await _dbContext.SaveChangesAsync();
+
+                    response.IsSuccess = true;
+                }
+                catch (Exception ex)
+                {
+                    response.ErrorMessage = ex.Message;
+                    response.IsSuccess = false;
+                }
+
+                return response;
+            }
+
+            [HttpGet("bymeeting/{meetingId:int}")]
+            public async Task<MainResponse> GetInvitedPetsByMeetingId(int meetingId)
+            {
+                var response = new MainResponse();
+                try
+                {
+                    response.Content = _dbContext.InvitedPets
+                        .Include(ip => ip.Pet)
+                        .Include(ip => ip.InvitedUser)
+                        .Include(ip => ip.Meeting)
+                        .Where(ip => ip.MeetingID == meetingId)
+                        .ToList();
+
+                    response.IsSuccess = true;
+                }
+                catch (Exception ex)
+                {
+                    response.ErrorMessage = ex.Message;
+                    response.IsSuccess = false;
+                }
+
+                return response;
+            }
+
         }
     }
 

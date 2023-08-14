@@ -45,6 +45,11 @@ namespace VETAPPAPI.Models
 
         public virtual ICollection<InvitedPet>? InvitedPets { get; set; }
     }
+    public class PetWithPicture
+    {
+        public Pet Pet { get; set; }
+        public IFormFile Picture { get; set; }
+    }
 
     [Table("Meeting")]
     public class Meeting

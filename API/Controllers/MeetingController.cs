@@ -24,48 +24,70 @@ namespace VETAPPAPI.Controllers
             try
             {
                 response.Content = _dbContext.Meetings
-                .Include(m => m.InvitedPets).Include(m => m.InvitedUsers).Include(m => m.User)
-                .Select(m => new Meeting
-                {
-                    MeetingID = m.MeetingID,
-                    UserCreated = m.UserCreated,
-                    MeetingDate = m.MeetingDate,
-                    MeetingLocation = m.MeetingLocation,
-                    MeetingCreationDate = m.MeetingCreationDate,
-                    MeetingCancellationDate = m.MeetingCancellationDate,
-                    MeetingName = m.MeetingName,
-                    MeetingMessage = m.MeetingMessage,
-                    User = new User
-                    {
-                        UserID = m.User.UserID,
-                        FirstName = m.User.FirstName,
-                        Surname = m.User.Surname,
-                        PhoneNumber = m.User.PhoneNumber,
-                        Email = m.User.Email,
-                        Suburb = m.User.Suburb,
-                        Postcode = m.User.Postcode,
-                        LoginUsername = m.User.LoginUsername,
-                        LoginPassword = m.User.LoginPassword,
-                        WebpageAnimalPreference = m.User.WebpageAnimalPreference
-                    },
-                    InvitedPets = m.InvitedPets.Select(m => new InvitedPet
-                    {
-                        InvitedPetID = m.InvitedPetID,
-                        InviteID = m.InviteID,
-                        MeetingID = m.MeetingID,
-                        PetID = m.PetID
-                    }).ToList(),
-                    InvitedUsers = m.InvitedUsers.Select(m => new InvitedUser
-                    {
-                        InviteID = m.InviteID,
-                        UserID = m.User.UserID,
-                        MeetingID =m.MeetingID,
-                        Accepted = m.Accepted,
-                        ResponseDate = m.ResponseDate
-                    }).ToList()
-                }) 
-                .ToList();
-
+                 .Include(m => m.InvitedPets).Include(m => m.InvitedUsers).Include(m => m.User)
+                 .Select(m => new Meeting
+                 {
+                     MeetingID = m.MeetingID,
+                     UserCreated = m.UserCreated,
+                     MeetingDate = m.MeetingDate,
+                     MeetingLocation = m.MeetingLocation,
+                     MeetingCreationDate = m.MeetingCreationDate,
+                     MeetingCancellationDate = m.MeetingCancellationDate,
+                     MeetingName = m.MeetingName,
+                     MeetingMessage = m.MeetingMessage,
+                     User = new User
+                     {
+                         UserID = m.User.UserID,
+                         FirstName = m.User.FirstName,
+                         Surname = m.User.Surname,
+                         PhoneNumber = m.User.PhoneNumber,
+                         Email = m.User.Email,
+                         Suburb = m.User.Suburb,
+                         Postcode = m.User.Postcode,
+                         LoginUsername = m.User.LoginUsername,
+                         LoginPassword = m.User.LoginPassword,
+                         WebpageAnimalPreference = m.User.WebpageAnimalPreference
+                     },
+                     InvitedPets = m.InvitedPets.Select(m => new InvitedPet
+                     {
+                         InvitedPetID = m.InvitedPetID,
+                         PetID = m.PetID,
+                         MeetingID = m.MeetingID,
+                         InviteID = m.InviteID,
+                         Pet = new Pet
+                         {
+                             PetID = m.Pet.PetID,
+                             OwnerID = m.Pet.OwnerID,
+                             PetName = m.Pet.PetName,
+                             PetBreed = m.Pet.PetBreed,
+                             PetAge = m.Pet.PetAge,
+                             PetGender = m.Pet.PetGender,
+                             PetPhotoFileLocation = m.Pet.PetPhotoFileLocation,
+                             PetDiscoverability = m.Pet.PetDiscoverability
+                         }
+                     }).ToList(),
+                     InvitedUsers = m.InvitedUsers.Select(m => new InvitedUser
+                     {
+                         InviteID = m.InviteID,
+                         UserID = m.UserID,
+                         MeetingID = m.InviteID,
+                         Accepted = m.Accepted,
+                         ResponseDate = m.ResponseDate,
+                         User = new User
+                         {
+                             UserID = m.User.UserID,
+                             FirstName = m.User.FirstName,
+                             Surname = m.User.Surname,
+                             PhoneNumber = m.User.PhoneNumber,
+                             Email = m.User.Email,
+                             Suburb = m.User.Suburb,
+                             Postcode = m.User.Postcode,
+                             LoginUsername = m.User.LoginUsername,
+                             LoginPassword = m.User.LoginPassword,
+                             WebpageAnimalPreference = m.User.WebpageAnimalPreference
+                         },
+                     }).ToList()
+                 }).ToList();
                 response.IsSuccess = true;
             }
             catch (Exception ex)
@@ -77,7 +99,322 @@ namespace VETAPPAPI.Controllers
             return Ok(response);
         }
 
+        [HttpGet("{id:int}")]
+        public IActionResult GetMeetingById(int id)
+        {
+            var response = new MainResponse();
+            try
+            {
+                response.Content = _dbContext.Meetings
+                 .Include(m => m.InvitedPets).Include(m => m.InvitedUsers).Include(m => m.User)
+                 .Select(m => new Meeting
+                 {
+                     MeetingID = m.MeetingID,
+                     UserCreated = m.UserCreated,
+                     MeetingDate = m.MeetingDate,
+                     MeetingLocation = m.MeetingLocation,
+                     MeetingCreationDate = m.MeetingCreationDate,
+                     MeetingCancellationDate = m.MeetingCancellationDate,
+                     MeetingName = m.MeetingName,
+                     MeetingMessage = m.MeetingMessage,
+                     User = new User
+                     {
+                         UserID = m.User.UserID,
+                         FirstName = m.User.FirstName,
+                         Surname = m.User.Surname,
+                         PhoneNumber = m.User.PhoneNumber,
+                         Email = m.User.Email,
+                         Suburb = m.User.Suburb,
+                         Postcode = m.User.Postcode,
+                         LoginUsername = m.User.LoginUsername,
+                         LoginPassword = m.User.LoginPassword,
+                         WebpageAnimalPreference = m.User.WebpageAnimalPreference
+                     },
+                     InvitedPets = m.InvitedPets.Select(m => new InvitedPet
+                     {
+                         InvitedPetID = m.InvitedPetID,
+                         PetID = m.PetID,
+                         MeetingID = m.MeetingID,
+                         InviteID = m.InviteID,
+                         Pet = new Pet
+                         {
+                             PetID = m.Pet.PetID,
+                             OwnerID = m.Pet.OwnerID,
+                             PetName = m.Pet.PetName,
+                             PetBreed = m.Pet.PetBreed,
+                             PetAge = m.Pet.PetAge,
+                             PetGender = m.Pet.PetGender,
+                             PetPhotoFileLocation = m.Pet.PetPhotoFileLocation,
+                             PetDiscoverability = m.Pet.PetDiscoverability
+                         }
+                     }).ToList(),
+                     InvitedUsers = m.InvitedUsers.Select(m => new InvitedUser
+                     {
+                         InviteID = m.InviteID,
+                         UserID = m.UserID,
+                         MeetingID = m.InviteID,
+                         Accepted = m.Accepted,
+                         ResponseDate = m.ResponseDate,
+                         User = new User
+                         {
+                             UserID = m.User.UserID,
+                             FirstName = m.User.FirstName,
+                             Surname = m.User.Surname,
+                             PhoneNumber = m.User.PhoneNumber,
+                             Email = m.User.Email,
+                             Suburb = m.User.Suburb,
+                             Postcode = m.User.Postcode,
+                             LoginUsername = m.User.LoginUsername,
+                             LoginPassword = m.User.LoginPassword,
+                             WebpageAnimalPreference = m.User.WebpageAnimalPreference
+                         },
+                     }).ToList()
+                 }).Where(m => m.MeetingID == id).ToList();
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = ex.Message;
+                response.IsSuccess = false;
+            }
+            return Ok(response);
+        }
 
+        [HttpGet("createdByUser/{id:int}")]
+        public IActionResult GetMeetingsByCreatedUserID(int id)
+        {
+            var response = new MainResponse();
+            try
+            {
+                response.Content = _dbContext.Meetings
+                 .Include(m => m.InvitedPets).Include(m => m.InvitedUsers).Include(m => m.User)
+                 .Select(m => new Meeting
+                 {
+                     MeetingID = m.MeetingID,
+                     UserCreated = m.UserCreated,
+                     MeetingDate = m.MeetingDate,
+                     MeetingLocation = m.MeetingLocation,
+                     MeetingCreationDate = m.MeetingCreationDate,
+                     MeetingCancellationDate = m.MeetingCancellationDate,
+                     MeetingName = m.MeetingName,
+                     MeetingMessage = m.MeetingMessage,
+                     User = new User
+                     {
+                         UserID = m.User.UserID,
+                         FirstName = m.User.FirstName,
+                         Surname = m.User.Surname,
+                         PhoneNumber = m.User.PhoneNumber,
+                         Email = m.User.Email,
+                         Suburb = m.User.Suburb,
+                         Postcode = m.User.Postcode,
+                         LoginUsername = m.User.LoginUsername,
+                         LoginPassword = m.User.LoginPassword,
+                         WebpageAnimalPreference = m.User.WebpageAnimalPreference
+                     },
+                     InvitedPets = m.InvitedPets.Select(m => new InvitedPet
+                     {
+                         InvitedPetID = m.InvitedPetID,
+                         PetID = m.PetID,
+                         MeetingID = m.MeetingID,
+                         InviteID = m.InviteID,
+                         Pet = new Pet
+                         {
+                             PetID = m.Pet.PetID,
+                             OwnerID = m.Pet.OwnerID,
+                             PetName = m.Pet.PetName,
+                             PetBreed = m.Pet.PetBreed,
+                             PetAge = m.Pet.PetAge,
+                             PetGender = m.Pet.PetGender,
+                             PetPhotoFileLocation = m.Pet.PetPhotoFileLocation,
+                             PetDiscoverability = m.Pet.PetDiscoverability
+                         }
+                     }).ToList(),
+                     InvitedUsers = m.InvitedUsers.Select(m => new InvitedUser
+                     {
+                         InviteID = m.InviteID,
+                         UserID = m.UserID,
+                         MeetingID = m.InviteID,
+                         Accepted = m.Accepted,
+                         ResponseDate = m.ResponseDate,
+                         User = new User
+                         {
+                             UserID = m.User.UserID,
+                             FirstName = m.User.FirstName,
+                             Surname = m.User.Surname,
+                             PhoneNumber = m.User.PhoneNumber,
+                             Email = m.User.Email,
+                             Suburb = m.User.Suburb,
+                             Postcode = m.User.Postcode,
+                             LoginUsername = m.User.LoginUsername,
+                             LoginPassword = m.User.LoginPassword,
+                             WebpageAnimalPreference = m.User.WebpageAnimalPreference
+                         },
+                     }).ToList()
+                 }).Where(m => m.UserCreated == id).ToList();
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = ex.Message;
+                response.IsSuccess = false;
+            }
+
+            return Ok(response);
+        }
+
+        [HttpGet("HasInvitedUser/{userId:int}")]
+        public IActionResult GetMeetingsByInvitedUserId(int userId)
+        {
+            var response = new MainResponse();
+            try
+            {
+                response.Content = _dbContext.Meetings
+                 .Include(m => m.InvitedPets).Include(m => m.InvitedUsers).Include(m => m.User)
+                 .Select(m => new Meeting
+                 {
+                     MeetingID = m.MeetingID,
+                     UserCreated = m.UserCreated,
+                     MeetingDate = m.MeetingDate,
+                     MeetingLocation = m.MeetingLocation,
+                     MeetingCreationDate = m.MeetingCreationDate,
+                     MeetingCancellationDate = m.MeetingCancellationDate,
+                     MeetingName = m.MeetingName,
+                     MeetingMessage = m.MeetingMessage,
+                     User = new User
+                     {
+                         UserID = m.User.UserID,
+                         FirstName = m.User.FirstName,
+                         Surname = m.User.Surname,
+                         PhoneNumber = m.User.PhoneNumber,
+                         Email = m.User.Email,
+                         Suburb = m.User.Suburb,
+                         Postcode = m.User.Postcode,
+                         LoginUsername = m.User.LoginUsername,
+                         LoginPassword = m.User.LoginPassword,
+                         WebpageAnimalPreference = m.User.WebpageAnimalPreference
+                     },
+                     InvitedPets = m.InvitedPets.Select(m => new InvitedPet
+                     {
+                         InvitedPetID = m.InvitedPetID,
+                         PetID = m.PetID,
+                         MeetingID = m.MeetingID,
+                         InviteID = m.InviteID,
+                         Pet = new Pet
+                         {
+                             PetID = m.Pet.PetID,
+                             OwnerID = m.Pet.OwnerID,
+                             PetName = m.Pet.PetName,
+                             PetBreed = m.Pet.PetBreed,
+                             PetAge = m.Pet.PetAge,
+                             PetGender = m.Pet.PetGender,
+                             PetPhotoFileLocation = m.Pet.PetPhotoFileLocation,
+                             PetDiscoverability = m.Pet.PetDiscoverability
+                         }
+                     }).ToList(),
+                     InvitedUsers = m.InvitedUsers.Select(m => new InvitedUser
+                     {
+                         InviteID = m.InviteID,
+                         UserID = m.UserID,
+                         MeetingID = m.InviteID,
+                         Accepted = m.Accepted,
+                         ResponseDate = m.ResponseDate,
+                         User = new User
+                         {
+                             UserID = m.User.UserID,
+                             FirstName = m.User.FirstName,
+                             Surname = m.User.Surname,
+                             PhoneNumber = m.User.PhoneNumber,
+                             Email = m.User.Email,
+                             Suburb = m.User.Suburb,
+                             Postcode = m.User.Postcode,
+                             LoginUsername = m.User.LoginUsername,
+                             LoginPassword = m.User.LoginPassword,
+                             WebpageAnimalPreference = m.User.WebpageAnimalPreference
+                         },
+                     }).ToList()
+                 }).Where(m => m.InvitedUsers.Any(u => u.UserID == userId)).ToList();
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = ex.Message;
+                response.IsSuccess = false;
+            }
+
+            return Ok(response);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateMeeting(Meeting meeting)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                _dbContext.Meetings.Add(meeting);
+                await _dbContext.SaveChangesAsync();
+
+                return Ok($"Meeting created successfully with ID: {meeting.MeetingID}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error creating meeting. {ex.Message}");
+            }
+        }
+
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> UpdateMeeting(int id, Meeting updatedMeeting)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var existingMeeting = await _dbContext.Meetings.FindAsync(id);
+                if (existingMeeting == null)
+                {
+                    return NotFound($"Meeting with ID {id} not found.");
+                }
+
+                // Update the meeting's properties with the new values
+                existingMeeting.MeetingName = updatedMeeting.MeetingName;
+                existingMeeting.MeetingMessage = updatedMeeting.MeetingMessage;
+                existingMeeting.MeetingDate = updatedMeeting.MeetingDate;
+                // Update other properties as needed
+
+                await _dbContext.SaveChangesAsync();
+
+                return Ok($"Meeting with ID {id} updated successfully.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error updating meeting. {ex.Message}");
+            }
+        }
+
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> DeleteMeeting(int id)
+        {
+            try
+            {
+                var meeting = await _dbContext.Meetings.FindAsync(id);
+                if (meeting == null)
+                {
+                    return NotFound($"Meeting with ID {id} not found.");
+                }
+
+                _dbContext.Meetings.Remove(meeting);
+                await _dbContext.SaveChangesAsync();
+
+                return Ok($"Meeting with ID {id} deleted successfully.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error deleting meeting with ID {id}. {ex.Message}");
+            }
+        }
 
     }
 }

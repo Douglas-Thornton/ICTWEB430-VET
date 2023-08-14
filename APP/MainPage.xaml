@@ -1,13 +1,63 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <TabbedPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Name="mainPage"
              xmlns:pages="clr-namespace:APP.Pages"
              xmlns:states="clr-namespace:APP.States"
-             x:DataType="states:LoggedUserState"
              xmlns:local="clr-namespace:APP"
              x:Class="APP.MainPage">
+   
     <ContentPage 
-        Title="Index">
+        Title="Vet App"
+        IconImageSource="/Images/Logo.jpg">
+        <BlazorWebView HostPage="wwwroot/index.html" >
+            <BlazorWebView.RootComponents>
+                <RootComponent Selector="#app" ComponentType="{x:Type pages:Index}" />
+            </BlazorWebView.RootComponents>
+        </BlazorWebView>
+    </ContentPage>
+    <ContentPage 
+        Title="{Binding LoginLogoutNavTitle}">
+        <BlazorWebView HostPage="wwwroot/index.html" >
+            <BlazorWebView.RootComponents>
+                <RootComponent Selector="#app" ComponentType="{x:Type pages:Index}" />
+            </BlazorWebView.RootComponents>
+        </BlazorWebView>
+    </ContentPage>
+    <ContentPage 
+        Title="{Binding RegisterProfileNavTitle}">
+        <BlazorWebView HostPage="wwwroot/index.html" >
+            <BlazorWebView.RootComponents>
+                <RootComponent Selector="#app" ComponentType="{x:Type pages:Index}" />
+            </BlazorWebView.RootComponents>
+        </BlazorWebView>
+    </ContentPage>
+    <ContentPage 
+        Title="Meet-up">
+        <BlazorWebView HostPage="wwwroot/index.html" >
+            <BlazorWebView.RootComponents>
+                <RootComponent Selector="#app" ComponentType="{x:Type pages:Index}" />
+            </BlazorWebView.RootComponents>
+        </BlazorWebView>
+    </ContentPage>
+    <ContentPage 
+        Title="Our Services">
+        <BlazorWebView HostPage="wwwroot/index.html" >
+            <BlazorWebView.RootComponents>
+                <RootComponent Selector="#app" ComponentType="{x:Type pages:Index}" />
+            </BlazorWebView.RootComponents>
+        </BlazorWebView>
+    </ContentPage>
+    <ContentPage 
+        Title="Contact us">
+        <BlazorWebView HostPage="wwwroot/index.html" >
+            <BlazorWebView.RootComponents>
+                <RootComponent Selector="#app" ComponentType="{x:Type pages:Index}" />
+            </BlazorWebView.RootComponents>
+        </BlazorWebView>
+    </ContentPage>
+    <ContentPage 
+        Title="About us">
         <BlazorWebView HostPage="wwwroot/index.html" >
             <BlazorWebView.RootComponents>
                 <RootComponent Selector="#app" ComponentType="{x:Type pages:Index}" />
@@ -37,9 +87,5 @@
                 <RootComponent Selector="#app" ComponentType="{x:Type pages:Login}" />
             </BlazorWebView.RootComponents>
         </BlazorWebView>
-    </ContentPage>
-    <ContentPage 
-        Title="{Binding LoggedUser.FirstName}">
-        <Label Text="This is a maui page!" TextColor="Black" FontSize="28"></Label>
     </ContentPage>
 </TabbedPage>
