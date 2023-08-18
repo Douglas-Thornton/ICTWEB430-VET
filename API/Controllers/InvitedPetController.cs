@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using global::VETAPPAPI.Data;
-using global::VETAPPAPI.Models;
+using VETAPPAPI.Data;
+using VETAPPAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860

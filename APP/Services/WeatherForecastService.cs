@@ -1,6 +1,10 @@
+using APP.Data.Models;
+using APP.Data.Services;
+
 namespace APP.Data
 {
-    public class WeatherForecastService
+    /// <inheritdoc/>
+    public class WeatherForecastService: IWeatherForecastService
     {
         private static readonly string[] Summaries = new[]
         {

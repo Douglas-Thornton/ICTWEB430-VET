@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static APP.Data.models.models;
+﻿using static APP.Data.Models.Models;
 
-namespace APP.Data.services
+namespace APP.Data.Services;
+
+public interface IUserService
 {
-    public interface IUserService
-    {
 
-        Task<List<User>> GetAllUsersList(); 
-        Task<User> LoginUser(LoginRequest loginRequest);
-    }
+    public Task<List<User>> GetAllUsersList(); 
+    public Task<User> LoginUser(LoginRequest loginRequest);
 }
