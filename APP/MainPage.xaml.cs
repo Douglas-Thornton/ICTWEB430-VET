@@ -1,7 +1,7 @@
 ﻿using APP.States;
 using System.ComponentModel;
-using APP.Data.services;
-using static APP.Data.models.models;
+using APP.Data.Services;
+using static APP.Data.Models.Models;
 
 namespace APP
 {
@@ -13,7 +13,7 @@ namespace APP
         private string _loginLogoutNavType = "Login";
         private string _registerProfileNavTitle = "Register";
         private string _registerProfileNavType = "Register";
-        public event PropertyChangedEventHandler PropertyChanged;
+        new public event PropertyChangedEventHandler PropertyChanged;
 
         public string LoginLogoutNavTitle
         {
@@ -102,7 +102,7 @@ namespace APP
             }
         }
 
-        protected virtual void OnPropertyChanged(string propertyName)
+        protected override void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
