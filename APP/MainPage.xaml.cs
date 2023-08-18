@@ -13,7 +13,7 @@ namespace APP
         private string _loginLogoutNavType = "Login";
         private string _registerProfileNavTitle = "Register";
         private string _registerProfileNavType = "Register";
-        public event PropertyChangedEventHandler PropertyChanged;
+        new public event PropertyChangedEventHandler PropertyChanged;
 
         public string LoginLogoutNavTitle
         {
@@ -102,7 +102,7 @@ namespace APP
             }
         }
 
-        protected virtual void OnPropertyChanged(string propertyName)
+        protected override void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
