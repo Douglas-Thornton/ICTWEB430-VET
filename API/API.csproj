@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <UserSecretsId>17235b2d-67c3-4646-89a7-882e99920912</UserSecretsId>
   </PropertyGroup>
     <Target Name="BeforePublish">
         <!-- Add your pre-publish commands or scripts here to stop the IIS website -->

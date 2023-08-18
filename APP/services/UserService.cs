@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using static APP.Data.Models.Models;
 using System.Net.Http.Json;
-using APP.Data.Models;
+using APP.models;
 
 namespace APP.Data.Services;
 
