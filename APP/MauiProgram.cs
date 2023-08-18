@@ -1,8 +1,7 @@
-﻿using APP.Data;
-using APP.Data.services;
-using APP.States;
+﻿using APP.States;
 using Microsoft.Extensions.Logging;
-using APP.Data.services;
+using APP.Data.Services;
+using APP.Data;
 
 namespace APP
 {
@@ -19,6 +18,7 @@ namespace APP
                 });
 
             builder.Services.AddMauiBlazorWebView();
+            builder.Services.AddTransient<IWeatherForecastService, WeatherForecastService>();
 
 #if DEBUG
 		builder.Services.AddBlazorWebViewDeveloperTools();

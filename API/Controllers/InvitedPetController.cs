@@ -1,203 +1,200 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using global::VETAPPAPI.Data;
-using global::VETAPPAPI.Models;
+using VETAPPAPI.Data;
+using VETAPPAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace VETAPPAPI.Controllers
+
+namespace VETAPPAPI.Controllers;
+
+[ApiController]
+[Route("api/invitedPetsController")]
+public class InvitedPetController : ControllerBase
 {
-    namespace VETAPPAPI.Controllers
+
+    private readonly VETDBContext _dbContext;
+
+    public InvitedPetController(VETDBContext dbContext)
     {
-        [ApiController]
-        [Route("api/invitedPetsController")]
-        public class InvitedPetController : ControllerBase
+        _dbContext = dbContext;
+    }
+
+    [HttpGet]
+    public async Task<MainResponse> GetInvitedPets()
+    {
+        var response = new MainResponse();
+        try
         {
-
-            private readonly VETDBContext _dbContext;
-
-            public InvitedPetController(VETDBContext dbContext)
-            {
-                _dbContext = dbContext;
-            }
-
-            [HttpGet]
-            public async Task<MainResponse> GetInvitedPets()
-            {
-                var response = new MainResponse();
-                try
+            response.Content = _dbContext.InvitedPets
+                .Include(ip => ip.Pet)
+                .Include(ip => ip.InvitedUser)
+                .Include(ip => ip.Meeting)
+                .Select(m => new InvitedPet
                 {
-                    response.Content = _dbContext.InvitedPets
-                        .Include(ip => ip.Pet)
-                        .Include(ip => ip.InvitedUser)
-                        .Include(ip => ip.Meeting)
-                        .Select(m => new InvitedPet
-                        {
-                            InvitedPetID = m.InvitedPetID,
-                            PetID = m.PetID,
-                            MeetingID = m.MeetingID,
-                            InviteID = m.InviteID,
-                            Pet = new Pet
-                            {
-                                PetID = m.Pet.PetID,
-                                OwnerID = m.Pet.OwnerID,
-                                PetName = m.Pet.PetName,
-                                PetBreed = m.Pet.PetBreed,
-                                PetAge = m.Pet.PetAge,
-                                PetGender = m.Pet.PetGender,
-                                PetPhotoFileLocation = m.Pet.PetPhotoFileLocation,
-                                PetDiscoverability = m.Pet.PetDiscoverability                                
-                            },
-                            Meeting = new Meeting
-                            {
-                                MeetingID = m.Meeting.MeetingID,
-                                UserCreated = m.Meeting.UserCreated,
-                                MeetingDate = m.Meeting.MeetingDate,
-                                MeetingLocation = m.Meeting.MeetingLocation,
-                                MeetingCreationDate = m.Meeting.MeetingCreationDate,
-                                MeetingCancellationDate = m.Meeting.MeetingCancellationDate,
-                                MeetingName = m.Meeting.MeetingName,
-                                MeetingMessage = m.Meeting.MeetingMessage 
-                            },
-                            InvitedUser = new InvitedUser 
-                            { 
-                                InviteID = m.InvitedUser.InviteID,
-                                UserID = m.InvitedUser.UserID,
-                                MeetingID = m.InvitedUser.InviteID,
-                                Accepted = m.InvitedUser.Accepted,
-                                ResponseDate = m.InvitedUser.ResponseDate
-                            }
-                        }).ToList();
-
-                    response.IsSuccess = true;
-                }
-                catch (Exception ex)
-                {
-                    response.ErrorMessage = ex.Message;
-                    response.IsSuccess = false;
-                }
-
-                return response;
-            }
-
-            [HttpPost]
-            public async Task<MainResponse> CreateInvitedPet(InvitedPet invitedPet)
-            {
-                var response = new MainResponse();
-                try
-                {
-                    if (!ModelState.IsValid)
+                    InvitedPetID = m.InvitedPetID,
+                    PetID = m.PetID,
+                    MeetingID = m.MeetingID,
+                    InviteID = m.InviteID,
+                    Pet = new Pet
                     {
-                        response.ErrorMessage = "Invalid input data.";
-                        response.IsSuccess = false;
-                        return response;
-                    }
-
-                    _dbContext.InvitedPets.Add(invitedPet);
-                    await _dbContext.SaveChangesAsync();
-
-                    response.Content = invitedPet;
-                    response.IsSuccess = true;
-                }
-                catch (Exception ex)
-                {
-                    response.ErrorMessage = ex.Message;
-                    response.IsSuccess = false;
-                }
-
-                return response;
-            }
-
-            [HttpPut("{id:int}")]
-            public async Task<MainResponse> UpdateInvitedPet(int id, InvitedPet invitedPet)
-            {
-                var response = new MainResponse();
-                try
-                {
-                    if (!ModelState.IsValid)
+                        PetID = m.Pet.PetID,
+                        OwnerID = m.Pet.OwnerID,
+                        PetName = m.Pet.PetName,
+                        PetBreed = m.Pet.PetBreed,
+                        PetAge = m.Pet.PetAge,
+                        PetGender = m.Pet.PetGender,
+                        PetPhotoFileLocation = m.Pet.PetPhotoFileLocation,
+                        PetDiscoverability = m.Pet.PetDiscoverability                                
+                    },
+                    Meeting = new Meeting
                     {
-                        response.ErrorMessage = "Invalid input data.";
-                        response.IsSuccess = false;
-                        return response;
+                        MeetingID = m.Meeting.MeetingID,
+                        UserCreated = m.Meeting.UserCreated,
+                        MeetingDate = m.Meeting.MeetingDate,
+                        MeetingLocation = m.Meeting.MeetingLocation,
+                        MeetingCreationDate = m.Meeting.MeetingCreationDate,
+                        MeetingCancellationDate = m.Meeting.MeetingCancellationDate,
+                        MeetingName = m.Meeting.MeetingName,
+                        MeetingMessage = m.Meeting.MeetingMessage 
+                    },
+                    InvitedUser = new InvitedUser 
+                    { 
+                        InviteID = m.InvitedUser.InviteID,
+                        UserID = m.InvitedUser.UserID,
+                        MeetingID = m.InvitedUser.InviteID,
+                        Accepted = m.InvitedUser.Accepted,
+                        ResponseDate = m.InvitedUser.ResponseDate
                     }
+                }).ToList();
 
-                    var existingInvitedPet = await _dbContext.InvitedPets.FindAsync(id);
-                    if (existingInvitedPet == null)
-                    {
-                        response.ErrorMessage = $"Invited pet with ID {id} not found.";
-                        response.IsSuccess = false;
-                        return response;
-                    }
-
-                    // Update properties of existingInvitedPet based on invitedPet
-
-                    await _dbContext.SaveChangesAsync();
-
-                    response.Content = existingInvitedPet;
-                    response.IsSuccess = true;
-                }
-                catch (Exception ex)
-                {
-                    response.ErrorMessage = ex.Message;
-                    response.IsSuccess = false;
-                }
-
-                return response;
-            }
-
-            [HttpDelete("{id:int}")]
-            public async Task<MainResponse> DeleteInvitedPet(int id)
-            {
-                var response = new MainResponse();
-                try
-                {
-                    var invitedPet = await _dbContext.InvitedPets.FindAsync(id);
-                    if (invitedPet == null)
-                    {
-                        response.ErrorMessage = $"Invited pet with ID {id} not found.";
-                        response.IsSuccess = false;
-                        return response;
-                    }
-
-                    _dbContext.InvitedPets.Remove(invitedPet);
-                    await _dbContext.SaveChangesAsync();
-
-                    response.IsSuccess = true;
-                }
-                catch (Exception ex)
-                {
-                    response.ErrorMessage = ex.Message;
-                    response.IsSuccess = false;
-                }
-
-                return response;
-            }
-
-            [HttpGet("bymeeting/{meetingId:int}")]
-            public async Task<MainResponse> GetInvitedPetsByMeetingId(int meetingId)
-            {
-                var response = new MainResponse();
-                try
-                {
-                    response.Content = _dbContext.InvitedPets
-                        .Include(ip => ip.Pet)
-                        .Include(ip => ip.InvitedUser)
-                        .Include(ip => ip.Meeting)
-                        .Where(ip => ip.MeetingID == meetingId)
-                        .ToList();
-
-                    response.IsSuccess = true;
-                }
-                catch (Exception ex)
-                {
-                    response.ErrorMessage = ex.Message;
-                    response.IsSuccess = false;
-                }
-
-                return response;
-            }
-
+            response.IsSuccess = true;
         }
+        catch (Exception ex)
+        {
+            response.ErrorMessage = ex.Message;
+            response.IsSuccess = false;
+        }
+
+        return response;
+    }
+
+    [HttpPost]
+    public async Task<MainResponse> CreateInvitedPet(InvitedPet invitedPet)
+    {
+        var response = new MainResponse();
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                response.ErrorMessage = "Invalid input data.";
+                response.IsSuccess = false;
+                return response;
+            }
+
+            _dbContext.InvitedPets.Add(invitedPet);
+            await _dbContext.SaveChangesAsync();
+
+            response.Content = invitedPet;
+            response.IsSuccess = true;
+        }
+        catch (Exception ex)
+        {
+            response.ErrorMessage = ex.Message;
+            response.IsSuccess = false;
+        }
+
+        return response;
+    }
+
+    [HttpPut("{id:int}")]
+    public async Task<MainResponse> UpdateInvitedPet(int id, InvitedPet invitedPet)
+    {
+        var response = new MainResponse();
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                response.ErrorMessage = "Invalid input data.";
+                response.IsSuccess = false;
+                return response;
+            }
+
+            var existingInvitedPet = await _dbContext.InvitedPets.FindAsync(id);
+            if (existingInvitedPet == null)
+            {
+                response.ErrorMessage = $"Invited pet with ID {id} not found.";
+                response.IsSuccess = false;
+                return response;
+            }
+
+            // Update properties of existingInvitedPet based on invitedPet
+
+            await _dbContext.SaveChangesAsync();
+
+            response.Content = existingInvitedPet;
+            response.IsSuccess = true;
+        }
+        catch (Exception ex)
+        {
+            response.ErrorMessage = ex.Message;
+            response.IsSuccess = false;
+        }
+
+        return response;
+    }
+
+    [HttpDelete("{id:int}")]
+    public async Task<MainResponse> DeleteInvitedPet(int id)
+    {
+        var response = new MainResponse();
+        try
+        {
+            var invitedPet = await _dbContext.InvitedPets.FindAsync(id);
+            if (invitedPet == null)
+            {
+                response.ErrorMessage = $"Invited pet with ID {id} not found.";
+                response.IsSuccess = false;
+                return response;
+            }
+
+            _dbContext.InvitedPets.Remove(invitedPet);
+            await _dbContext.SaveChangesAsync();
+
+            response.IsSuccess = true;
+        }
+        catch (Exception ex)
+        {
+            response.ErrorMessage = ex.Message;
+            response.IsSuccess = false;
+        }
+
+        return response;
+    }
+
+    [HttpGet("bymeeting/{meetingId:int}")]
+    public async Task<MainResponse> GetInvitedPetsByMeetingId(int meetingId)
+    {
+        var response = new MainResponse();
+        try
+        {
+            response.Content = _dbContext.InvitedPets
+                .Include(ip => ip.Pet)
+                .Include(ip => ip.InvitedUser)
+                .Include(ip => ip.Meeting)
+                .Where(ip => ip.MeetingID == meetingId)
+                .ToList();
+
+            response.IsSuccess = true;
+        }
+        catch (Exception ex)
+        {
+            response.ErrorMessage = ex.Message;
+            response.IsSuccess = false;
+        }
+
+        return response;
     }
 
 }
+
