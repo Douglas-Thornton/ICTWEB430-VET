@@ -62,6 +62,7 @@
 
     <ItemGroup>
       <Folder Include="Helpers\" />
+      <Folder Include="JS\" />
     </ItemGroup>
 
 </Project>

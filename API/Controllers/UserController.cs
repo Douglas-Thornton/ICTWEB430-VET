@@ -117,6 +117,56 @@ namespace VETAPPAPI.Controllers
         }
 
         /// <summary>
+        /// Try to login using a login username and password
+        /// </summary>
+        /// <param name="user">A user that contains a username, password</param>
+        /// <returns>a user.</returns>
+        [HttpPost("login")]
+        public IActionResult Login(LoginRequest loginRequest)
+        {
+            var response = new MainResponse();
+            try
+            {
+                response.Content = _dbContext.Users.Where(u => u.LoginUsername == loginRequest.LoginUsername && u.LoginPassword == loginRequest.LoginPassword)
+                .Select(u => new User
+                {
+                    UserID = u.UserID,
+                    FirstName = u.FirstName,
+                    Surname = u.Surname,
+                    PhoneNumber = u.PhoneNumber,
+                    Email = u.Email,
+                    Suburb = u.Suburb,
+                    Postcode = u.Postcode,
+                    LoginUsername = u.LoginUsername,
+                    LoginPassword = u.LoginPassword,
+                    WebpageAnimalPreference = u.WebpageAnimalPreference,
+                    Pets = u.Pets.Select(p => new Pet
+                    {
+                        PetID = p.PetID,
+                        PetName = p.PetName,
+                        PetBreed = p.PetBreed,
+                        PetAge = p.PetAge,
+                        PetGender = p.PetGender,
+                        PetPhotoFileLocation = p.PetPhotoFileLocation,
+                        PetDiscoverability = p.PetDiscoverability,
+                        OwnerID = p.OwnerID // Include the OwnerID property if needed
+                    }).ToList()
+                })
+                .ToList();
+
+                response.IsSuccess = true;
+
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = ex.Message;
+                response.IsSuccess = false;
+            }
+
+            return Ok(response);
+        }
+
+        /// <summary>
         /// Deletes a user with all data created or 'owned' by them.
         /// </summary>
         /// <param name="id">The ID of the user to delete.</param>

@@ -1,7 +1,6 @@
-﻿using APP.Data.services.Interfaces;
-using APP.States;
+﻿using APP.States;
 using System.ComponentModel;
-using VETAPP.Data.services;
+using APP.Data.services;
 using static APP.Data.models.models;
 
 namespace APP
@@ -11,7 +10,9 @@ namespace APP
         private readonly LoggedUserState _loggedUserState;
 
         private string _loginLogoutNavTitle = "Login";
+        private string _loginLogoutNavType = "Login";
         private string _registerProfileNavTitle = "Register";
+        private string _registerProfileNavType = "Register";
         public event PropertyChangedEventHandler PropertyChanged;
 
         public string LoginLogoutNavTitle
@@ -39,6 +40,33 @@ namespace APP
                 }
             }
         }
+
+        public string LoginLogoutNavType
+        {
+            get { return _loginLogoutNavType; }
+            set
+            {
+                if (_loginLogoutNavType != value)
+                {
+                    _loginLogoutNavType = value;
+                    OnPropertyChanged(nameof(LoginLogoutNavType));
+                }
+            }
+        }
+
+        public string RegisterProfileNavType
+        {
+            get { return _registerProfileNavType; }
+            set
+            {
+                if (_registerProfileNavType != value)
+                {
+                    _registerProfileNavTitle = value;
+                    OnPropertyChanged(nameof(RegisterProfileNavType));
+                }
+            }
+        }
+
 
         public MainPage(LoggedUserState loggedUserState)
         {

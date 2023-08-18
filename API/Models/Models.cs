@@ -34,7 +34,7 @@ namespace VETAPPAPI.Models
         public int OwnerID { get; set; }
         public string PetName { get; set; }
         public string PetBreed { get; set; }
-        public string PetAge { get; set; }
+        public int PetAge { get; set; }
         public string PetGender { get; set; }
         public string PetPhotoFileLocation { get; set; }
         public bool PetDiscoverability { get; set; }
@@ -105,6 +105,12 @@ namespace VETAPPAPI.Models
         public virtual Meeting? Meeting { get; set; }
         [ForeignKey("InviteID")]
         public virtual InvitedUser? InvitedUser { get; set; }
+    }
+
+    public class LoginRequest
+    {
+        public string LoginUsername { get; set; }
+        public string LoginPassword{ get; set; }
     }
 
 }

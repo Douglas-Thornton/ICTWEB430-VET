@@ -1,0 +1,272 @@
+﻿@page "/register-profile"
+@using APP.Data.services;
+@using APP.States;
+@using System.ComponentModel;
+@using static APP.Data.models.models;
+@inject IUserService userService;
+@inject LoggedUserState LoggedUserState
+
+
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            @if (LoggedUserState.LoggedUser == null)
+            {
+                <EditForm class="form-container" Model="NewUser" OnValidSubmit="HandleValidNewUserSubmit">
+                    <DataAnnotationsValidator />
+
+                    <div>
+                        <label for="firstName">First Name:</label>
+                        <InputText id="firstName" class="form-control" @bind-Value="NewUser.FirstName" />
+                        <ValidationMessage For="@(() => NewUser.FirstName)" />
+                    </div>
+
+                    <div>
+                        <label for="surname">Surname:</label>
+                        <InputText id="surname" class="form-control" @bind-Value="NewUser.Surname" />
+                        <ValidationMessage For="@(() => NewUser.Surname)" />
+                    </div>
+
+                    <div>
+                        <label for="phoneNumber">Phone Number:</label>
+                        <InputText id="phoneNumber" class="form-control" @bind-Value="NewUser.PhoneNumber" />
+                        <ValidationMessage For="@(() => NewUser.PhoneNumber)" />
+                    </div>
+
+                    <div>
+                        <label for="email">Email:</label>
+                        <InputText id="email" class="form-control" @bind-Value="NewUser.Email" />
+                        <ValidationMessage For="@(() => NewUser.Email)" />
+                    </div>
+
+                    <div>
+                        <label for="suburb">Suburb:</label>
+                        <InputText id="suburb" class="form-control" @bind-Value="NewUser.Suburb" />
+                        <ValidationMessage For="@(() => NewUser.Suburb)" />
+                    </div>
+
+                    <div>
+                        <label for="postcode">Postcode:</label>
+                        <InputText id="postcode" class="form-control" @bind-Value="NewUser.Postcode" />
+                        <ValidationMessage For="@(() => NewUser.Postcode)" />
+                    </div>
+
+                    <div>
+                        <label for="loginNewUsername">Login Username:</label>
+                        <InputText id="loginNewUsername" class="form-control" @bind-Value="NewUser.LoginUsername" />
+                        <ValidationMessage For="@(() => NewUser.LoginUsername)" />
+                    </div>
+
+                    <div>
+                        <label for="webpageAnimalPreference">Webpage Animal Preference:</label>
+                        <InputText id="webpageAnimalPreference" class="form-control" @bind-Value="NewUser.WebpageAnimalPreference" />
+                        <ValidationMessage For="@(() => NewUser.WebpageAnimalPreference)" />
+                    </div>
+
+                    <button class="btn btn-primary" type="submit">Save Changes</button>
+                </EditForm>
+            }
+            else
+            {
+                <EditForm Model="EditUser" class="form-container" OnValidSubmit="HandleValidEditUserSubmit">
+                    <DataAnnotationsValidator />
+                    <div>
+                        <label for="firstName">First Name:</label>
+                        <InputText id="firstName" class="form-control" @bind-Value="EditUser.FirstName" />
+                        <ValidationMessage For="@(() => EditUser.FirstName)" />
+                    </div>
+
+                    <div>
+                        <label for="surname">Surname:</label>
+                        <InputText id="surname" class="form-control" @bind-Value="EditUser.Surname" />
+                        <ValidationMessage For="@(() => EditUser.Surname)" />
+                    </div>
+
+                    <div>
+                        <label for="phoneNumber">Phone Number:</label>
+                        <InputText id="phoneNumber" class="form-control" @bind-Value="EditUser.PhoneNumber" />
+                        <ValidationMessage For="@(() => EditUser.PhoneNumber)" />
+                    </div>
+
+                    <div>
+                        <label for="email">Email:</label>
+                        <InputText id="email" class="form-control" @bind-Value="EditUser.Email" />
+                        <ValidationMessage For="@(() => EditUser.Email)" />
+                    </div>
+
+                    <div>
+                        <label for="suburb">Suburb:</label>
+                        <InputText id="suburb" class="form-control" @bind-Value="EditUser.Suburb" />
+                        <ValidationMessage For="@(() => EditUser.Suburb)" />
+                    </div>
+
+                    <div>
+                        <label for="postcode">Postcode:</label>
+                        <InputText id="postcode" class="form-control" @bind-Value="EditUser.Postcode" />
+                        <ValidationMessage For="@(() => EditUser.Postcode)" />
+                    </div>
+
+                    <div>
+                        <label for="loginEditUsername">Login EditUsername:</label>
+                        <InputText id="loginEditUsername" class="form-control" @bind-Value="EditUser.LoginUsername" />
+                        <ValidationMessage For="@(() => EditUser.LoginUsername)" />
+                    </div>
+
+                    <div>
+                        <label for="webpageAnimalPreference">Webpage Animal Preference:</label>
+                        <InputText id="webpageAnimalPreference" class="form-control" @bind-Value="EditUser.WebpageAnimalPreference" />
+                        <ValidationMessage For="@(() => EditUser.WebpageAnimalPreference)" />
+                    </div>
+                    <button class="btn btn-primary" type="submit">Save Changes</button>
+                </EditForm>
+            }
+        </div>
+        <div class="col">
+            <p>Dog creation UI</p>
+            <EditForm class="form-container" Model="NewPet" OnValidSubmit="HandleValidNewPetSubmit">
+                <div>
+                    <label for="petName">Pet Name:</label>
+                    <InputText id="petName" class="form-control" @bind-Value="NewPet.PetName" />
+                    <ValidationMessage For="@(() => NewPet.PetName)" />
+                </div>
+                <div>
+                    <label for="petBreed">Pet Breed:</label>
+                    <InputText id="petBreed" class="form-control" @bind-Value="NewPet.PetBreed" />
+                    <ValidationMessage For="@(() => NewPet.PetBreed)" />
+                </div>
+                <div>
+                    <label for="petAge">Pet Age:</label>
+                    <InputNumber id="petAge" class="form-control" @bind-Value="NewPet.PetAge" />
+                    <ValidationMessage For="@(() => NewPet.PetAge)" />
+                </div>
+                <div>
+                    <label for="petSex">Pet sex:</label>
+                    <InputSelect id="petSex" class="form-control form-select" @bind-Value="NewPet.PetGender">
+                        <option>Male</option>
+                        <option>Female</option>
+                    </InputSelect>
+                    <ValidationMessage For="@(() => NewPet.PetGender)" />
+                </div>                
+                <div>
+                    <label for="petDiscoverability">Pet Discoverability:</label>
+                    <InputCheckbox type="checkbox" class="form-check-input" id="petDiscoverability" @bind-Value="@NewPet.PetDiscoverability" />
+                    <ValidationMessage For="@(() => NewPet.PetDiscoverability)" />
+                </div>
+                <div>
+                    <label for="petSex">Pet Image:</label>
+                    <InputFile accept="image/*" OnChange="@HandleImageUpload" />
+                </div>
+                <button type="submit" class="btn btn-primary">Add</button>
+            </EditForm>
+            <div class="scrollable-container">
+                @foreach (Pet pet in Pets)
+                {
+                    <div class="container">
+                        <div class="row">
+                            <div class="col">
+                                <img src="@(!string.IsNullOrEmpty(pet.PetPhotoFileLocation) ? pet.PetPhotoFileLocation : "Images/placeholder.jpg")"
+                                     width="100" height="100" alt="Picture of @pet.PetName" />
+                            </div>
+                            <div class="col">
+                                <div class="col">
+                                    <h2>@pet.PetName</h2>
+                                    <p>Breed: @pet.PetBreed</p>
+                                    <p>Age: @pet.PetAge</p>
+                                </div>
+                                <div class="col">
+                                    <p>Gender: @pet.PetGender</p>
+                                    <p>Discoverable: @(pet.PetDiscoverability ? "Visible" : "Hidden")</p>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-close btn-sm" @onclick="() => DeletePet(pet)"></button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code 
+{
+    private User NewUser = new User();
+    private User EditUser = new User();
+
+    private Pet NewPet = new Pet();
+    private List<Pet> Pets = new List<Pet>();
+
+    public event PropertyChangedEventHandler PropertyChanged;
+
+
+
+    private void HandleValidNewUserSubmit()
+    {
+
+        // Perform further processing, such as saving the user data
+        // You can access user.Username, user.Email, etc.
+    }
+
+    private void HandleValidEditUserSubmit()
+    {
+
+        // Perform further processing, such as saving the user data
+        // You can access user.Username, user.Email, etc.
+    }
+
+    private void HandleValidNewPetSubmit()
+    {
+        Pets.Add(NewPet);
+        NewPet = new Pet();
+    }
+
+    protected override void OnInitialized()
+    {
+        loadPage();
+        LoggedUserState.PropertyChanged += OnLoggedUserStateChanged;
+    }
+
+    private void loadPage() 
+    {
+        NewUser = new User();
+        EditUser = new User();
+        Pets = new List<Pet>();
+
+        if (LoggedUserState.LoggedUser != null)
+        {
+            EditUser = LoggedUserState.LoggedUser;
+            Pets = LoggedUserState.LoggedUser.Pets.ToList();
+        }
+
+        StateHasChanged();
+    }
+
+    private void OnLoggedUserStateChanged(object sender, PropertyChangedEventArgs e)
+    {
+        // Check if the property that changed is "LoggedUser"
+        if (e.PropertyName == nameof(LoggedUserState.LoggedUser))
+        {
+            loadPage();
+        }
+    }
+
+    private void HandleImageUpload(InputFileChangeEventArgs e)
+    {
+        NewPet.PetPhotoUpload = null;
+
+        try
+        {
+            NewPet.PetPhotoUpload = e.File;
+        }
+        catch (Exception ex)
+        {
+
+        }
+
+    }
+
+    private void DeletePet(Pet PetToDelete)
+    {
+        Pets.Remove(PetToDelete);
+    }
+}

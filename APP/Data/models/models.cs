@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace APP.Data.models
 {
@@ -29,17 +30,23 @@ namespace APP.Data.models
 
         }
 
+        public class LoginRequest
+        {
+            public string LoginUsername { get; set; }
+            public string LoginPassword { get; set; }
+        }
+
         public class Pet
         {
             public int PetID { get; set; }
             public int OwnerID { get; set; }
             public string PetName { get; set; }
             public string PetBreed { get; set; }
-            public string PetAge { get; set; }
+            public int PetAge { get; set; }
             public string PetGender { get; set; }
             public string PetPhotoFileLocation { get; set; }
             public bool PetDiscoverability { get; set; }
-
+            public IBrowserFile PetPhotoUpload { get; set; }
             public virtual User Owner { get; set; }
 
 

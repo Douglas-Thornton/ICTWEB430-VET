@@ -20,15 +20,15 @@
         Title="{Binding LoginLogoutNavTitle}">
         <BlazorWebView HostPage="wwwroot/index.html" >
             <BlazorWebView.RootComponents>
-                <RootComponent Selector="#app" ComponentType="{x:Type pages:Index}" />
+                <RootComponent Selector="#app" ComponentType="{x:Type pages:LoginLogout}" />
             </BlazorWebView.RootComponents>
         </BlazorWebView>
     </ContentPage>
     <ContentPage 
         Title="{Binding RegisterProfileNavTitle}">
-        <BlazorWebView HostPage="wwwroot/index.html" >
+        <BlazorWebView HostPage="wwwroot/index.html">
             <BlazorWebView.RootComponents>
-                <RootComponent Selector="#app" ComponentType="{x:Type pages:Index}" />
+                <RootComponent Selector="#app" ComponentType="{x:Type pages:RegisterProfile}" />
             </BlazorWebView.RootComponents>
         </BlazorWebView>
     </ContentPage>
@@ -60,7 +60,7 @@
         Title="About us">
         <BlazorWebView HostPage="wwwroot/index.html" >
             <BlazorWebView.RootComponents>
-                <RootComponent Selector="#app" ComponentType="{x:Type pages:Index}" />
+                <RootComponent Selector="#app" ComponentType="{x:Type pages:AboutUs}" />
             </BlazorWebView.RootComponents>
         </BlazorWebView>
     </ContentPage>
@@ -77,14 +77,6 @@
         <BlazorWebView HostPage="wwwroot/index.html">
             <BlazorWebView.RootComponents>
                 <RootComponent Selector="#app" ComponentType="{x:Type pages:FetchData}" />
-            </BlazorWebView.RootComponents>
-        </BlazorWebView>
-    </ContentPage>
-    <ContentPage 
-        Title="Login">
-        <BlazorWebView HostPage="wwwroot/index.html">
-            <BlazorWebView.RootComponents>
-                <RootComponent Selector="#app" ComponentType="{x:Type pages:Login}" />
             </BlazorWebView.RootComponents>
         </BlazorWebView>
     </ContentPage>
