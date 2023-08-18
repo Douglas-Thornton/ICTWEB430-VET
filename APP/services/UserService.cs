@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using static APP.Data.Models.Models;
 using System.Net.Http.Json;
+using APP.Data.Models;
 
 namespace APP.Data.Services;
 
@@ -13,25 +14,23 @@ public class UserService : IUserService
         try
         {
             var returnResponse = new List<User>();
-            using (var client = new HttpClient())
+            using var client = new HttpClient();
+            string url = $"{_baseUrl}api/userController";
+            HttpResponseMessage apiResponse = await client.GetAsync(url);
+
+            if (apiResponse.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                string url = $"{_baseUrl}api/userController";
-                var apiResponse = await client.GetAsync(url);
+                string response = await apiResponse.Content.ReadAsStringAsync();
+                var deserilizeResponse = JsonConvert.DeserializeObject<MainResponseModel>(response);
 
-                if (apiResponse.StatusCode == System.Net.HttpStatusCode.OK)
+                if (deserilizeResponse.IsSuccess)
                 {
-                    var response = await apiResponse.Content.ReadAsStringAsync();
-                    var deserilizeResponse = JsonConvert.DeserializeObject<MainResponseModel>(response);
-
-                    if (deserilizeResponse.IsSuccess)
-                    {
-                        returnResponse = JsonConvert.DeserializeObject<List<User>>(deserilizeResponse.Content.ToString());
-                    }
+                    returnResponse = JsonConvert.DeserializeObject<List<User>>(deserilizeResponse.Content.ToString());
                 }
-                return returnResponse;
             }
+            return returnResponse;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return new List<User>();
         }
@@ -42,28 +41,27 @@ public class UserService : IUserService
         try
         {
             var returnResponse = new User();
-            using (var client = new HttpClient())
+            using var client = new HttpClient();
+
+            string url = $"{_baseUrl}api/userController/login";
+            HttpResponseMessage apiResponse = await client.PostAsJsonAsync(url, loginRequest);
+
+            if (apiResponse.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                string url = $"{_baseUrl}api/userController/login";
-                var apiResponse = await client.PostAsJsonAsync(url, loginRequest);
+                string response = await apiResponse.Content.ReadAsStringAsync();
+                MainResponseModel deserializeResponse = JsonConvert.DeserializeObject<MainResponseModel>(response);
 
-                if (apiResponse.StatusCode == System.Net.HttpStatusCode.OK)
+                if (deserializeResponse.IsSuccess)
                 {
-                    var response = await apiResponse.Content.ReadAsStringAsync();
-                    var deserializeResponse = JsonConvert.DeserializeObject<MainResponseModel>(response);
-
-                    if (deserializeResponse.IsSuccess)
-                    {
-                        returnResponse = JsonConvert.DeserializeObject<User>(deserializeResponse.Content.ToString());
+                    returnResponse = JsonConvert.DeserializeObject<User>(deserializeResponse.Content.ToString());
 
 
-                    }
                 }
-
-                return null; // Handle other status codes or response scenarios
             }
+
+            return null; // Handle other status codes or response scenarios
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return null;
         }
