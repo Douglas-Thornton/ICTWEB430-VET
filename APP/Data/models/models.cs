@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components.Forms;
+using System.ComponentModel.DataAnnotations;
 
 namespace APP.Data.Models;
 
@@ -33,15 +34,25 @@ public class Models
     {
         public int PetID { get; set; }
         public int OwnerID { get; set; }
+
+        [Required(ErrorMessage = "Pet name required.")]
+        [StringLength(16, ErrorMessage = "Pet name too long.(16 character limit).")]
         public string PetName { get; set; }
+
+        [Required(ErrorMessage = "Pet breed required.")]
+        [StringLength(16, ErrorMessage = "Pet breed too long.(16 character limit).")]
         public string PetBreed { get; set; }
+
+        [Required(ErrorMessage = "Pet age required.")]
         public int PetAge { get; set; }
+
+        [Required(ErrorMessage = "Pet sex required.")]
         public string PetGender { get; set; }
+
         public string PetPhotoFileLocation { get; set; }
+        [Required(ErrorMessage = "Pet discoverability required.")]
         public bool PetDiscoverability { get; set; }
         public IBrowserFile PetPhotoUpload { get; set; }
         public virtual User Owner { get; set; }
-
-
     }
 }

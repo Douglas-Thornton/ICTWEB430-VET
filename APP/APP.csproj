@@ -55,14 +55,16 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="Images\Logo.jpg">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
+      <Folder Include="Helpers\" />
+      <Folder Include="JS\" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Helpers\" />
-      <Folder Include="JS\" />
+      <None Include="wwwroot\images\file_placeholder.png" />
+      <None Include="wwwroot\images\Logo.jpg">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Include="wwwroot\images\placeholder.jpg" />
     </ItemGroup>
 
 </Project>
