@@ -49,11 +49,7 @@ else
 
     private async Task HandleValidLoginSubmit()
     {
-
-        var returneduser = await userService.LoginUser(loginRequest);
-
-        LoggedUserState.LoggedUser = users.FirstOrDefault();
-
+        LoggedUserState.LoggedUser = await userService.LoginUser(loginRequest);
     }
 
     public async Task Login()
