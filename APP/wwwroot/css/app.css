@@ -113,3 +113,11 @@ a, .btn-link {
     .form-container textarea {
         flex: 1;
     }
+
+.dog-background-image {
+    position: relative; /* Required for positioning the pseudo-element */
+    background-image: url(../Images/Dog_Background.jpg);
+    background-size: contain;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+}

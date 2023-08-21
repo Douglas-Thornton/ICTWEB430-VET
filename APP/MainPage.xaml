@@ -44,7 +44,7 @@
         Title="Our Services">
         <BlazorWebView HostPage="wwwroot/index.html" >
             <BlazorWebView.RootComponents>
-                <RootComponent Selector="#app" ComponentType="{x:Type pages:Index}" />
+                <RootComponent Selector="#app" ComponentType="{x:Type pages:OurServices}" />
             </BlazorWebView.RootComponents>
         </BlazorWebView>
     </ContentPage>
@@ -52,7 +52,7 @@
         Title="Contact us">
         <BlazorWebView HostPage="wwwroot/index.html" >
             <BlazorWebView.RootComponents>
-                <RootComponent Selector="#app" ComponentType="{x:Type pages:Index}" />
+                <RootComponent Selector="#app" ComponentType="{x:Type pages:ContactUs}" />
             </BlazorWebView.RootComponents>
         </BlazorWebView>
     </ContentPage>
