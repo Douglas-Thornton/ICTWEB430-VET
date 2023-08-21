@@ -53,12 +53,9 @@ public class UserService : IUserService
 
                 if (deserializeResponse.IsSuccess)
                 {
-                    returnResponse = JsonConvert.DeserializeObject<User>(deserializeResponse.Content.ToString());
-
-
+                    return returnResponse = JsonConvert.DeserializeObject<List<User>>(deserializeResponse.Content.ToString()).FirstOrDefault();
                 }
             }
-
             return null; // Handle other status codes or response scenarios
         }
         catch (Exception)
