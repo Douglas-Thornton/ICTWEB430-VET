@@ -70,4 +70,16 @@
       <Folder Include="JS\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Update="Pages\UserPreferencesChanger.xaml.cs">
+        <DependentUpon>UserPreferencesChanger.xaml</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <MauiXaml Update="Pages\UserPreferencesChanger.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </MauiXaml>
+    </ItemGroup>
+
 </Project>

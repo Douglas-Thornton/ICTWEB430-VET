@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Name="mainPage"
              xmlns:pages="clr-namespace:APP.Pages"
-             xmlns:states="clr-namespace:APP.States"
              xmlns:local="clr-namespace:APP"
              x:Class="APP.MainPage">
 

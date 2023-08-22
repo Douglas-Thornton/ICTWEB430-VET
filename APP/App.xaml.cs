@@ -1,12 +1,14 @@
-﻿namespace APP
+﻿using APP.Shared.Helpers;
+
+namespace APP
 {
     public partial class App : Application
     {
-        public App()
+        public App(UserPreferences userPreferences)
         {
             InitializeComponent();
 
-            MainPage = new MainPage();
+            MainPage = new MainPage(userPreferences);
         }
     }
 }

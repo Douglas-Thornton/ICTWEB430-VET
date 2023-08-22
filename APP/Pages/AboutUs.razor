@@ -1,4 +1,6 @@
 ﻿@page "/about-us"
+@inject UserPreferences UserPreferencesInstance
+
 <div class="container">
     <div class="row">
         <div class="col">
@@ -34,6 +36,16 @@
     </div>
 </div>
 
-@code {
+@code
+{
 
+    protected override async Task OnInitializedAsync()
+    {
+        UserPreferencesInstance.PreferencesChanged += OnUserPreferencesChange;
+    }
+
+    private void OnUserPreferencesChange(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
 }

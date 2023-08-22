@@ -1,10 +1,11 @@
 ﻿@page "/OurServices"
+@inject UserPreferences UserPreferencesInstance
 
 <div class="container">
     <h1>Our Services</h1>
     <div class="service">
         <h2>Specialized Canine Care</h2>
-        <p>Our expertise lies in providing tailored care for dogs of all breeds. Whether it's routine checkups, vaccinations, or specialized treatments, we ensure your canine companions receive the highest quality care.</p>
+        <p style="@UserPreferencesInstance.PStyleTag">Our expertise lies in providing tailored care for dogs of all breeds. Whether it's routine checkups, vaccinations, or specialized treatments, we ensure your canine companions receive the highest quality care.</p>
     </div>
     <div class="service">
         <h2>Suburban Pet Care</h2>
@@ -20,8 +21,16 @@
     </div>
 </div>
 
-@code {
+@code 
+{
+
     protected override async Task OnInitializedAsync()
     {
+        UserPreferencesInstance.PreferencesChanged += OnUserPreferencesChange;
+    }
+
+    private void OnUserPreferencesChange(object sender, EventArgs e)
+    {
+        StateHasChanged();
     }
 }
