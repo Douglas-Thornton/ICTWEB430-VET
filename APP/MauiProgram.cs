@@ -1,9 +1,4 @@
-﻿using APP.States;
-using Microsoft.Extensions.Logging;
-using APP.Data.Services;
-using APP.Data;
-
-namespace APP
+﻿namespace APP
 {
     public static class MauiProgram
     {
@@ -18,15 +13,11 @@ namespace APP
                 });
 
             builder.Services.AddMauiBlazorWebView();
-            builder.Services.AddTransient<IWeatherForecastService, WeatherForecastService>();
 
 #if DEBUG
 		builder.Services.AddBlazorWebViewDeveloperTools();
-		builder.Logging.AddDebug();
 #endif
 
-            builder.Services.AddSingleton<IUserService, UserService>();
-            builder.Services.AddSingleton<LoggedUserState>();
             builder.Services.AddSingleton<App>();
 
             return builder.Build();

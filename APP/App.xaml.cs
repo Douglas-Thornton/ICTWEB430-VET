@@ -1,14 +1,12 @@
-﻿using APP.States;
-
-namespace APP
+﻿namespace APP
 {
     public partial class App : Application
     {
-        public App(LoggedUserState loggedUserState)
+        public App()
         {
             InitializeComponent();
 
-            MainPage = new MainPage(loggedUserState);
+            MainPage = new MainPage();
         }
     }
 }

@@ -6,7 +6,7 @@
              xmlns:states="clr-namespace:APP.States"
              xmlns:local="clr-namespace:APP"
              x:Class="APP.MainPage">
-   
+
     <ContentPage 
         Title="Vet App"
         IconImageSource="/Images/Logo.jpg">
@@ -17,34 +17,10 @@
         </BlazorWebView>
     </ContentPage>
     <ContentPage 
-        Title="{Binding LoginLogoutNavTitle}">
-        <BlazorWebView HostPage="wwwroot/index.html" >
-            <BlazorWebView.RootComponents>
-                <RootComponent Selector="#app" ComponentType="{x:Type pages:LoginLogout}" />
-            </BlazorWebView.RootComponents>
-        </BlazorWebView>
-    </ContentPage>
-    <ContentPage 
-        Title="{Binding RegisterProfileNavTitle}">
-        <BlazorWebView HostPage="wwwroot/index.html">
-            <BlazorWebView.RootComponents>
-                <RootComponent Selector="#app" ComponentType="{x:Type pages:RegisterProfile}" />
-            </BlazorWebView.RootComponents>
-        </BlazorWebView>
-    </ContentPage>
-    <ContentPage 
-        Title="Meet-up">
-        <BlazorWebView HostPage="wwwroot/index.html" >
-            <BlazorWebView.RootComponents>
-                <RootComponent Selector="#app" ComponentType="{x:Type pages:Index}" />
-            </BlazorWebView.RootComponents>
-        </BlazorWebView>
-    </ContentPage>
-    <ContentPage 
         Title="Our Services">
         <BlazorWebView HostPage="wwwroot/index.html" >
             <BlazorWebView.RootComponents>
-                <RootComponent Selector="#app" ComponentType="{x:Type pages:Index}" />
+                <RootComponent Selector="#app" ComponentType="{x:Type pages:OurServices}" />
             </BlazorWebView.RootComponents>
         </BlazorWebView>
     </ContentPage>
@@ -52,7 +28,7 @@
         Title="Contact us">
         <BlazorWebView HostPage="wwwroot/index.html" >
             <BlazorWebView.RootComponents>
-                <RootComponent Selector="#app" ComponentType="{x:Type pages:Index}" />
+                <RootComponent Selector="#app" ComponentType="{x:Type pages:ContactUs}" />
             </BlazorWebView.RootComponents>
         </BlazorWebView>
     </ContentPage>
@@ -61,22 +37,6 @@
         <BlazorWebView HostPage="wwwroot/index.html" >
             <BlazorWebView.RootComponents>
                 <RootComponent Selector="#app" ComponentType="{x:Type pages:AboutUs}" />
-            </BlazorWebView.RootComponents>
-        </BlazorWebView>
-    </ContentPage>
-    <ContentPage 
-        Title="Counter">
-        <BlazorWebView HostPage="wwwroot/index.html">
-            <BlazorWebView.RootComponents>
-                <RootComponent Selector="#app" ComponentType="{x:Type pages:Counter}" />
-            </BlazorWebView.RootComponents>
-        </BlazorWebView>
-    </ContentPage>
-    <ContentPage 
-        Title="Fetch Data">
-        <BlazorWebView HostPage="wwwroot/index.html">
-            <BlazorWebView.RootComponents>
-                <RootComponent Selector="#app" ComponentType="{x:Type pages:FetchData}" />
             </BlazorWebView.RootComponents>
         </BlazorWebView>
     </ContentPage>
