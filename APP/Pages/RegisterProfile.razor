@@ -1,12 +1,57 @@
 ﻿@page "/register-profile"
 @using APP.Data.Services;
+@using APP.Shared.Components
 @using APP.States;
 @using System.ComponentModel;
 @using static APP.Data.Models.Models;
 @inject IUserService userService;
 @inject LoggedUserState LoggedUserState
 
-
+@if (isDogModalOpen)
+{
+    <Modal ModalTitle="Dog Creation"
+            OnClose="CancelDogModal">
+        <EditForm class="form-container" Model="NewPet" OnValidSubmit="HandleValidNewPetSubmit">
+                <DataAnnotationsValidator />
+            <div>
+                <label for="petName">Pet Name:</label>
+                <InputText id="petName" class="form-control" @bind-Value="NewPet.PetName"  />
+                <ValidationMessage For="@(() => NewPet.PetName)" />
+            </div>
+            <div>
+                <label for="petBreed">Pet Breed:</label>
+                <InputText id="petBreed" class="form-control" @bind-Value="NewPet.PetBreed" />
+                <ValidationMessage For="@(() => NewPet.PetBreed)" />
+            </div>
+            <div>
+                <label for="petAge">Pet Age:</label>
+                <InputNumber id="petAge" class="form-control" @bind-Value="NewPet.PetAge" />
+                <ValidationMessage For="@(() => NewPet.PetAge)" />
+            </div>
+            <div>
+                <label for="petSex">Pet sex:</label>
+                <InputSelect id="petSex" class="form-control form-select" @bind-Value="NewPet.PetGender">
+                    <option>Male</option>
+                    <option>Female</option>
+                </InputSelect>
+                <ValidationMessage For="@(() => NewPet.PetGender)" />
+            </div>
+            <div>
+                <label for="petDiscoverability">Pet Discoverability:</label>
+                <InputCheckbox type="checkbox" class="form-check-input" id="petDiscoverability" @bind-Value="@NewPet.PetDiscoverability"/>
+                <ValidationMessage For="@(() => NewPet.PetDiscoverability)" />
+            </div>
+            <div>
+                <label for="petSex">Pet Image:</label>
+                <InputFile accept="image/*" OnChange="@HandleImageUpload" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" @onclick="CancelDogModal" class="btn btn-danger">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </EditForm>   
+    </Modal>
+}
 
 <div class="container">
     <div class="row">
@@ -123,49 +168,14 @@
             }
         </div>
         <div class="col">
-            <p>Dog creation UI</p>
-            <EditForm class="form-container" Model="NewPet" OnValidSubmit="HandleValidNewPetSubmit">
-                <div>
-                    <label for="petName">Pet Name:</label>
-                    <InputText id="petName" class="form-control" @bind-Value="NewPet.PetName" />
-                    <ValidationMessage For="@(() => NewPet.PetName)" />
-                </div>
-                <div>
-                    <label for="petBreed">Pet Breed:</label>
-                    <InputText id="petBreed" class="form-control" @bind-Value="NewPet.PetBreed" />
-                    <ValidationMessage For="@(() => NewPet.PetBreed)" />
-                </div>
-                <div>
-                    <label for="petAge">Pet Age:</label>
-                    <InputNumber id="petAge" class="form-control" @bind-Value="NewPet.PetAge" />
-                    <ValidationMessage For="@(() => NewPet.PetAge)" />
-                </div>
-                <div>
-                    <label for="petSex">Pet sex:</label>
-                    <InputSelect id="petSex" class="form-control form-select" @bind-Value="NewPet.PetGender">
-                        <option>Male</option>
-                        <option>Female</option>
-                    </InputSelect>
-                    <ValidationMessage For="@(() => NewPet.PetGender)" />
-                </div>                
-                <div>
-                    <label for="petDiscoverability">Pet Discoverability:</label>
-                    <InputCheckbox type="checkbox" class="form-check-input" id="petDiscoverability" @bind-Value="@NewPet.PetDiscoverability" />
-                    <ValidationMessage For="@(() => NewPet.PetDiscoverability)" />
-                </div>
-                <div>
-                    <label for="petSex">Pet Image:</label>
-                    <InputFile accept="image/*" OnChange="@HandleImageUpload" />
-                </div>
-                <button type="submit" class="btn btn-primary">Add</button>
-            </EditForm>
+            <button class="btn btn-primary" @onclick=toggleDogModal>Add dog</button>
             <div class="scrollable-container">
                 @foreach (Pet pet in Pets)
                 {
                     <div class="container">
                         <div class="row">
                             <div class="col">
-                                <img src="@(!string.IsNullOrEmpty(pet.PetPhotoFileLocation) ? pet.PetPhotoFileLocation : "Images/placeholder.jpg")"
+                                <img src="@(!string.IsNullOrEmpty(pet.PetPhotoFileLocation) ? pet.PetPhotoFileLocation : "images\\file_placeholder.png")"
                                      width="100" height="100" alt="Picture of @pet.PetName" />
                             </div>
                             <div class="col">
@@ -188,7 +198,7 @@
     </div>
 </div>
 
-@code 
+@code
 {
     private User NewUser = new User();
     private User EditUser = new User();
@@ -198,6 +208,7 @@
 
     public event PropertyChangedEventHandler PropertyChanged;
 
+    public bool isDogModalOpen = false;
 
 
     private void HandleValidNewUserSubmit()
@@ -218,6 +229,7 @@
     {
         Pets.Add(NewPet);
         NewPet = new Pet();
+        toggleDogModal();
     }
 
     protected override void OnInitialized()
@@ -226,7 +238,7 @@
         LoggedUserState.PropertyChanged += OnLoggedUserStateChanged;
     }
 
-    private void loadPage() 
+    private void loadPage()
     {
         NewUser = new User();
         EditUser = new User();
@@ -268,5 +280,25 @@
     private void DeletePet(Pet PetToDelete)
     {
         Pets.Remove(PetToDelete);
+    }
+
+    private void toggleDogModal()
+    {
+        isDogModalOpen = !isDogModalOpen;
+        StateHasChanged();
+    }
+
+    private void CancelDogModal()
+    {
+        NewPet = new Pet();
+        toggleDogModal();
+    }
+
+    private void DogModalOnClose(bool confirm)
+    {
+        if(!confirm)
+        {
+            CancelDogModal();
+        }
     }
 }
