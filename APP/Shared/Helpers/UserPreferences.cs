@@ -39,14 +39,21 @@ namespace APP.Shared.Helpers
         {
             get
             {
-                return ActualFontFamilyCss + " " + ActualFontSizePCSS;
+                return GetFontFamilyCSS + " " + GetFontSizePCSS;
+            }
+        }
+
+        public string H1StyleTag
+        {
+            get
+            {
+                return GetFontFamilyCSS + " " + GetFontSizeH1CSS;
             }
         }
 
 
-
         // Properties for actual font family and font size
-        public string ActualFontFamilyCss
+        public string GetFontFamilyCSS
         {
             get
             {
@@ -70,7 +77,7 @@ namespace APP.Shared.Helpers
             }
         }
 
-        public string ActualFontSizePCSS
+        public string GetFontSizePCSS
         {
             get
             {
@@ -85,55 +92,36 @@ namespace APP.Shared.Helpers
                     case AccessibleFontSizes.XLarge:
                         return "font-size: 24px;";
                     case AccessibleFontSizes.XXLarge:
-                        return "font-size: 32px;";
+                        return "font-size: 28px;";
                     default:
                         return "font-size: 16px;"; // Default to Medium
                 }
             }
         }
 
-        public string ActualFontSizeH1CSS
+        public string GetFontSizeH1CSS
         {
             get
             {
                 switch (FontSize)
                 {
                     case AccessibleFontSizes.Small:
-                        return "font-size: 12px;";
-                    case AccessibleFontSizes.Medium:
-                        return "font-size: 16px;";
-                    case AccessibleFontSizes.Large:
-                        return "font-size: 20px;";
-                    case AccessibleFontSizes.XLarge:
                         return "font-size: 24px;";
-                    case AccessibleFontSizes.XXLarge:
+                    case AccessibleFontSizes.Medium:
                         return "font-size: 32px;";
+                    case AccessibleFontSizes.Large:
+                        return "font-size: 40px;";
+                    case AccessibleFontSizes.XLarge:
+                        return "font-size: 48px;";
+                    case AccessibleFontSizes.XXLarge:
+                        return "font-size: 56px;";
                     default:
                         return "font-size: 16px;"; // Default to Medium
                 }
             }
         }
 
-        public string GETSIZE(AccessibleFontSizes AccessibleFontSizes)
-        {
-            switch (AccessibleFontSizes)
-            {
-                case AccessibleFontSizes.Small:
-                    return "12";
-                case AccessibleFontSizes.Medium:
-                    return "16";
-                case AccessibleFontSizes.Large:
-                    return "20";
-                case AccessibleFontSizes.XLarge:
-                    return "24";
-                case AccessibleFontSizes.XXLarge:
-                    return "32";
-                default:
-                    return "16"; // Default to Medium
-            }
-        }
-
-        public string GETFONTVALUE(AccessibleFonts font)
+        public string GetFontFamilyXAML(AccessibleFonts font)
         {
             switch (font)
             {
@@ -151,6 +139,25 @@ namespace APP.Shared.Helpers
                     return "Helvetica";
                 default:
                     return "Arial";
+            }
+        }
+
+        public string GetFontSizeXAML(AccessibleFontSizes AccessibleFontSizes)
+        {
+            switch (AccessibleFontSizes)
+            {
+                case AccessibleFontSizes.Small:
+                    return "12";
+                case AccessibleFontSizes.Medium:
+                    return "16";
+                case AccessibleFontSizes.Large:
+                    return "20";
+                case AccessibleFontSizes.XLarge:
+                    return "24";
+                case AccessibleFontSizes.XXLarge:
+                    return "28";
+                default:
+                    return "16"; // Default to Medium
             }
         }
     }

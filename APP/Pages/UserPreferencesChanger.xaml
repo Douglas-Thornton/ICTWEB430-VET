@@ -9,11 +9,11 @@
     <StackLayout Orientation="Vertical">
         <Frame BorderColor="Black" CornerRadius="5" Padding="10">
             <StackLayout Orientation="Vertical" Padding="20">
-                <Label x:Name="SelectFontLabel" Text="Select font:"/>
+                <Label TextColor="Black" x:Name="SelectFontLabel" Text="Select font:"/>
                 <Picker TextColor="Black" x:Name="fontPicker" SelectedItem="{Binding selectedUserFontPicker, Mode=TwoWay}">
                 </Picker>
 
-                <Label x:Name="SelectFontSizeLabel" Text="Select font size:" />
+                <Label TextColor="Black" x:Name="SelectFontSizeLabel" Text="Select font size:" />
                 <Picker TextColor="Black" x:Name="fontSizePicker" SelectedItem="{Binding selectedUserFontSizePicker, Mode=TwoWay}">
                 </Picker>
                 <Button Text="Save" Clicked="OnSaveClicked" HorizontalOptions="CenterAndExpand" Margin="0,20,0,0">
@@ -43,7 +43,8 @@
                        BindingContext="{Binding}"
                        FontFamily="{Binding selectedUserFontPicker}"
                        FontSize="{Binding selectedUserFontSizeValue}"
-                       Text="Example: &#10;Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."></Label>
+                       Text="Example: &#10;Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.">
+                </Label>
             </StackLayout>
         </Frame>
     </StackLayout>
