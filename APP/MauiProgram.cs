@@ -1,4 +1,5 @@
 ﻿using APP.Shared.Helpers;
+using CommunityToolkit.Maui;
 
 namespace APP
 {
@@ -9,6 +10,7 @@ namespace APP
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
+                .UseMauiCommunityToolkit()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");

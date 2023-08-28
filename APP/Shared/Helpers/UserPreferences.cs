@@ -9,7 +9,7 @@ namespace APP.Shared.Helpers
 {
     public class UserPreferences
     {
-        public UserPreferences(){}
+        public UserPreferences() { }
 
 
         // Properties for user preferences
@@ -35,18 +35,18 @@ namespace APP.Shared.Helpers
             PreferencesChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        public string PStyleTag 
+        public string PStyleTag
         {
-            get 
-            { 
-                return ActualFontFamily + " " + ActualFontSizeP;
+            get
+            {
+                return ActualFontFamilyCss + " " + ActualFontSizePCSS;
             }
         }
 
 
 
         // Properties for actual font family and font size
-        public string ActualFontFamily
+        public string ActualFontFamilyCss
         {
             get
             {
@@ -70,7 +70,7 @@ namespace APP.Shared.Helpers
             }
         }
 
-        public string ActualFontSizeP
+        public string ActualFontSizePCSS
         {
             get
             {
@@ -92,7 +92,7 @@ namespace APP.Shared.Helpers
             }
         }
 
-        public string ActualFontSizeH1
+        public string ActualFontSizeH1CSS
         {
             get
             {
@@ -111,6 +111,46 @@ namespace APP.Shared.Helpers
                     default:
                         return "font-size: 16px;"; // Default to Medium
                 }
+            }
+        }
+
+        public string GETSIZE(AccessibleFontSizes AccessibleFontSizes)
+        {
+            switch (AccessibleFontSizes)
+            {
+                case AccessibleFontSizes.Small:
+                    return "12";
+                case AccessibleFontSizes.Medium:
+                    return "16";
+                case AccessibleFontSizes.Large:
+                    return "20";
+                case AccessibleFontSizes.XLarge:
+                    return "24";
+                case AccessibleFontSizes.XXLarge:
+                    return "32";
+                default:
+                    return "16"; // Default to Medium
+            }
+        }
+
+        public string GETFONTVALUE(AccessibleFonts font)
+        {
+            switch (font)
+            {
+                case AccessibleFonts.Arial:
+                    return "Arial";
+                case AccessibleFonts.TimesNewRoman:
+                    return "Times New Roman";
+                case AccessibleFonts.Verdana:
+                    return "Verdana";
+                case AccessibleFonts.Tahoma:
+                    return "Tahoma";
+                case AccessibleFonts.Calibri:
+                    return "Calibri";
+                case AccessibleFonts.Helvetica:
+                    return "Helvetica";
+                default:
+                    return "Arial";
             }
         }
     }

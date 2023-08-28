@@ -2,22 +2,49 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="APP.Pages.UserPreferencesChanger"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:ViewModel="clr-namespace:APP.Pages" 
              Title="UserPreferences">
-    <VerticalStackLayout>
-        <StackLayout Padding="20">
-            <Label Text="Select font:"/>
-            <Picker x:Name="fontPicker">
-                <!-- Add enum values here -->
-            </Picker>
 
-            <Label Text="Select font size:" />
-            <Picker x:Name="fontSizePicker">
-                <!-- Add enum values here -->
-            </Picker>
+    <StackLayout Orientation="Vertical">
+        <Frame BorderColor="Black" CornerRadius="5" Padding="10">
+            <StackLayout Orientation="Vertical" Padding="20">
+                <Label x:Name="SelectFontLabel" Text="Select font:"/>
+                <Picker TextColor="Black" x:Name="fontPicker" SelectedItem="{Binding selectedUserFontPicker, Mode=TwoWay}">
+                </Picker>
 
-            <Button Text="Save" Clicked="OnSaveClicked" HorizontalOptions="CenterAndExpand" Margin="0,20,0,0" />
+                <Label x:Name="SelectFontSizeLabel" Text="Select font size:" />
+                <Picker TextColor="Black" x:Name="fontSizePicker" SelectedItem="{Binding selectedUserFontSizePicker, Mode=TwoWay}">
+                </Picker>
+                <Button Text="Save" Clicked="OnSaveClicked" HorizontalOptions="CenterAndExpand" Margin="0,20,0,0">
+                    <VisualStateManager.VisualStateGroups>
+                        <VisualStateGroup x:Name="CommonStates">
+                            <VisualState x:Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Property="Scale" Value="1" />
+                                    <Setter Property="BackgroundColor" Value="Blue" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Pressed">
+                                <VisualState.Setters>
+                                    <Setter Property="Scale" Value="0.8" />
+                                    <Setter Property="BackgroundColor" Value="DarkBlue" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateManager.VisualStateGroups>
+                </Button>
 
-        </StackLayout>
-    </VerticalStackLayout>
-
+            </StackLayout>
+        </Frame>
+        <Frame BorderColor="Gray" CornerRadius="5" Padding="10">
+            <StackLayout Orientation="Vertical">
+                <Label TextColor="Black"
+                       BindingContext="{Binding}"
+                       FontFamily="{Binding selectedUserFontPicker}"
+                       FontSize="{Binding selectedUserFontSizeValue}"
+                       Text="Example: &#10;Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."></Label>
+            </StackLayout>
+        </Frame>
+    </StackLayout>
 </ContentPage>
