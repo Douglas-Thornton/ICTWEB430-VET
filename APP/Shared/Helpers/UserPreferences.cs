@@ -35,7 +35,10 @@ namespace APP.Shared.Helpers
             PreferencesChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        public string PStyleTag
+        /// <summary>
+        /// Returns combined family and size required to style a P tag. 
+        /// </summary>
+        public string PStyleTagCSS
         {
             get
             {
@@ -43,6 +46,9 @@ namespace APP.Shared.Helpers
             }
         }
 
+        /// <summary>
+        /// Returns combined family and size required to style a H1 tag. 
+        /// </summary>
         public string H1StyleTag
         {
             get
@@ -52,7 +58,7 @@ namespace APP.Shared.Helpers
         }
 
 
-        // Properties for actual font family and font size
+        // Properties for font family for CSS.
         public string GetFontFamilyCSS
         {
             get
@@ -77,6 +83,7 @@ namespace APP.Shared.Helpers
             }
         }
 
+        // Properties for font size for a P tag for CSS.
         public string GetFontSizePCSS
         {
             get
@@ -99,6 +106,7 @@ namespace APP.Shared.Helpers
             }
         }
 
+        // Properties for font size for a H1 tag for CSS.
         public string GetFontSizeH1CSS
         {
             get
@@ -121,6 +129,7 @@ namespace APP.Shared.Helpers
             }
         }
 
+        // Properties for font family for XAML.
         public string GetFontFamilyXAML(AccessibleFonts font)
         {
             switch (font)
@@ -142,6 +151,7 @@ namespace APP.Shared.Helpers
             }
         }
 
+        // Properties for font size for XAML.
         public string GetFontSizeXAML(AccessibleFontSizes AccessibleFontSizes)
         {
             switch (AccessibleFontSizes)
