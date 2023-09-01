@@ -49,7 +49,8 @@ public class Models
         [Required(ErrorMessage = "Pet sex required.")]
         public string PetGender { get; set; }
 
-        public string PetPhotoFileLocation { get; set; }
+        public byte[] PetPhoto { get; set; }
+
         [Required(ErrorMessage = "Pet discoverability required.")]
         public bool PetDiscoverability { get; set; }
         public IBrowserFile PetPhotoUpload { get; set; }

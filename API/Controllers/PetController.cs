@@ -33,7 +33,7 @@ namespace VETAPPAPI.Controllers
                     PetBreed = p.PetBreed,
                     PetAge = p.PetAge,
                     PetGender = p.PetGender,
-                    PetPhotoFileLocation = p.PetPhotoFileLocation,
+                    PetPhoto = p.PetPhoto,
                     PetDiscoverability = p.PetDiscoverability,
                     Owner = new User
                     {
@@ -90,7 +90,7 @@ namespace VETAPPAPI.Controllers
                         PetBreed = p.PetBreed,
                         PetAge = p.PetAge,
                         PetGender = p.PetGender,
-                        PetPhotoFileLocation = p.PetPhotoFileLocation,
+                        PetPhoto = p.PetPhoto,
                         PetDiscoverability = p.PetDiscoverability,
                         Owner = new User
                         {
@@ -168,44 +168,44 @@ namespace VETAPPAPI.Controllers
             }
         }
 
-        [HttpPost("petWithPicture")]
-        public async Task<IActionResult> CreatePetWithPicture([FromForm] PetWithPicture petWithPicture)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
+        //[HttpPost("petWithPicture")]
+        //public async Task<IActionResult> CreatePetWithPicture([FromForm] PetWithPicture petWithPicture)
+        //{
+        //    try
+        //    {
+        //        if (!ModelState.IsValid)
+        //        {
+        //            return BadRequest(ModelState);
+        //        }
 
-                // Process uploaded picture from petWithPicture.Picture
-                var pictureFileName = Guid.NewGuid().ToString() + Path.GetExtension(petWithPicture.Picture.FileName);
-                var pictureFilePath = Path.Combine("Uploads", pictureFileName);
-                using (var stream = new FileStream(pictureFilePath, FileMode.Create))
-                {
-                    await petWithPicture.Picture.CopyToAsync(stream);
-                }
+        //        // Process uploaded picture from petWithPicture.Picture
+        //        var pictureFileName = Guid.NewGuid().ToString() + Path.GetExtension(petWithPicture.Picture.FileName);
+        //        var pictureFilePath = Path.Combine("Uploads", pictureFileName);
+        //        using (var stream = new FileStream(pictureFilePath, FileMode.Create))
+        //        {
+        //            await petWithPicture.Picture.CopyToAsync(stream);
+        //        }
 
-                // Create a new pet with picture information
-                var newPet = new Pet
-                {
-                    // Assign pet properties from petWithPicture.Pet
-                    PetName = petWithPicture.Pet.PetName,
-                    PetBreed = petWithPicture.Pet.PetBreed,
-                    // Assign other properties as needed
-                    PetPhotoFileLocation = pictureFilePath
-                };
+        //        // Create a new pet with picture information
+        //        var newPet = new Pet
+        //        {
+        //            // Assign pet properties from petWithPicture.Pet
+        //            PetName = petWithPicture.Pet.PetName,
+        //            PetBreed = petWithPicture.Pet.PetBreed,
+        //            // Assign other properties as needed
+        //            PetPhotoFileLocation = pictureFilePath
+        //        };
 
-                _dbContext.Pets.Add(newPet);
-                await _dbContext.SaveChangesAsync();
+        //        _dbContext.Pets.Add(newPet);
+        //        await _dbContext.SaveChangesAsync();
 
-                return Ok($"Pet created successfully with ID: {newPet.PetID}");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Error creating pet. {ex.Message}");
-            }
-        }
+        //        return Ok($"Pet created successfully with ID: {newPet.PetID}");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, $"Error creating pet. {ex.Message}");
+        //    }
+        //}
 
         [HttpPut("pet/{id:int}")]
         public async Task<IActionResult> UpdatePet(int id, Pet updatedPet)
@@ -227,7 +227,7 @@ namespace VETAPPAPI.Controllers
                 existingPet.PetBreed = updatedPet.PetBreed;
                 existingPet.PetAge = updatedPet.PetAge;
                 existingPet.PetGender = updatedPet.PetGender;
-                existingPet.PetPhotoFileLocation = updatedPet.PetPhotoFileLocation;
+                existingPet.PetPhoto = updatedPet.PetPhoto;
                 existingPet.PetDiscoverability = updatedPet.PetDiscoverability;
                 // Update other properties as needed
 
@@ -241,48 +241,48 @@ namespace VETAPPAPI.Controllers
             }
         }
 
-        [HttpPut("petWithPicture/{id:int}")]
-        public async Task<IActionResult> UpdatePetWithPicture(int id, [FromForm] PetWithPicture petWithPicture)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
+        //[HttpPut("petWithPicture/{id:int}")]
+        //public async Task<IActionResult> UpdatePetWithPicture(int id, [FromForm] PetWithPicture petWithPicture)
+        //{
+        //    try
+        //    {
+        //        if (!ModelState.IsValid)
+        //        {
+        //            return BadRequest(ModelState);
+        //        }
 
-                var existingPet = await _dbContext.Pets.FindAsync(id);
-                if (existingPet == null)
-                {
-                    return NotFound($"Pet with ID {id} not found.");
-                }
+        //        var existingPet = await _dbContext.Pets.FindAsync(id);
+        //        if (existingPet == null)
+        //        {
+        //            return NotFound($"Pet with ID {id} not found.");
+        //        }
 
-                // Process uploaded picture from petWithPicture.Picture
-                if (petWithPicture.Picture != null)
-                {
-                    var pictureFileName = Guid.NewGuid().ToString() + Path.GetExtension(petWithPicture.Picture.FileName);
-                    var pictureFilePath = Path.Combine("Uploads", pictureFileName);
-                    using (var stream = new FileStream(pictureFilePath, FileMode.Create))
-                    {
-                        await petWithPicture.Picture.CopyToAsync(stream);
-                    }
+        //        // Process uploaded picture from petWithPicture.Picture
+        //        if (petWithPicture.Picture != null)
+        //        {
+        //            var pictureFileName = Guid.NewGuid().ToString() + Path.GetExtension(petWithPicture.Picture.FileName);
+        //            var pictureFilePath = Path.Combine("Uploads", pictureFileName);
+        //            using (var stream = new FileStream(pictureFilePath, FileMode.Create))
+        //            {
+        //                await petWithPicture.Picture.CopyToAsync(stream);
+        //            }
 
-                    existingPet.PetPhotoFileLocation = pictureFilePath;
-                }
+        //            existingPet.PetPhoto = pictureFilePath;
+        //        }
 
-                // Update pet properties
-                existingPet.PetName = petWithPicture.Pet.PetName;
-                existingPet.PetBreed = petWithPicture.Pet.PetBreed;
-                // Update other properties as needed
+        //        // Update pet properties
+        //        existingPet.PetName = petWithPicture.Pet.PetName;
+        //        existingPet.PetBreed = petWithPicture.Pet.PetBreed;
+        //        // Update other properties as needed
 
-                await _dbContext.SaveChangesAsync();
+        //        await _dbContext.SaveChangesAsync();
 
-                return Ok($"Pet with ID {id} updated successfully.");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Error updating pet. {ex.Message}");
-            }
-        }
+        //        return Ok($"Pet with ID {id} updated successfully.");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, $"Error updating pet. {ex.Message}");
+        //    }
+        //}
     }
 }

@@ -49,7 +49,7 @@ namespace VETAPPAPI.Controllers
                         PetBreed = p.PetBreed,
                         PetAge = p.PetAge,
                         PetGender = p.PetGender,
-                        PetPhotoFileLocation = p.PetPhotoFileLocation,
+                        PetPhoto = p.PetPhoto,
                         PetDiscoverability = p.PetDiscoverability,
                         OwnerID = p.OwnerID // Include the OwnerID property if needed
                     }).ToList()
@@ -98,7 +98,7 @@ namespace VETAPPAPI.Controllers
                         PetBreed = p.PetBreed,
                         PetAge = p.PetAge,
                         PetGender = p.PetGender,
-                        PetPhotoFileLocation = p.PetPhotoFileLocation,
+                        PetPhoto = p.PetPhoto,
                         PetDiscoverability = p.PetDiscoverability,
                         OwnerID = p.OwnerID // Include the OwnerID property if needed
                     }).ToList()
@@ -147,7 +147,7 @@ namespace VETAPPAPI.Controllers
                         PetBreed = p.PetBreed,
                         PetAge = p.PetAge,
                         PetGender = p.PetGender,
-                        PetPhotoFileLocation = p.PetPhotoFileLocation,
+                        PetPhoto = p.PetPhoto,
                         PetDiscoverability = p.PetDiscoverability,
                         OwnerID = p.OwnerID // Include the OwnerID property if needed
                     }).ToList()
