@@ -7,34 +7,72 @@
 
 
 
-
-@if (LoggedUserState.LoggedUser != null)
-{
-    <button class="btn btn-primary" @onclick="Logout"> Logout</button>
-}
-else
-{
-    <EditForm class="form-container" Model="loginRequest" OnValidSubmit="HandleValidLoginSubmit">
-    <div class="container">
-        <div class="row">
-            <div class="col">
+<div class="background-container">
+    <img src="./Images/three_stooges.jpg" alt="buddies" class="background-image"/>
+    <div class="card">
+        @if (LoggedUserState.LoggedUser != null)
+        {
+            <button class="btn btn-primary" @onclick="Logout"> Logout</button>
+            return;
+        }
+        <div class="centered title">
+            <h2>Login Page</h2>
+        </div>
+        <EditForm class="form-container" Model="loginRequest" OnValidSubmit="HandleValidLoginSubmit">
+            
+            <div class="centered">
                 <div>
-                    <label for="loginUsername">Login Username:</label>
-                    <InputText id="loginUsername" class="form-control" @bind-Value="loginRequest.LoginUsername" />
+                    <label for="loginUsername">Username:</label>
+                    <InputText id="loginUsername" class="inputs" @bind-Value="loginRequest.LoginUsername" />
                     <ValidationMessage For="@(() => loginRequest.LoginUsername)" />
                 </div>
-
+            </div>
+            <div class="row-cols centered">
                 <div>
-                    <label for="loginPassword">Login Password:</label>
-                    <InputText type="password" id="loginPassword" class="form-control" @bind-Value="loginRequest.LoginPassword" />
+                    <label for="loginPassword">Password:</label>
+                    <InputText type="password" id="loginPassword" class="inputs" @bind-Value="loginRequest.LoginPassword" />
                     <ValidationMessage For="@(() => loginRequest.LoginPassword)" />
                 </div>
             </div>
-        </div>
+            <div class="row-cols centered">
+                <button class="login-button" type="submit">Login</button>
+            </div>
+        </EditForm>
     </div>
-    <button class="btn btn-primary" type="submit">Login</button>
-    </EditForm>
-}
+</div>
+
+<style>
+    .title{
+        display: flex;
+        justify-content: center;
+        font-size: 32px;
+        font-weight: bolder;
+        margin: 20px auto;
+    }
+    .login-button{
+        border-radius: 15px;
+        background-color: royalblue;
+        min-width: 200px;
+        color: white;
+    }
+
+    .centered{
+        justify-content: center;
+    }
+    label{
+        font-size: 18px;
+        font-weight: bold;
+    }
+    .inputs {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+    }
+
+
+
+</style>
 
 @code 
 {

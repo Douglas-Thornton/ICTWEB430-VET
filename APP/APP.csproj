@@ -68,9 +68,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Include="wwwroot\Images\Dog_Background.jpg" />
+      <None Include="wwwroot\Images\dog_background.jpg" />
       <None Include="wwwroot\Images\file_placeholder.png" />
-      <None Include="wwwroot\Images\Logo.jpg">
+      <None Include="wwwroot\Images\logo.jpg">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
       <None Include="wwwroot\Images\placeholder.jpg" />
