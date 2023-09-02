@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 using System.Text.Json.Serialization;
@@ -31,7 +30,15 @@ builder.Services.AddSwaggerGen(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 });
-builder.Services.AddDbContext<VETDBContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("VetDB")));
+builder.Services.AddDbContext<VETDBContext>(options =>
+    { 
+        options.UseSqlServer(builder.Configuration.GetConnectionString("VetDB"), sqlServerOptions => {
+            sqlServerOptions.EnableRetryOnFailure(
+                        maxRetryCount: 5, // Maximum number of retries
+                        maxRetryDelay: TimeSpan.FromSeconds(30), // Delay between retries
+                        errorNumbersToAdd: null);
+        });
+    });
 
 var app = builder.Build();
 

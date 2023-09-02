@@ -7,7 +7,7 @@ namespace APP.Data.Services;
 
 public class UserService : IUserService
 {
-    private readonly string _baseUrl = "http://192.168.0.14:90/";
+    private readonly string _baseUrl = "https://localhost:7020/";
 
     public async Task<List<User>> GetAllUsersList()
     {
