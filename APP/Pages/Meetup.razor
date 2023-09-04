@@ -19,7 +19,7 @@
         <label>Select your playdate</label>
         <select>
             <option value="none">select</option>
-            @foreach (var pet in pets)
+            @foreach (var pet in petList)
             {
                 <option value="@pet.PetID">@pet.PetName</option>
             }
@@ -29,8 +29,10 @@
 </div>
 
 
-@code {
-    List<Pet> pets = new();
+@code 
+{
+
+    List<Pet> petList = new();
     IPetService petService = new PetService();
     protected override async Task OnInitializedAsync()
     {
@@ -46,6 +48,6 @@
 
     public async Task LoadDataAsync()
     {
-        pets = await petService.GetAllPets();
+        petList = await petService.GetAllPets();
     }
 }
