@@ -15,31 +15,32 @@
         @if (LoggedUserState.LoggedUser != null)
         {
             <button class="btn btn-primary" @onclick="Logout"> Logout</button>
-            return;
         }
-        <div class="centered title">
-            <h2>Login Page</h2>
-        </div>
-        <EditForm class="form-container" Model="loginRequest" OnValidSubmit="HandleValidLoginSubmit">
+        else{
+            <div class="centered title">
+                <h2>Login Page</h2>
+            </div>
+            <EditForm class="form-container" Model="loginRequest" OnValidSubmit="HandleValidLoginSubmit">
             
-            <div class="centered">
-                <div>
-                    <label for="loginUsername">Username:</label>
-                    <InputText id="loginUsername" class="inputs" @bind-Value="loginRequest.LoginUsername" />
-                    <ValidationMessage For="@(() => loginRequest.LoginUsername)" />
+                <div class="centered">
+                    <div>
+                        <label for="loginUsername">Username:</label>
+                        <InputText id="loginUsername" class="inputs" @bind-Value="loginRequest.LoginUsername" />
+                        <ValidationMessage For="@(() => loginRequest.LoginUsername)" />
+                    </div>
                 </div>
-            </div>
-            <div class="row-cols centered">
-                <div>
-                    <label for="loginPassword">Password:</label>
-                    <InputText type="password" id="loginPassword" class="inputs" @bind-Value="loginRequest.LoginPassword" />
-                    <ValidationMessage For="@(() => loginRequest.LoginPassword)" />
+                <div class="row-cols centered">
+                    <div>
+                        <label for="loginPassword">Password:</label>
+                        <InputText type="password" id="loginPassword" class="inputs" @bind-Value="loginRequest.LoginPassword" />
+                        <ValidationMessage For="@(() => loginRequest.LoginPassword)" />
+                    </div>
                 </div>
-            </div>
-            <div class="row-cols centered">
-                <button class="login-button" type="submit">Login</button>
-            </div>
-        </EditForm>
+                <div class="row-cols centered">
+                    <button class="login-button" type="submit">Login</button>
+                </div>
+            </EditForm>
+        }
     </div>
 </div>
 
