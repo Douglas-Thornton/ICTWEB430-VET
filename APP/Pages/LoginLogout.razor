@@ -1,7 +1,9 @@
 ﻿@page "/login-logout"
-@using APP.Data.Services;
+@using APP.Services;
+@using APP.Interfaces;
 @using APP.States;
-@using static APP.Data.Models.Models;
+@using APP.Data.Models;
+
 @inject IUserService userService;
 @inject LoggedUserState LoggedUserState
 

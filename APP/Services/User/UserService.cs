@@ -1,9 +1,9 @@
 ﻿using APP.Data.Models;
 using Newtonsoft.Json;
 using System.Net.Http.Json;
-using static APP.Data.Models.Models;
+using APP.Interfaces;
 
-namespace APP.Data.Services;
+namespace APP.Services;
 
 public class UserService : IUserService
 {

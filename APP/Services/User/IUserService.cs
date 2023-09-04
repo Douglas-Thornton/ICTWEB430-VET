@@ -1,6 +1,6 @@
-﻿using static APP.Data.Models.Models;
+﻿using APP.Data.Models;
 
-namespace APP.Data.Services;
+namespace APP.Interfaces;
 
 public interface IUserService
 {

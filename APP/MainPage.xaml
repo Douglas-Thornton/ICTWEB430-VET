@@ -36,7 +36,7 @@
         Title="Meet-up">
         <BlazorWebView HostPage="wwwroot/index.html" >
             <BlazorWebView.RootComponents>
-                <RootComponent Selector="#app" ComponentType="{x:Type pages:HomePage}" />
+                <RootComponent Selector="#app" ComponentType="{x:Type pages:Meetup}" />
             </BlazorWebView.RootComponents>
         </BlazorWebView>
     </ContentPage>

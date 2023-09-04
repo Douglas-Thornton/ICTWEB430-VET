@@ -1,0 +1,51 @@
+﻿@using APP.Data.Models;
+@using APP.Interfaces;
+@using APP.Services;
+
+<div class="background-container">
+    <img src="./Images/cartoon_dog_and_cat.jpg" alt="buddies" class="background-image"/>
+    <div class="card">
+        <h3>Meetup</h3>
+        <label>Your Name</label>
+        <input placeholder="Insert your name here"/>
+        <label>Your Pets Name</label>
+        <input placeholder="Insert your name here" />
+        <label>Is your pet a dog or cat?</label>
+        <select>
+            <option>Select an option</option>
+            <option value="dog">Dog</option>
+            <option value="cat">Cat</option>
+        </select>
+        <label>Select your playdate</label>
+        <select>
+            <option value="none">select</option>
+            @foreach (var pet in pets)
+            {
+                <option value="@pet.PetID">@pet.PetName</option>
+            }
+        </select>
+        <button>Submit</button>
+    </div>
+</div>
+
+
+@code {
+    List<Pet> pets = new();
+    IPetService petService = new PetService();
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await LoadDataAsync();
+        }
+        catch(Exception)
+        {
+            
+        }
+    }
+
+    public async Task LoadDataAsync()
+    {
+        pets = await petService.GetAllPets();
+    }
+}

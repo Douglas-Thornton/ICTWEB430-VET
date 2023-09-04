@@ -1,8 +1,10 @@
 ﻿@page "/register-profile"
-@using APP.Data.Services;
+@using APP.Services;
 @using APP.States;
 @using System.ComponentModel;
-@using static APP.Data.Models.Models;
+@using APP.Data.Models;
+@using APP.Interfaces;
+
 @inject IUserService userService;
 @inject LoggedUserState LoggedUserState
 

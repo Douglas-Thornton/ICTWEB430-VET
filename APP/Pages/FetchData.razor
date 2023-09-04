@@ -1,8 +1,10 @@
 ﻿@page "/fetchdata"
 
-@using APP.Data
-@using APP.Data.Services;
-@using static APP.Data.Models.Models;
+@using APP.Data;
+@using APP.Services;
+@using APP.Data.Models;
+@using APP.Interfaces;
+
 @inject IUserService userService;
 
 <div class="background-container">

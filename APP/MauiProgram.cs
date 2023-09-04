@@ -1,6 +1,7 @@
 ﻿using APP.States;
 using Microsoft.Extensions.Logging;
-using APP.Data.Services;
+using APP.Services;
+using APP.Interfaces;
 using APP.Data;
 
 namespace APP
@@ -18,7 +19,6 @@ namespace APP
                 });
 
             builder.Services.AddMauiBlazorWebView();
-            builder.Services.AddTransient<IWeatherForecastService, WeatherForecastService>();
 
 #if DEBUG
 		builder.Services.AddBlazorWebViewDeveloperTools();
@@ -26,6 +26,7 @@ namespace APP
 #endif
 
             builder.Services.AddSingleton<IUserService, UserService>();
+            builder.Services.AddSingleton<IPetService, PetService>();
             builder.Services.AddSingleton<LoggedUserState>();
             builder.Services.AddSingleton<App>();
 
