@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel;
-using static APP.Data.Models.Models;
+using APP.Data.Models;
 
 namespace APP.States
 {
