@@ -67,13 +67,10 @@
       <Folder Include="JS\" />
     </ItemGroup>
 
-    <ItemGroup>
-      <None Include="wwwroot\Images\Dog_Background.jpg" />
-      <None Include="wwwroot\Images\file_placeholder.png" />
-      <None Include="wwwroot\Images\Logo.jpg">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Include="wwwroot\Images\placeholder.jpg" />
-    </ItemGroup>
+	<ItemGroup>
+		<None Include="wwwroot\**">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 
 </Project>

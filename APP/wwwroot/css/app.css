@@ -96,28 +96,58 @@ a, .btn-link {
     flex-direction: column;
 }
 
-    /* Style for individual form elements */
-    .form-container > div {
-        display: flex;
-        align-items: center;
-        margin-bottom: 10px;
-    }
-
-    .form-container label {
-        width: 150px; /* Adjust the width as needed */
-        margin-right: 10px;
-    }
-
-    .form-container input,
-    .form-container select,
-    .form-container textarea {
-        flex: 1;
-    }
-
-.dog-background-image {
-    position: relative; /* Required for positioning the pseudo-element */
-    background-image: url(../Images/Dog_Background.jpg);
-    background-size: contain;
-    background-repeat: no-repeat;
-    min-height: 100vh;
+/* Style for individual form elements */
+.form-container > div {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
 }
+
+.form-container label {
+    width: 150px; /* Adjust the width as needed */
+    margin-right: 10px;
+}
+
+.form-container input,
+.form-container select,
+.form-container textarea {
+    flex: 1;
+}
+
+.card {
+    overflow: auto;
+    border-radius: 15px;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.5); /* Adjust the shadow */
+    display: flex;
+    top: 10vh;
+    flex-wrap: wrap;
+    justify-content: space-between; /* Adjust as needed */
+    padding: 30px;
+    max-width: 60vw; /* Adjust the maximum width as needed */
+    max-height: 80vh;
+    margin: 20px auto;
+}
+
+.background-container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+}
+
+.background-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensure the image covers the entire container */
+    z-index: -1; /* Place the image behind the content */
+}
+
+.content {
+    position: relative;
+    z-index: 1; /* Place the content above the background image */
+    padding: 20px;
+    color: white;
+}
+
