@@ -61,3 +61,11 @@ public class LoginRequest
     public string LoginUsername { get; set; }
     public string LoginPassword { get; set; }
 }
+
+public class ServiceResponse
+{
+    public string? Response { get; set; }
+    public bool success { get; set; }
+    public User? User { get; set; }
+
+}

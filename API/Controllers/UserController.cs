@@ -248,6 +248,13 @@ namespace VETAPPAPI.Controllers
             try
             {
                 // You can add validation and other necessary logic here
+                if (_dbContext.Users.Any(u => u.LoginUsername == newUser.LoginUsername))
+                {
+                    // A user with the same username already exists, return an error response
+                    response.IsSuccess = false;
+                    response.ErrorMessage = "Username is not unique. Please choose a different username.";
+                    return BadRequest(response); // Return a 400 Bad Request status
+                }
 
                 // Save the new user to your database or perform any other required operations
                 //newUser.UserID = null;
@@ -255,7 +262,32 @@ namespace VETAPPAPI.Controllers
                 _dbContext.SaveChanges();
 
                 response.IsSuccess = true;
-                response.Content = "User created successfully"; // You can set any response message you want
+                response.Content = _dbContext.Users.Where(u => u.LoginUsername == newUser.LoginUsername && u.LoginPassword == newUser.LoginPassword)
+                               .Select(u => new User
+                               {
+                                   UserID = u.UserID,
+                                   FirstName = u.FirstName,
+                                   Surname = u.Surname,
+                                   PhoneNumber = u.PhoneNumber,
+                                   Email = u.Email,
+                                   Suburb = u.Suburb,
+                                   Postcode = u.Postcode,
+                                   LoginUsername = u.LoginUsername,
+                                   LoginPassword = u.LoginPassword,
+                                   WebpageAnimalPreference = u.WebpageAnimalPreference,
+                                   Pets = u.Pets.Select(p => new Pet
+                                   {
+                                       PetID = p.PetID,
+                                       PetName = p.PetName,
+                                       PetBreed = p.PetBreed,
+                                       PetAge = p.PetAge,
+                                       PetGender = p.PetGender,
+                                       PetPhoto = p.PetPhoto,
+                                       PetDiscoverability = p.PetDiscoverability,
+                                       OwnerID = p.OwnerID // Include the OwnerID property if needed
+                                   }).ToList()
+                               })
+                               .ToList();
             }
             catch (Exception ex)
             {

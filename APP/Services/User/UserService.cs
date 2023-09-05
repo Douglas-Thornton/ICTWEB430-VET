@@ -48,7 +48,7 @@ public class UserService : IUserService
             string url = $"{_baseUrl}api/userController/login";
             HttpResponseMessage apiResponse = await client.PostAsJsonAsync(url, loginRequest);
 
-            if (apiResponse.StatusCode == System.Net.HttpStatusCode.OK)
+            if (apiResponse.IsSuccessStatusCode)
             {
                 string response = await apiResponse.Content.ReadAsStringAsync();
                 MainResponseModel deserializeResponse = JsonConvert.DeserializeObject<MainResponseModel>(response);
@@ -66,34 +66,53 @@ public class UserService : IUserService
         }
     }
 
-    public async Task<bool> CreateUserAsync(User userToCreate)
+    public async Task<ServiceResponse> CreateUserAsync(User userToCreate)
     {
+        ServiceResponse serviceResponse = new ServiceResponse { };
+
         try
         {
-            var returnResponse = new User();
+            var createdUser = new User();
             using var client = new HttpClient();
 
             string url = $"{_baseUrl}api/userController/create";
             var json = JsonConvert.SerializeObject(userToCreate);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await client.PostAsync(url, content);
+            var apiResponse = await client.PostAsync(url, content);
 
-            if (response.IsSuccessStatusCode)
+            if (apiResponse.IsSuccessStatusCode)
             {
                 // User creation was successful
-                return true;
+
+                string response = await apiResponse.Content.ReadAsStringAsync();
+                MainResponseModel deserializeResponse = JsonConvert.DeserializeObject<MainResponseModel>(response);
+
+                if (deserializeResponse.IsSuccess)
+                {
+                    createdUser = JsonConvert.DeserializeObject<List<User>>(deserializeResponse.Content.ToString()).FirstOrDefault();
+                    serviceResponse.User = createdUser;
+                    serviceResponse.success = true;
+                }
+                else 
+                { 
+                    serviceResponse.success= false;
+                    serviceResponse.Response = "Failed to login to new user";
+                }
             }
             else
             {
                 // Handle errors if necessary
-                return false;
+                serviceResponse.Response = await apiResponse.Content.ReadAsStringAsync();
+                serviceResponse.success = true;
             }
+
+            return serviceResponse;
         }
         catch (Exception)
         {
-            // Handle exceptions if necessary
-            return false;
+            serviceResponse.success = false;
+            return serviceResponse;
         }
     }
 }

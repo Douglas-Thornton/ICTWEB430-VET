@@ -58,7 +58,7 @@
 
 <div class="background-container">
     <img src="./Images/dog_background.jpg" alt="buddies" class="background-image" />
-    <div class="card">
+    <div class="card wide-card">
         <div class="container">
             <div class="row">
                 <div class="col">
@@ -165,13 +165,7 @@
                                             <label for="postcode">Postcode:</label>
                                             <InputText id="postcode" class="form-control" @bind-Value="EditUser.Postcode" />
                                             <ValidationMessage For="@(() => EditUser.Postcode)" />
-                                        </div>
-
-                                        <div>
-                                            <label for="loginEditUsername">Login EditUsername:</label>
-                                            <InputText id="loginEditUsername" class="form-control" @bind-Value="EditUser.LoginUsername" />
-                                            <ValidationMessage For="@(() => EditUser.LoginUsername)" />
-                                        </div>
+                                        </div
 
                                         <div>
                                             <label for="webpageAnimalPreference">Webpage Animal Preference:</label>
@@ -237,12 +231,13 @@
     private async void HandleValidNewUserSubmit()
     {
         NewUser.Pets = Pets;
-        bool success = await userService.CreateUserAsync(NewUser);
+        var response = await userService.CreateUserAsync(NewUser);
         // Perform further processing, such as saving the user data
         // You can access user.Username, user.Email, etc.
 
-        if(success)
-        {        
+        if(response.success)
+        {
+            LoggedUserState.LoggedUser = response.User;
             NewUser = new User();
             EditUser = new User();
             Pets = new List<Pet>();
