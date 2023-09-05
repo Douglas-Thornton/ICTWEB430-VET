@@ -182,26 +182,7 @@
                                     <div class="scrollable-container">
                                         @foreach (Pet pet in Pets)
                                         {
-                                            <div class="container">
-                                                <div class="row">
-                                                    <div class="col">
-                                                        <img src="@(!string.IsNullOrEmpty(pet.PetPhotoFileLocation) ? pet.PetPhotoFileLocation : "images\\file_placeholder.png")"
-                                                             width="100" height="100" alt="Picture of @pet.PetName" />
-                                                    </div>
-                                                    <div class="col">
-                                                        <div class="col">
-                                                            <h2>@pet.PetName</h2>
-                                                            <p>Breed: @pet.PetBreed</p>
-                                                            <p>Age: @pet.PetAge</p>
-                                                        </div>
-                                                        <div class="col">
-                                                            <p>Gender: @pet.PetGender</p>
-                                                            <p>Discoverable: @(pet.PetDiscoverability ? "Visible" : "Hidden")</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <button class="btn btn-close btn-sm" @onclick="() => DeletePet(pet)"></button>
-                                            </div>
+                                           <PetTile pet="pet" DeleteEnabled=true OnDelete="()=>DeletePet(pet)"></PetTile>
                                         }
                                     </div>
                                 </div>

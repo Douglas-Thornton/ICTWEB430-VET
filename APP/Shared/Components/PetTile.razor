@@ -1,0 +1,63 @@
+﻿@using APP.Data.Models;
+
+<div class="container">
+    <div class="row">
+        <div class="col-3">
+            <img src="@(!string.IsNullOrEmpty(pet.PetPhotoFileLocation) ? pet.PetPhotoFileLocation : "images\\file_placeholder.png")"
+                 width="50" height="50" alt="Picture of @pet.PetName" />
+        </div>
+        <div class="col">
+            <div class="row">
+                <div class="col-8">
+                    <h2>@pet.PetName</h2>
+                </div>
+                <div class="col-4 text-end">
+                    @if (DeleteEnabled)
+                    {
+                        <button class="btn btn-close btn-sm" @onclick="() => DeletePet()"></button>
+                    }
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <p>Breed: @pet.PetBreed</p>
+                    <p>Age: @pet.PetAge</p>
+                </div>
+                <div class="col">
+                    <p>Gender: @pet.PetGender</p>
+                    <p>Discoverable: @(pet.PetDiscoverability ? "Visible" : "Hidden")</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@code
+{
+
+    [Parameter]
+    public Pet pet { get; set; }
+
+    [Parameter]
+    public bool DeleteEnabled { get; set; } = false;
+
+    /// <summary>
+    /// Event on delete button pressed.
+    /// </summary>
+    [Parameter]
+    public EventCallback<Pet> OnDelete { get; set; }
+
+    /// <summary>
+    /// Deletes the current pet.
+    /// </summary>
+    /// <returns>Task</returns>
+    private Task DeletePet()
+    {
+        if (DeleteEnabled)
+        {
+            return OnDelete.InvokeAsync(pet);
+        }
+        return Task.CompletedTask;
+    }
+}
