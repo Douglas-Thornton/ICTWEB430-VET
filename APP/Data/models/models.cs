@@ -9,11 +9,15 @@ public class User
     public int UserID { get; set; }
     public string? FirstName { get; set; }
     public string? Surname { get; set; }
+    [StringLength(16, ErrorMessage = "Phone number too long.(20 character limit).")]
     public string? PhoneNumber { get; set; }
     public string? Email { get; set; }
     public string? Suburb { get; set; }
+    [StringLength(10, ErrorMessage = "Post code too long.(10 character limit).")]
     public string? Postcode { get; set; }
+    [Required(ErrorMessage = "Username is required.")]
     public string LoginUsername { get; set; }
+    [Required(ErrorMessage = "Password is required.")]
     public string LoginPassword { get; set; }
     public string WebpageAnimalPreference { get; set; }
 
@@ -21,12 +25,6 @@ public class User
     public virtual ICollection<Pet> Pets { get; set; }
 
 
-}
-
-public class LoginRequest
-{
-    public string LoginUsername { get; set; }
-    public string LoginPassword { get; set; }
 }
 
 public class Pet
@@ -56,4 +54,10 @@ public class Pet
     public bool PetDiscoverability { get; set; }
     public IBrowserFile PetPhotoUpload { get; set; }
     public virtual User Owner { get; set; }
+}
+
+public class LoginRequest
+{
+    public string LoginUsername { get; set; }
+    public string LoginPassword { get; set; }
 }

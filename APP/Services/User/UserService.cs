@@ -2,6 +2,8 @@
 using Newtonsoft.Json;
 using System.Net.Http.Json;
 using APP.Interfaces;
+using System.Net;
+using System.Text;
 
 namespace APP.Services;
 
@@ -64,4 +66,34 @@ public class UserService : IUserService
         }
     }
 
+    public async Task<bool> CreateUserAsync(User userToCreate)
+    {
+        try
+        {
+            var returnResponse = new User();
+            using var client = new HttpClient();
+
+            string url = $"{_baseUrl}api/userController/create";
+            var json = JsonConvert.SerializeObject(userToCreate);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await client.PostAsync(url, content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                // User creation was successful
+                return true;
+            }
+            else
+            {
+                // Handle errors if necessary
+                return false;
+            }
+        }
+        catch (Exception)
+        {
+            // Handle exceptions if necessary
+            return false;
+        }
+    }
 }

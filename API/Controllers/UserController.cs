@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using VETAPPAPI.Data;
 using VETAPPAPI.Models;
 
@@ -194,50 +195,6 @@ namespace VETAPPAPI.Controllers
         }
 
         /// <summary>
-        /// Creates a new user.
-        /// </summary>
-        /// <param name="user">The user to be created.</param>
-        /// <returns>Success or failure of the creation.</returns>
-        [HttpPost]
-        public async Task<IActionResult> CreateUser(User user)
-        {
-            try
-            {
-                // Validate the input data
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-
-                // Map the UserModel data to your User entity (if needed) and create the new user
-                //var newUser = new User
-                //{
-                //    FirstName = user.FirstName,
-                //    Surname = user.Surname,
-                //    PhoneNumber = user.PhoneNumber,
-                //    Email = user.Email,
-                //    Suburb = user.Suburb,
-                //    Postcode = user.Postcode,
-                //    LoginUsername = user.LoginUsername,
-                //    LoginPassword = user.LoginPassword,
-                //    WebpageAnimalPreference = user.WebpageAnimalPreference
-                //};
-
-                // Add the new user to the DbContext and save changes
-                _dbContext.Users.Add(user);
-                await _dbContext.SaveChangesAsync();
-
-                // Return a response indicating success and the new user's ID
-                return Ok($"User created successfully with ID: {user.UserID}");
-            }
-            catch (Exception ex)
-            {
-                // Handle any exceptions or errors
-                return StatusCode(500, $"Error creating user. {ex.Message}");
-            }
-        }
-
-        /// <summary>
         /// Update an exisiting user with new data.
         /// </summary>
         /// <param name="updatedUser">The user to update.</param>
@@ -284,5 +241,29 @@ namespace VETAPPAPI.Controllers
             }
         }
 
+        [HttpPost("create")]
+        public IActionResult CreateUser([FromBody] User newUser)
+        {
+            var response = new MainResponse();
+            try
+            {
+                // You can add validation and other necessary logic here
+
+                // Save the new user to your database or perform any other required operations
+                //newUser.UserID = null;
+                _dbContext.Users.Add(newUser);
+                _dbContext.SaveChanges();
+
+                response.IsSuccess = true;
+                response.Content = "User created successfully"; // You can set any response message you want
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = ex.Message;
+                response.IsSuccess = false;
+            }
+
+            return Ok(response);
+        }
     }
 }

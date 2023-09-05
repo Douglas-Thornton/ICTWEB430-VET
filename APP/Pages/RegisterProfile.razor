@@ -113,6 +113,12 @@
                                         </div>
 
                                         <div>
+                                            <label for="loginNewUsername">Login Password:</label>
+                                            <InputText id="loginNewUsername" class="form-control" type="password" @bind-Value="NewUser.LoginPassword" />
+                                            <ValidationMessage For="@(() => NewUser.LoginPassword)" />
+                                        </div>
+
+                                        <div>
                                             <label for="webpageAnimalPreference">Webpage Animal Preference:</label>
                                             <InputText id="webpageAnimalPreference" class="form-control" @bind-Value="NewUser.WebpageAnimalPreference" />
                                             <ValidationMessage For="@(() => NewUser.WebpageAnimalPreference)" />
@@ -228,11 +234,20 @@
     public bool isDogModalOpen = false;
 
 
-    private void HandleValidNewUserSubmit()
+    private async void HandleValidNewUserSubmit()
     {
-
+        NewUser.Pets = Pets;
+        bool success = await userService.CreateUserAsync(NewUser);
         // Perform further processing, such as saving the user data
         // You can access user.Username, user.Email, etc.
+
+        if(success)
+        {        
+            NewUser = new User();
+            EditUser = new User();
+            Pets = new List<Pet>();
+            loadPage();
+        }
     }
 
     private void HandleValidEditUserSubmit()

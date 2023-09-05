@@ -37,8 +37,8 @@ namespace VETAPPAPI.Models
         public int? PetAge { get; set; }
         public string? PetGender { get; set; }
         public string? PetPhotoFileLocation { get; set; }
-        public byte[] PetPhoto { get; set; }
-        public bool? PetDiscoverability { get; set; }
+        public byte[]? PetPhoto { get; set; }
+        public bool PetDiscoverability { get; set; }
 
         [ForeignKey("OwnerID")]
         public virtual User? Owner { get; set; }
