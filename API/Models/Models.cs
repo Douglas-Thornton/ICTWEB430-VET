@@ -9,15 +9,15 @@ namespace VETAPPAPI.Models
     {
         [Key]
         public int UserID { get; set; }
-        public string FirstName { get; set; }
-        public string Surname { get; set; }
-        public string PhoneNumber { get; set; }
-        public string Email { get; set; }
-        public string Suburb { get; set; }
-        public string Postcode { get; set; }
+        public string? FirstName { get; set; }
+        public string? Surname { get; set; }
+        public string? PhoneNumber { get; set; }
+        public string? Email { get; set; }
+        public string? Suburb { get; set; }
+        public string? Postcode { get; set; }
         public string LoginUsername { get; set; }
         public string LoginPassword { get; set; }
-        public string WebpageAnimalPreference { get; set; }
+        public string? WebpageAnimalPreference { get; set; }
 
 
         public virtual ICollection<Pet>? Pets { get; set; }
@@ -32,12 +32,12 @@ namespace VETAPPAPI.Models
         [Key]
         public int PetID { get; set; }
         public int OwnerID { get; set; }
-        public string PetName { get; set; }
-        public string PetBreed { get; set; }
-        public int PetAge { get; set; }
-        public string PetGender { get; set; }
-        public string PetPhotoFileLocation { get; set; }
-        public bool PetDiscoverability { get; set; }
+        public string? PetName { get; set; }
+        public string? PetBreed { get; set; }
+        public int? PetAge { get; set; }
+        public string? PetGender { get; set; }
+        public string? PetPhotoFileLocation { get; set; }
+        public bool? PetDiscoverability { get; set; }
 
         [ForeignKey("OwnerID")]
         public virtual User? Owner { get; set; }
@@ -57,12 +57,12 @@ namespace VETAPPAPI.Models
         [Key]
         public int MeetingID { get; set; }
         public int UserCreated { get; set; }
-        public DateTime MeetingDate { get; set; }
-        public string MeetingLocation { get; set; }
-        public DateTime MeetingCreationDate { get; set; }
+        public DateTime? MeetingDate { get; set; }
+        public string? MeetingLocation { get; set; }
+        public DateTime? MeetingCreationDate { get; set; }
         public DateTime? MeetingCancellationDate { get; set; }
-        public string MeetingName { get; set; }
-        public string MeetingMessage { get; set; }
+        public string? MeetingName { get; set; }
+        public string? MeetingMessage { get; set; }
 
         [ForeignKey("UserCreated")]
         public virtual User? User { get; set; }
