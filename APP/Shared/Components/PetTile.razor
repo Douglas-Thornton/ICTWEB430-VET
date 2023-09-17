@@ -66,6 +66,7 @@
     public EventCallback<Pet> OnEdit { get; set; }
 
     private byte[] previousPetPhoto;
+
     private string ImageDataUrl { get; set; }
 
     protected override void OnInitialized()
@@ -103,6 +104,9 @@
         return Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Convert the BASE64 image to a regular image.
+    /// </summary>
     private void convertImage()
     {
         // Convert the byte[] to a Base64-encoded string
@@ -112,7 +116,9 @@
         }
     }
 
-
+    /// <summary>
+    /// Update the current pet photo after a new one is uploaded.
+    /// </summary>
     protected override void OnParametersSet()
     {
         // Check if the value of petPhoto has changed

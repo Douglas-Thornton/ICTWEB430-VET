@@ -200,19 +200,20 @@
 {
     private User NewUser = new User();
     private User EditUser = new User();
-
     private Pet NewPet = new Pet();
+    private Pet PetToEdit = new Pet();
     private List<Pet> Pets = new List<Pet>();
+
+    public bool isDogModalOpen = false;
+    public ModalMode DogModalMode = ModalMode.Edit;
 
     public event PropertyChangedEventHandler PropertyChanged;
 
-    public bool isDogModalOpen = false;
-
-    public ModalMode DogModalMode = ModalMode.Edit;
-    public Pet PetToEdit = new Pet();
-
     private Pet CurrentPet => DogModalMode == ModalMode.Create ? NewPet : PetToEdit;
 
+    //// <summary>
+    /// If the editForm is valid; create the new user.
+    /// </summary>
     private async void HandleValidNewUserSubmit()
     {
         NewUser.Pets = Pets;
@@ -230,6 +231,10 @@
         }
     }
 
+    /// <summary>
+    /// If the editform is valid; save the edited user.
+    /// </summary>
+    /// <returns></returns>
     private async Task HandleValidEditUserSubmit()
     {
         EditUser.Pets = Pets;
@@ -245,6 +250,10 @@
         }
     }
 
+    /// <summary>
+    /// If the editform is valid; update or create the pet.
+    /// </summary>
+    /// <returns></returns>
     private async Task HandleValidPetSubmit()
     {
         switch(DogModalMode)
@@ -261,12 +270,18 @@
 
     }
 
+    /// <summary>
+    /// On initialized setup propertyChanged event and load the page data.
+    /// </summary>
     protected override void OnInitialized()
     {
         loadPage();
         LoggedUserState.PropertyChanged += OnLoggedUserStateChanged;
     }
 
+    /// <summary>
+    /// On load; setup empty user objects and try and load the currently logged in user data.
+    /// </summary>
     private void loadPage()
     {
         NewUser = new User();
@@ -282,6 +297,11 @@
         StateHasChanged();
     }
 
+    /// <summary>
+    /// If the user logs in; update the data on this page.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void OnLoggedUserStateChanged(object sender, PropertyChangedEventArgs e)
     {
         // Check if the property that changed is "LoggedUser"
@@ -291,6 +311,12 @@
         }
     }
 
+    /// <summary>
+    /// Handle a uploaded photo.
+    /// </summary>
+    /// <param name="e"></param>
+    /// <param name="petToUpload"></param>
+    /// <returns></returns>
     private async Task HandleImageUpload(InputFileChangeEventArgs e, Pet petToUpload)
     {
         petToUpload.PetPhotoUpload = null;
@@ -314,17 +340,19 @@
 
     }
 
+    /// <summary>
+    /// Open the dog modal in create mode.
+    /// </summary>
     private void CreatePet()
     {
         DogModalMode = ModalMode.Create;
         isDogModalOpen = true;
     }
 
-    private void DeletePet(Pet petToDelete)
-    {
-        Pets.Remove(petToDelete);
-    }
-
+    /// <summary>
+    /// Open tbe dog modal in edit mode.
+    /// </summary>
+    /// <param name="petToEdit"></param>
     private void EditPet(Pet petToEdit)
     {
         PetToEdit = petToEdit;
@@ -332,6 +360,18 @@
         isDogModalOpen = true;
     }
 
+    /// <summary>
+    /// Remove a pet from the user's pet list.
+    /// </summary>
+    /// <param name="petToDelete"></param>
+    private void DeletePet(Pet petToDelete)
+    {
+        Pets.Remove(petToDelete);
+    }
+
+    /// <summary>
+    /// Close the modal and clear the edit and new pets.
+    /// </summary>
     private void CloseModal()
     {
         NewPet = new Pet();
@@ -341,8 +381,6 @@
 
     private void DogModalOnClose(bool confirm)
     {
-        if (!confirm)
-        {
-        }
+        CloseModal();
     }
 }

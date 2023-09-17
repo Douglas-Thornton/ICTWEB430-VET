@@ -280,6 +280,11 @@ namespace VETAPPAPI.Controllers
             return Ok(response);
         }
 
+        /// <summary>
+        /// Create a new user.
+        /// </summary>
+        /// <param name="newUser">The user to create.</param>
+        /// <returns></returns>
         [HttpPost("create")]
         public IActionResult CreateUser([FromBody] User newUser)
         {

@@ -17,6 +17,10 @@ namespace VETAPPAPI.Controllers
             _dbContext = dbContext;
         }
 
+        /// <summary>
+        /// Get all pets.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public async Task<MainResponse> GetPets()
         {
@@ -124,6 +128,11 @@ namespace VETAPPAPI.Controllers
             return Ok(response);
         }
 
+        /// <summary>
+        /// Delete a pet.
+        /// </summary>
+        /// <param name="id">The ID of the pet to delete.</param>
+        /// <returns></returns>
         [HttpDelete("pet/{id:int}")]
         public async Task<IActionResult> DeletePet(int id)
         {
@@ -146,6 +155,11 @@ namespace VETAPPAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Create a new pet.
+        /// </summary>
+        /// <param name="pet">The pet to create,</param>
+        /// <returns></returns>
         [HttpPost("pet")]
         public async Task<IActionResult> CreatePet(Pet pet)
         {
@@ -167,6 +181,12 @@ namespace VETAPPAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Update an existing pet.
+        /// </summary>
+        /// <param name="id">The id of the pet to update.</param>
+        /// <param name="updatedPet">The updated pet.</param>
+        /// <returns></returns>
         [HttpPut("pet/{id:int}")]
         public async Task<IActionResult> UpdatePet(int id, Pet updatedPet)
         {
