@@ -199,25 +199,33 @@ namespace VETAPPAPI.Controllers
         /// </summary>
         /// <param name="updatedUser">The user to update.</param>
         /// <returns>Success or failure of the updated user.</returns>
-        [HttpPut("{id:int}")]
-        public async Task<IActionResult> UpdateUser(User updatedUser)
+        [HttpPut("update/{userId}")]
+        public IActionResult UpdateUser(int userId, [FromBody] User updatedUser)
         {
+            var response = new MainResponse();
             try
             {
-                // Validate the input data
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
+                // Check if a user with the given UserID exists in the database
+                var existingUser = _dbContext.Users.Include(p => p.Pets).FirstOrDefault(u => u.UserID == userId);
 
-                // Get the existing user from the database
-                var existingUser = await _dbContext.Users.FindAsync(updatedUser.UserID);
                 if (existingUser == null)
                 {
-                    return NotFound($"User with ID {updatedUser.UserID} not found.");
+                    // If the user does not exist, return a not found response
+                    response.IsSuccess = false;
+                    response.ErrorMessage = "User not found.";
+                    return NotFound(response); // Return a 404 Not Found status
                 }
 
-                // Update the user's properties with the new values
+                // Check if the updated username conflicts with other users
+                if (_dbContext.Users.Any(u => u.LoginUsername == updatedUser.LoginUsername && u.UserID != userId))
+                {
+                    // Another user with the same username already exists, return an error response
+                    response.IsSuccess = false;
+                    response.ErrorMessage = "Username is not unique. Please choose a different username.";
+                    return BadRequest(response); // Return a 400 Bad Request status
+                }
+
+                // Update the existing user's information with the data from the updatedUser object
                 existingUser.FirstName = updatedUser.FirstName;
                 existingUser.Surname = updatedUser.Surname;
                 existingUser.PhoneNumber = updatedUser.PhoneNumber;
@@ -228,17 +236,47 @@ namespace VETAPPAPI.Controllers
                 existingUser.LoginPassword = updatedUser.LoginPassword;
                 existingUser.WebpageAnimalPreference = updatedUser.WebpageAnimalPreference;
 
-                // Save the changes to the database
-                await _dbContext.SaveChangesAsync();
+                // You can also handle updating the user's pets if needed
+                foreach (var updatedPet in updatedUser.Pets)
+                {
+                    var existingPet = existingUser.Pets.FirstOrDefault(p => p.PetID == updatedPet.PetID);
 
-                // Return a response indicating success
-                return Ok($"User with ID {existingUser.UserID} updated successfully.");
+                    if (existingPet == null)
+                    {
+                        // If the pet doesn't exist in the user's current list, add it
+                        existingUser.Pets.Add(updatedPet);
+                    }
+                    else
+                    {
+                        // If the pet exists, update its information
+                        existingPet.PetName = updatedPet.PetName;
+                        existingPet.PetBreed = updatedPet.PetBreed;
+                        existingPet.PetAge = updatedPet.PetAge;
+                        existingPet.PetGender = updatedPet.PetGender;
+                        // Update other pet properties as needed
+                    }
+                }
+
+                // Remove pets that are absent from the updated user's pet list
+                foreach (var existingPet in existingUser.Pets.ToList())
+                {
+                    if (!updatedUser.Pets.Any(p => p.PetID == existingPet.PetID))
+                    {
+                        existingUser.Pets.Remove(existingPet);
+                    }
+                }
+                _dbContext.SaveChanges();
+
+                response.IsSuccess = true;
+                response.Content = existingUser; // Return the updated user object
             }
             catch (Exception ex)
             {
-                // Handle any exceptions or errors
-                return StatusCode(500, $"Error updating user. {ex.Message}");
+                response.ErrorMessage = ex.Message;
+                response.IsSuccess = false;
             }
+
+            return Ok(response);
         }
 
         [HttpPost("create")]

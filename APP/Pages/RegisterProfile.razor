@@ -226,11 +226,19 @@
         }
     }
 
-    private void HandleValidEditUserSubmit()
+    private async Task HandleValidEditUserSubmit()
     {
+        EditUser.Pets = Pets;
+        var response = await userService.UpdateUserAsync(EditUser);
 
-        // Perform further processing, such as saving the user data
-        // You can access user.Username, user.Email, etc.
+        if(response.success)
+        {
+            LoggedUserState.LoggedUser = response.User;
+            NewUser = new User();
+            EditUser = new User();
+            Pets = new List<Pet>();
+            loadPage();
+        }
     }
 
     private void HandleValidNewPetSubmit()
@@ -270,13 +278,21 @@
         }
     }
 
-    private void HandleImageUpload(InputFileChangeEventArgs e)
+    private async Task HandleImageUpload(InputFileChangeEventArgs e)
     {
         NewPet.PetPhotoUpload = null;
-
+        NewPet.PetPhoto = null;
         try
         {
             NewPet.PetPhotoUpload = e.File;
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                // Read the content of the IBrowserFile into the MemoryStream
+                await NewPet.PetPhotoUpload.OpenReadStream().CopyToAsync(memoryStream);
+
+                // Assign the byte[] to the Pet's PetPhoto property
+                NewPet.PetPhoto = memoryStream.ToArray();
+            }
         }
         catch (Exception ex)
         {

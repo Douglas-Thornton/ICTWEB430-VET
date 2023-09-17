@@ -115,4 +115,54 @@ public class UserService : IUserService
             return serviceResponse;
         }
     }
+
+    public async Task<ServiceResponse> UpdateUserAsync(User userToUpdate)
+    {
+        ServiceResponse serviceResponse = new ServiceResponse { };
+
+        try
+        {
+            var updatedUser = new User();
+            using var client = new HttpClient();
+
+            string url = $"{_baseUrl}api/userController/update/{userToUpdate.UserID}";
+            var json = JsonConvert.SerializeObject(userToUpdate);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var apiResponse = await client.PutAsync(url, content);
+
+            if (apiResponse.IsSuccessStatusCode)
+            {
+                // User creation was successful
+
+                string response = await apiResponse.Content.ReadAsStringAsync();
+                MainResponseModel deserializeResponse = JsonConvert.DeserializeObject<MainResponseModel>(response);
+
+                if (deserializeResponse.IsSuccess)
+                {
+                    updatedUser = JsonConvert.DeserializeObject<List<User>>(deserializeResponse.Content.ToString()).FirstOrDefault();
+                    serviceResponse.User = updatedUser;
+                    serviceResponse.success = true;
+                }
+                else
+                {
+                    serviceResponse.success = false;
+                    serviceResponse.Response = "Failed to login to new user";
+                }
+            }
+            else
+            {
+                // Handle errors if necessary
+                serviceResponse.Response = await apiResponse.Content.ReadAsStringAsync();
+                serviceResponse.success = true;
+            }
+
+            return serviceResponse;
+        }
+        catch (Exception)
+        {
+            serviceResponse.success = false;
+            return serviceResponse;
+        }
+    }
 }

@@ -9,4 +9,7 @@ public interface IUserService
     public Task<User> LoginUser(LoginRequest loginRequest);
 
     public Task<ServiceResponse> CreateUserAsync(User userToCreate);
+
+    public Task<ServiceResponse> UpdateUserAsync(User userToCreate);
+
 }

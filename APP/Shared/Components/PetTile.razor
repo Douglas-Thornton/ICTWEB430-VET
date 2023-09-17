@@ -3,7 +3,7 @@
 <div class="container">
     <div class="row">
         <div class="col-3">
-            <img src="@(!string.IsNullOrEmpty(pet.PetPhotoFileLocation) ? pet.PetPhotoFileLocation : "images\\file_placeholder.png")"
+            <img src="@(ImageDataUrl != null ? ImageDataUrl : "images\\file_placeholder.png")"
                  width="50" height="50" alt="Picture of @pet.PetName" />
         </div>
         <div class="col">
@@ -47,6 +47,22 @@
     /// </summary>
     [Parameter]
     public EventCallback<Pet> OnDelete { get; set; }
+
+    private string ImageDataUrl { get; set; }
+
+    protected override void OnInitialized()
+    {
+        // Convert the byte[] to a Base64-encoded string
+        if (pet.PetPhoto != null)
+        {
+            ImageDataUrl = $"data:image/jpeg;base64,{Convert.ToBase64String(pet.PetPhoto)}";
+        }
+        else
+        {
+            // If there's no image data, you can set a default image or display a placeholder.
+            // Example: ImageDataUrl = "path_to_default_image.jpg";
+        }
+    }
 
     /// <summary>
     /// Deletes the current pet.
