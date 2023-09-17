@@ -1,4 +1,5 @@
 ﻿@using APP.Data.Models;
+@using System.ComponentModel;
 
 <div class="container">
     <div class="row">
@@ -27,6 +28,12 @@
                     <p>Gender: @pet.PetGender</p>
                     <p>Discoverable: @(pet.PetDiscoverability ? "Visible" : "Hidden")</p>
                 </div>
+                @if (EditEnabled)
+                {
+                    <div class="col">
+                        <button class="btn btn-link btn-sm" @onclick="() => EditPet()">Edit</button>
+                    </div>
+                }
             </div>
         </div>
     </div>
@@ -42,26 +49,32 @@
     [Parameter]
     public bool DeleteEnabled { get; set; } = false;
 
+
+    [Parameter]
+    public bool EditEnabled { get; set; } = false;
+
     /// <summary>
     /// Event on delete button pressed.
     /// </summary>
     [Parameter]
     public EventCallback<Pet> OnDelete { get; set; }
 
+    /// <summary>
+    /// Event on edit button pressed.
+    /// </summary>
+    [Parameter]
+    public EventCallback<Pet> OnEdit { get; set; }
+
+    private byte[] previousPetPhoto;
     private string ImageDataUrl { get; set; }
 
     protected override void OnInitialized()
     {
-        // Convert the byte[] to a Base64-encoded string
-        if (pet.PetPhoto != null)
+        if(pet.PetPhoto != null)
         {
-            ImageDataUrl = $"data:image/jpeg;base64,{Convert.ToBase64String(pet.PetPhoto)}";
+            previousPetPhoto = pet.PetPhoto;
         }
-        else
-        {
-            // If there's no image data, you can set a default image or display a placeholder.
-            // Example: ImageDataUrl = "path_to_default_image.jpg";
-        }
+        convertImage();
     }
 
     /// <summary>
@@ -76,4 +89,38 @@
         }
         return Task.CompletedTask;
     }
+
+    /// <summary>
+    /// Edit the current pet.
+    /// </summary>
+    /// <returns>Task</returns>
+    private Task EditPet()
+    {
+        if (EditEnabled)
+        {
+            return OnEdit.InvokeAsync(pet);
+        }
+        return Task.CompletedTask;
+    }
+
+    private void convertImage()
+    {
+        // Convert the byte[] to a Base64-encoded string
+        if (pet.PetPhoto != null)
+        {
+            ImageDataUrl = $"data:image/jpeg;base64,{Convert.ToBase64String(pet.PetPhoto)}";
+        }
+    }
+
+
+    protected override void OnParametersSet()
+    {
+        // Check if the value of petPhoto has changed
+        if (pet.PetPhoto != null && !pet.PetPhoto.SequenceEqual(previousPetPhoto))
+        {
+            convertImage();
+            previousPetPhoto = pet.PetPhoto.ToArray(); // Update the previous value
+        }
+    }
+
 }

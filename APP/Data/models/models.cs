@@ -69,3 +69,9 @@ public class ServiceResponse
     public User? User { get; set; }
 
 }
+
+public enum ModalMode 
+{ 
+    Edit,
+    Create
+}

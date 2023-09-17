@@ -253,6 +253,7 @@ namespace VETAPPAPI.Controllers
                         existingPet.PetBreed = updatedPet.PetBreed;
                         existingPet.PetAge = updatedPet.PetAge;
                         existingPet.PetGender = updatedPet.PetGender;
+                        existingPet.PetPhoto = updatedPet.PetPhoto;
                         // Update other pet properties as needed
                     }
                 }

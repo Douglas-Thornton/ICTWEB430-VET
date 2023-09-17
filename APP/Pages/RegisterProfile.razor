@@ -12,44 +12,44 @@
 @if (isDogModalOpen)
 {
     <Modal ModalTitle="Dog Creation"
-           OnClose="CancelDogModal">
-        <EditForm class="form-container" Model="NewPet" OnValidSubmit="HandleValidNewPetSubmit">
+           OnClose="CloseModal">
+        <EditForm class="form-container" Model="@CurrentPet" OnValidSubmit="HandleValidPetSubmit">
             <DataAnnotationsValidator />
             <div>
                 <label for="petName">Pet Name:</label>
-                <InputText id="petName" class="form-control" @bind-Value="NewPet.PetName" />
-                <ValidationMessage For="@(() => NewPet.PetName)" />
+                <InputText id="petName" class="form-control" @bind-Value="CurrentPet.PetName" />
+                <ValidationMessage For="@(() => CurrentPet.PetName)" />
             </div>
             <div>
                 <label for="petBreed">Pet Breed:</label>
-                <InputText id="petBreed" class="form-control" @bind-Value="NewPet.PetBreed" />
-                <ValidationMessage For="@(() => NewPet.PetBreed)" />
+                <InputText id="petBreed" class="form-control" @bind-Value="CurrentPet.PetBreed" />
+                <ValidationMessage For="@(() => CurrentPet.PetBreed)" />
             </div>
             <div>
                 <label for="petAge">Pet Age:</label>
-                <InputNumber id="petAge" class="form-control" @bind-Value="NewPet.PetAge" />
-                <ValidationMessage For="@(() => NewPet.PetAge)" />
+                <InputNumber id="petAge" class="form-control" @bind-Value="CurrentPet.PetAge" />
+                <ValidationMessage For="@(() => CurrentPet.PetAge)" />
             </div>
             <div>
                 <label for="petSex">Pet sex:</label>
-                <InputSelect id="petSex" class="form-control form-select" @bind-Value="NewPet.PetGender">
+                <InputSelect id="petSex" class="form-control form-select" @bind-Value="CurrentPet.PetGender">
                     <option>Male</option>
                     <option>Female</option>
                     <option>Unknown</option>
                 </InputSelect>
-                <ValidationMessage For="@(() => NewPet.PetGender)" />
+                <ValidationMessage For="@(() => CurrentPet.PetGender)" />
             </div>
             <div>
                 <label for="petDiscoverability">Pet Discoverability:</label>
-                <InputCheckbox type="checkbox" class="form-check-input" id="petDiscoverability" @bind-Value="@NewPet.PetDiscoverability" />
-                <ValidationMessage For="@(() => NewPet.PetDiscoverability)" />
+                <InputCheckbox type="checkbox" class="form-check-input" id="petDiscoverability" @bind-Value="@CurrentPet.PetDiscoverability" />
+                <ValidationMessage For="@(() => CurrentPet.PetDiscoverability)" />
             </div>
             <div>
                 <label for="petSex">Pet Image:</label>
-                <InputFile accept="image/*" OnChange="@HandleImageUpload" />
+                <InputFile accept="image/*" OnChange="(e) => HandleImageUpload(e, CurrentPet)" />
             </div>
             <div class="modal-footer">
-                <button type="button" @onclick="CancelDogModal" class="btn btn-danger">Cancel</button>
+                <button type="button" @onclick="CloseModal" class="btn btn-danger">Cancel</button>
                 <button type="submit" class="btn btn-primary">Save</button>
             </div>
         </EditForm>
@@ -178,11 +178,11 @@
                             </div>
                             <div class="col">
                                 <div class="col">
-                                    <button class="btn btn-primary" @onclick=toggleDogModal>Add dog</button>
+                                    <button class="btn btn-primary" @onclick=CreatePet>Add dog</button>
                                     <div class="scrollable-container">
                                         @foreach (Pet pet in Pets)
                                         {
-                                           <PetTile pet="pet" DeleteEnabled=true OnDelete="()=>DeletePet(pet)"></PetTile>
+                                           <PetTile pet="pet" DeleteEnabled=true EditEnabled=true OnDelete="()=>DeletePet(pet)" OnEdit="()=>EditPet(pet)"></PetTile>
                                         }
                                     </div>
                                 </div>
@@ -208,6 +208,10 @@
 
     public bool isDogModalOpen = false;
 
+    public ModalMode DogModalMode = ModalMode.Edit;
+    public Pet PetToEdit = new Pet();
+
+    private Pet CurrentPet => DogModalMode == ModalMode.Create ? NewPet : PetToEdit;
 
     private async void HandleValidNewUserSubmit()
     {
@@ -241,11 +245,20 @@
         }
     }
 
-    private void HandleValidNewPetSubmit()
+    private async Task HandleValidPetSubmit()
     {
-        Pets.Add(NewPet);
-        NewPet = new Pet();
-        toggleDogModal();
+        switch(DogModalMode)
+        {
+            case ModalMode.Create:
+                Pets.Add(NewPet);
+                NewPet = new Pet();
+                CloseModal();
+                break;
+            case ModalMode.Edit:
+                CloseModal();
+                break;
+        }
+
     }
 
     protected override void OnInitialized()
@@ -278,20 +291,20 @@
         }
     }
 
-    private async Task HandleImageUpload(InputFileChangeEventArgs e)
+    private async Task HandleImageUpload(InputFileChangeEventArgs e, Pet petToUpload)
     {
-        NewPet.PetPhotoUpload = null;
-        NewPet.PetPhoto = null;
+        petToUpload.PetPhotoUpload = null;
+        petToUpload.PetPhoto = null;
         try
         {
-            NewPet.PetPhotoUpload = e.File;
+            petToUpload.PetPhotoUpload = e.File;
             using (MemoryStream memoryStream = new MemoryStream())
             {
                 // Read the content of the IBrowserFile into the MemoryStream
-                await NewPet.PetPhotoUpload.OpenReadStream().CopyToAsync(memoryStream);
+                await petToUpload.PetPhotoUpload.OpenReadStream().CopyToAsync(memoryStream);
 
                 // Assign the byte[] to the Pet's PetPhoto property
-                NewPet.PetPhoto = memoryStream.ToArray();
+                petToUpload.PetPhoto = memoryStream.ToArray();
             }
         }
         catch (Exception ex)
@@ -301,28 +314,35 @@
 
     }
 
-    private void DeletePet(Pet PetToDelete)
+    private void CreatePet()
     {
-        Pets.Remove(PetToDelete);
+        DogModalMode = ModalMode.Create;
+        isDogModalOpen = true;
     }
 
-    private void toggleDogModal()
+    private void DeletePet(Pet petToDelete)
     {
-        isDogModalOpen = !isDogModalOpen;
-        StateHasChanged();
+        Pets.Remove(petToDelete);
     }
 
-    private void CancelDogModal()
+    private void EditPet(Pet petToEdit)
+    {
+        PetToEdit = petToEdit;
+        DogModalMode = ModalMode.Edit;
+        isDogModalOpen = true;
+    }
+
+    private void CloseModal()
     {
         NewPet = new Pet();
-        toggleDogModal();
+        PetToEdit = new Pet();
+        isDogModalOpen = false;
     }
 
     private void DogModalOnClose(bool confirm)
     {
         if (!confirm)
         {
-            CancelDogModal();
         }
     }
 }
