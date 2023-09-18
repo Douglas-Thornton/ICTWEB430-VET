@@ -120,7 +120,12 @@
 
                                         <div>
                                             <label for="webpageAnimalPreference">Webpage Animal Preference:</label>
-                                            <InputText id="webpageAnimalPreference" class="form-control" @bind-Value="NewUser.WebpageAnimalPreference" />
+                                            <InputSelect id="webpageAnimalPreference" class="form-control" @bind-Value="NewUser.WebpageAnimalPreference">
+                                                @foreach(var animal in Enum.GetValues(typeof(UserAnimalPreference)))
+                                                {
+                                                    <option value="@animal">@animal</option>         
+                                                }
+                                            </InputSelect>
                                             <ValidationMessage For="@(() => NewUser.WebpageAnimalPreference)" />
                                         </div>
 
@@ -165,12 +170,15 @@
                                             <label for="postcode">Postcode:</label>
                                             <InputText id="postcode" class="form-control" @bind-Value="EditUser.Postcode" />
                                             <ValidationMessage For="@(() => EditUser.Postcode)" />
-                                        </div
-
+                                        </div>
                                         <div>
                                             <label for="webpageAnimalPreference">Webpage Animal Preference:</label>
-                                            <InputText id="webpageAnimalPreference" class="form-control" @bind-Value="EditUser.WebpageAnimalPreference" />
-                                            <ValidationMessage For="@(() => EditUser.WebpageAnimalPreference)" />
+                                            <InputSelect id="webpageAnimalPreference" class="form-control" @bind-Value="EditUser.WebpageAnimalPreference">
+                                                @foreach(var animal in Enum.GetValues(typeof(UserAnimalPreference)))
+                                                {
+                                                    <option value="@animal">@animal</option>         
+                                                }
+                                            </InputSelect>                                            <ValidationMessage For="@(() => EditUser.WebpageAnimalPreference)" />
                                         </div>
                                         <button class="btn btn-primary" type="submit">Save Changes</button>
                                     </EditForm>

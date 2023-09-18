@@ -19,7 +19,7 @@ public class User
     public string LoginUsername { get; set; }
     [Required(ErrorMessage = "Password is required.")]
     public string LoginPassword { get; set; }
-    public string WebpageAnimalPreference { get; set; }
+    public UserAnimalPreference WebpageAnimalPreference { get; set; }
 
 
     public virtual ICollection<Pet> Pets { get; set; }
@@ -74,4 +74,10 @@ public enum ModalMode
 { 
     Edit,
     Create
+}
+
+public enum UserAnimalPreference
+{
+    Dog,
+    Cat
 }
