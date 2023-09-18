@@ -93,6 +93,14 @@
                 </InputSelect>
                 <ValidationMessage For="@(() => CurrentUserPreferences.WebpageAnimalPreference)" />
             </div>
+            <div>
+                <p>
+                    Example:
+                </p>
+                <p style="@PStyleTagCSS">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+                </p>
+            </div>
             <div class="modal-footer">
                 <button type="submit" class="btn btn-primary">Close</button>
             </div>
@@ -163,7 +171,7 @@
                                     <div class="row">
                                         <div class="col">
                                             <button class="btn btn-secondary" @onclick=OpenUserPrefModal>Change app preferences</button>
-                                        </div> 
+                                        </div>
                                         <div class="col">
                                             <button class="btn btn-primary" type="submit">Save Changes</button>
                                         </div>
@@ -409,5 +417,80 @@
     private void OpenUserPrefModal()
     {
         isUserPreferencesModalOpen = true;
+    }
+
+    /// <summary>
+    /// Returns combined family and size required to style a P tag.
+    /// </summary>
+    public string PStyleTagCSS
+    {
+        get
+        {
+            return GetFontFamilyCSS + " " + GetFontSizePCSS;
+        }
+    }
+
+    // Properties for font family for CSS.
+    public string GetFontFamilyCSS
+    {
+        get
+        {
+
+            if (Enum.TryParse(CurrentUser.AppPreferences.SelectedFont, out AccessibleFonts selectedFont))
+            {
+                switch (selectedFont)
+                {
+                    case AccessibleFonts.Arial:
+                        return "font-family: Arial, sans-serif  !important;";
+                    case AccessibleFonts.TimesNewRoman:
+                        return "font-family: Times New Roman, serif !important;";
+                    case AccessibleFonts.Verdana:
+                        return "font-family: Verdana, sans-serif !important;";
+                    case AccessibleFonts.Tahoma:
+                        return "font-family: Tahoma, sans-serif !important;";
+                    case AccessibleFonts.Calibri:
+                        return "font-family: Calibri, sans-serif !important;";
+                    case AccessibleFonts.Helvetica:
+                        return "font-family: Helvetica, sans-serif !important;";
+                    default:
+                        return "font-family: Arial, sans-serif !important;";
+                }
+            }
+            else
+            {
+                // Handle the case where the string doesn't match any enum value
+                return "font-family: Arial, sans-serif !important;";
+            }
+        }
+    }
+
+    // Properties for font size for a P tag for CSS.
+    public string GetFontSizePCSS
+    {
+        get
+        {
+            if (Enum.TryParse(CurrentUser.AppPreferences.SelectedFontSize, out AccessibleFontSizes selectedFontSize))
+            {
+                switch (selectedFontSize)
+                {
+                    case AccessibleFontSizes.Small:
+                        return "font-size: 12px;";
+                    case AccessibleFontSizes.Medium:
+                        return "font-size: 16px;";
+                    case AccessibleFontSizes.Large:
+                        return "font-size: 20px;";
+                    case AccessibleFontSizes.XLarge:
+                        return "font-size: 24px;";
+                    case AccessibleFontSizes.XXLarge:
+                        return "font-size: 28px;";
+                    default:
+                        return "font-size: 16px;"; // Default to Medium
+                }
+            }
+            else
+            {
+                return "font-size: 16px;"; // Default to Medium
+            }
+        }
     }
 }
