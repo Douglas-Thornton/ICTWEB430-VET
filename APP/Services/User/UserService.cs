@@ -125,7 +125,7 @@ public class UserService : IUserService
             var updatedUser = new User();
             using var client = new HttpClient();
 
-            string url = $"{_baseUrl}api/userController/update/{userToUpdate.UserID}";
+            string url = $"{_baseUrl}api/userController/update";
             var json = JsonConvert.SerializeObject(userToUpdate);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
@@ -154,7 +154,7 @@ public class UserService : IUserService
             {
                 // Handle errors if necessary
                 serviceResponse.Response = await apiResponse.Content.ReadAsStringAsync();
-                serviceResponse.success = true;
+                serviceResponse.success = false;
             }
 
             return serviceResponse;

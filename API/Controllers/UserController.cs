@@ -199,14 +199,14 @@ namespace VETAPPAPI.Controllers
         /// </summary>
         /// <param name="updatedUser">The user to update.</param>
         /// <returns>Success or failure of the updated user.</returns>
-        [HttpPut("update/{userId}")]
-        public IActionResult UpdateUser(int userId, [FromBody] User updatedUser)
+        [HttpPut("update")]
+        public IActionResult UpdateUser([FromBody] User updatedUser)
         {
             var response = new MainResponse();
             try
             {
                 // Check if a user with the given UserID exists in the database
-                var existingUser = _dbContext.Users.Include(p => p.Pets).FirstOrDefault(u => u.UserID == userId);
+                var existingUser = _dbContext.Users.Include(p => p.Pets).FirstOrDefault(u => u.UserID == updatedUser.UserID);
 
                 if (existingUser == null)
                 {
@@ -217,7 +217,7 @@ namespace VETAPPAPI.Controllers
                 }
 
                 // Check if the updated username conflicts with other users
-                if (_dbContext.Users.Any(u => u.LoginUsername == updatedUser.LoginUsername && u.UserID != userId))
+                if (_dbContext.Users.Any(u => u.LoginUsername == updatedUser.LoginUsername && u.UserID != updatedUser.UserID))
                 {
                     // Another user with the same username already exists, return an error response
                     response.IsSuccess = false;
