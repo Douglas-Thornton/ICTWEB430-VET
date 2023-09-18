@@ -49,7 +49,6 @@ namespace VETAPPAPI.Controllers
                         Postcode = p.Owner.Postcode,
                         LoginUsername = p.Owner.LoginUsername,
                         LoginPassword = p.Owner.LoginPassword,
-                        WebpageAnimalPreference = p.Owner.WebpageAnimalPreference
                     },
                     InvitedPets = p.InvitedPets.Select(p => new InvitedPet
                     {
@@ -106,7 +105,6 @@ namespace VETAPPAPI.Controllers
                             Postcode = p.Owner.Postcode,
                             LoginUsername = p.Owner.LoginUsername,
                             LoginPassword = p.Owner.LoginPassword,
-                            WebpageAnimalPreference = p.Owner.WebpageAnimalPreference
                         },
                         InvitedPets = p.InvitedPets.Select(p => new InvitedPet
                         {

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components.Forms;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace APP.Data.Models;
@@ -19,7 +20,7 @@ public class User
     public string LoginUsername { get; set; }
     [Required(ErrorMessage = "Password is required.")]
     public string LoginPassword { get; set; }
-    public string WebpageAnimalPreference { get; set; }
+    public AppPreferences? AppPreferences { get; set; } = new AppPreferences();
 
 
     public virtual ICollection<Pet> Pets { get; set; }
@@ -56,6 +57,14 @@ public class Pet
     public virtual User Owner { get; set; }
 }
 
+public class AppPreferences
+{ 
+    public int UserID { get; set; }
+    public string WebpageAnimalPreference { get; set; } = UserAnimalPreference.Dog.ToString();
+    public string SelectedFontSize { get; set; } = AccessibleFontSizes.Medium.ToString();
+    public string SelectedFont { get; set; } = AccessibleFonts.Arial.ToString();
+}
+
 public class LoginRequest
 {
     public string LoginUsername { get; set; }
@@ -80,4 +89,34 @@ public enum UserAnimalPreference
 {
     Dog,
     Cat
+}
+
+public enum AccessibleFonts
+{
+    [Description("Arial, sans-serif")]
+    Arial,
+
+    [Description("Times New Roman, serif")]
+    TimesNewRoman,
+
+    [Description("Verdana, sans-serif")]
+    Verdana,
+
+    [Description("Tahoma, sans-serif")]
+    Tahoma,
+
+    [Description("Calibri, sans-serif")]
+    Calibri,
+
+    [Description("Helvetica, sans-serif")]
+    Helvetica
+}
+
+public enum AccessibleFontSizes
+{
+    Small = 12,
+    Medium = 16,
+    Large = 20,
+    XLarge = 24,
+    XXLarge = 32
 }

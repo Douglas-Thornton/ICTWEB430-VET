@@ -122,7 +122,7 @@
     protected override void OnParametersSet()
     {
         // Check if the value of petPhoto has changed
-        if (pet.PetPhoto != null && !pet.PetPhoto.SequenceEqual(previousPetPhoto))
+        if (pet.PetPhoto != null && (previousPetPhoto == null || !pet.PetPhoto.SequenceEqual(previousPetPhoto)))
         {
             convertImage();
             previousPetPhoto = pet.PetPhoto.ToArray(); // Update the previous value

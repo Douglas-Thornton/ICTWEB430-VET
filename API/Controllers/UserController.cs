@@ -40,7 +40,6 @@ namespace VETAPPAPI.Controllers
                     Postcode = u.Postcode,
                     LoginUsername = u.LoginUsername,
                     LoginPassword = u.LoginPassword,
-                    WebpageAnimalPreference = u.WebpageAnimalPreference,
                     Pets = u.Pets.Select(p => new Pet
                     {
                         PetID = p.PetID,
@@ -89,7 +88,6 @@ namespace VETAPPAPI.Controllers
                     Postcode = u.Postcode,
                     LoginUsername = u.LoginUsername,
                     LoginPassword = u.LoginPassword,
-                    WebpageAnimalPreference = u.WebpageAnimalPreference,
                     Pets = u.Pets.Select(p => new Pet
                     {
                         PetID = p.PetID,
@@ -126,7 +124,7 @@ namespace VETAPPAPI.Controllers
             var response = new MainResponse();
             try
             {
-                response.Content = _dbContext.Users.Where(u => u.LoginUsername == loginRequest.LoginUsername && u.LoginPassword == loginRequest.LoginPassword)
+                response.Content = _dbContext.Users.Include(p => p.AppPreferences).Where(u => u.LoginUsername == loginRequest.LoginUsername && u.LoginPassword == loginRequest.LoginPassword)
                 .Select(u => new User
                 {
                     UserID = u.UserID,
@@ -138,7 +136,6 @@ namespace VETAPPAPI.Controllers
                     Postcode = u.Postcode,
                     LoginUsername = u.LoginUsername,
                     LoginPassword = u.LoginPassword,
-                    WebpageAnimalPreference = u.WebpageAnimalPreference,
                     Pets = u.Pets.Select(p => new Pet
                     {
                         PetID = p.PetID,
@@ -149,7 +146,8 @@ namespace VETAPPAPI.Controllers
                         PetPhoto = p.PetPhoto,
                         PetDiscoverability = p.PetDiscoverability,
                         OwnerID = p.OwnerID // Include the OwnerID property if needed
-                    }).ToList()
+                    }).ToList(),
+                    AppPreferences = u.AppPreferences
                 })
                 .ToList();
 
@@ -234,7 +232,6 @@ namespace VETAPPAPI.Controllers
                 existingUser.Postcode = updatedUser.Postcode;
                 existingUser.LoginUsername = updatedUser.LoginUsername;
                 existingUser.LoginPassword = updatedUser.LoginPassword;
-                existingUser.WebpageAnimalPreference = updatedUser.WebpageAnimalPreference;
 
                 // You can also handle updating the user's pets if needed
                 foreach (var updatedPet in updatedUser.Pets)
@@ -306,7 +303,7 @@ namespace VETAPPAPI.Controllers
                 _dbContext.SaveChanges();
 
                 response.IsSuccess = true;
-                response.Content = _dbContext.Users.Where(u => u.LoginUsername == newUser.LoginUsername && u.LoginPassword == newUser.LoginPassword)
+                response.Content = _dbContext.Users.Include(p => p.AppPreferences).Where(u => u.LoginUsername == newUser.LoginUsername && u.LoginPassword == newUser.LoginPassword)
                                .Select(u => new User
                                {
                                    UserID = u.UserID,
@@ -318,7 +315,6 @@ namespace VETAPPAPI.Controllers
                                    Postcode = u.Postcode,
                                    LoginUsername = u.LoginUsername,
                                    LoginPassword = u.LoginPassword,
-                                   WebpageAnimalPreference = u.WebpageAnimalPreference,
                                    Pets = u.Pets.Select(p => new Pet
                                    {
                                        PetID = p.PetID,
@@ -329,7 +325,8 @@ namespace VETAPPAPI.Controllers
                                        PetPhoto = p.PetPhoto,
                                        PetDiscoverability = p.PetDiscoverability,
                                        OwnerID = p.OwnerID // Include the OwnerID property if needed
-                                   }).ToList()
+                                   }).ToList(),
+                                   AppPreferences = u.AppPreferences
                                })
                                .ToList();
             }
