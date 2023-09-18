@@ -61,44 +61,40 @@
 {
     <Modal ModalTitle="User Preferences"
            OnClose="CloseUserPrefModal">
-        <EditForm class="form-container" Model="@CurrentPet" OnValidSubmit="HandleValidPetSubmit">
+        <EditForm class="form-container" Model="@CurrentUserPreferences" OnValidSubmit="HandleValidPrefencesSubmit">
             <DataAnnotationsValidator />
             <div>
-                <label for="petName">Pet Name:</label>
-                <InputText id="petName" class="form-control" @bind-Value="CurrentPet.PetName" />
-                <ValidationMessage For="@(() => CurrentPet.PetName)" />
-            </div>
-            <div>
-                <label for="petBreed">Pet Breed:</label>
-                <InputText id="petBreed" class="form-control" @bind-Value="CurrentPet.PetBreed" />
-                <ValidationMessage For="@(() => CurrentPet.PetBreed)" />
-            </div>
-            <div>
-                <label for="petAge">Pet Age:</label>
-                <InputNumber id="petAge" class="form-control" @bind-Value="CurrentPet.PetAge" />
-                <ValidationMessage For="@(() => CurrentPet.PetAge)" />
-            </div>
-            <div>
-                <label for="petSex">Pet sex:</label>
-                <InputSelect id="petSex" class="form-control form-select" @bind-Value="CurrentPet.PetGender">
-                    <option>Male</option>
-                    <option>Female</option>
-                    <option>Unknown</option>
+                <label for="petName">Animal preference:</label>
+                <InputSelect id="petName" class="form-control" @bind-Value="CurrentUserPreferences.WebpageAnimalPreference">
+                    @foreach (var animal in Enum.GetValues(typeof(UserAnimalPreference)))
+                    {
+                        <option value="@animal">@animal</option>
+                    }
                 </InputSelect>
-                <ValidationMessage For="@(() => CurrentPet.PetGender)" />
+                <ValidationMessage For="@(() => CurrentUserPreferences.WebpageAnimalPreference)" />
             </div>
             <div>
-                <label for="petDiscoverability">Pet Discoverability:</label>
-                <InputCheckbox type="checkbox" class="form-check-input" id="petDiscoverability" @bind-Value="@CurrentPet.PetDiscoverability" />
-                <ValidationMessage For="@(() => CurrentPet.PetDiscoverability)" />
+                <label for="petBreed">Font:</label>
+                <InputSelect id="petBreed" class="form-control" @bind-Value="CurrentUserPreferences.SelectedFont">
+                    @foreach (var font in Enum.GetValues(typeof(AccessibleFonts)))
+                    {
+                        <option value="@font">@font</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="@(() => CurrentUserPreferences.WebpageAnimalPreference)" />
             </div>
             <div>
-                <label for="petSex">Pet Image:</label>
-                <InputFile accept="image/*" OnChange="(e) => HandleImageUpload(e, CurrentPet)" />
+                <label for="petAge">Font size:</label>
+                <InputSelect id="petAge" class="form-control" @bind-Value="CurrentUserPreferences.SelectedFontSize">
+                    @foreach (var fontsize in Enum.GetValues(typeof(AccessibleFontSizes)))
+                    {
+                        <option value="@fontsize">@fontsize</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="@(() => CurrentUserPreferences.WebpageAnimalPreference)" />
             </div>
             <div class="modal-footer">
-                <button type="button" @onclick="CloseDogModal" class="btn btn-danger">Cancel</button>
-                <button type="submit" class="btn btn-primary">Save</button>
+                <button type="submit" class="btn btn-primary">Close</button>
             </div>
         </EditForm>
     </Modal>
@@ -164,19 +160,14 @@
                                         <InputText id="loginCurrentUsername" class="form-control" type="password" @bind-Value="CurrentUser.LoginPassword" />
                                         <ValidationMessage For="@(() => CurrentUser.LoginPassword)" />
                                     </div>
-
-                                    @*  <div>
-                                    <label for="webpageAnimalPreference">Webpage Animal Preference:</label>
-                                    <InputSelect id="webpageAnimalPreference" class="form-control" @bind-Value="NewUser.WebpageAnimalPreference">
-                                    @foreach(var animal in Enum.GetValues(typeof(UserAnimalPreference)))
-                                    {
-                                    <option value="@animal">@animal</option>
-                                    }
-                                    </InputSelect>
-                                    <ValidationMessage For="@(() => NewUser.WebpageAnimalPreference)" />
-                                    </div>*@
-
-                                    <button class="btn btn-primary" type="submit">Save Changes</button>
+                                    <div class="row">
+                                        <div class="col">
+                                            <button class="btn btn-secondary" @onclick=OpenUserPrefModal>Change app preferences</button>
+                                        </div> 
+                                        <div class="col">
+                                            <button class="btn btn-primary" type="submit">Save Changes</button>
+                                        </div>
+                                    </div>
                                 </EditForm>
                             </div>
                             <div class="col">
@@ -216,6 +207,7 @@
 
     private Pet CurrentPet => DogModalMode == ModalMode.Create ? NewPet : TempPet;
     private User CurrentUser => LoggedUserState.LoggedUser != null ? EditUser : NewUser;
+    private AppPreferences CurrentUserPreferences => LoggedUserState.LoggedUser != null ? EditUser.AppPreferences : NewUser.AppPreferences;
 
     //// <summary>
     /// If the editForm is valid; create the new user.
@@ -262,6 +254,16 @@
                 break;
         }
         CloseDogModal();
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// If the editform is valid; update or create the pet.
+    /// </summary>
+    /// <returns></returns>
+    private async Task HandleValidPrefencesSubmit()
+    {
+        CloseUserPrefModal();
         StateHasChanged();
     }
 
@@ -361,8 +363,8 @@
                 PetPhoto = petToEdit.PetPhoto,
                 PetDiscoverability = petToEdit.PetDiscoverability,
                 PetPhotoFileLocation = PetToEdit.PetPhotoFileLocation
-            }; 
-            
+            };
+
         PetToEdit = petToEdit;
         DogModalMode = ModalMode.Edit;
         isDogModalOpen = true;
@@ -394,10 +396,18 @@
     }
 
     /// <summary>
-    /// Close the modal and clear the edit and new pets.
+    /// Close the modal.
     /// </summary>
     private void CloseUserPrefModal()
     {
         isUserPreferencesModalOpen = false;
+    }
+
+    /// <summary>
+    /// Close the modal and clear the edit and new pets.
+    /// </summary>
+    private void OpenUserPrefModal()
+    {
+        isUserPreferencesModalOpen = true;
     }
 }
