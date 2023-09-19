@@ -1,12 +1,12 @@
 ﻿@using APP.Data.Models;
 @using APP.Interfaces;
 @using APP.Services;
-@inject LoggedUserState LoggedUserState
+@inject LoggedUserState loggedUserState
 
 <div class="background-container">
-    <img src="./Images/cartoon_dog_and_cat.jpg" alt="buddies" class="background-image"/>
-    <div class="card" style="@LoggedUserState.PStyleTagCSS">
-        <h1 style="@LoggedUserState.H1StyleTagCSS">Meetup</h1>
+    <img src=@backgroundImagePath alt="buddies" class="background-image"/>
+    <div class="card" style="@loggedUserState.PStyleTagCSS">
+        <h1 style="@loggedUserState.H1StyleTagCSS">Meetup</h1>
         <label>Your Name</label>
         <input placeholder="Insert your name here"/>
         <label>Your Pets Name</label>
@@ -32,6 +32,7 @@
 
 @code 
 {
+    public string backgroundImagePath = "./Images/Background_Images/Dog_Background1.jpg";
 
     List<Pet> petList = new();
     IPetService petService = new PetService();
@@ -40,6 +41,7 @@
         try
         {
             await LoadDataAsync();
+            backgroundImagePath = loggedUserState.GetBackgroundImage();
         }
         catch(Exception)
         {
@@ -60,13 +62,14 @@
     /// </summary>
     protected override void OnInitialized()
     {
-        LoggedUserState.PropertyChanged += OnLoggedUserStateChanged;
+        loggedUserState.PropertyChanged += OnloggedUserStateChanged;
 
         // Subscribe to the PropertyChanged event of AppPreferences
-        if (LoggedUserState.LoggedUser != null && LoggedUserState.LoggedUser.AppPreferences != null)
+        if (loggedUserState.LoggedUser != null && loggedUserState.LoggedUser.AppPreferences != null)
         {
-            LoggedUserState.LoggedUser.AppPreferences.PropertyChanged += OnAppPreferencesChanged;
+            loggedUserState.LoggedUser.AppPreferences.PropertyChanged += OnAppPreferencesChanged;
         }
+        backgroundImagePath = loggedUserState.GetBackgroundImage();
     }
 
     /// <summary>
@@ -74,15 +77,16 @@
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private void OnLoggedUserStateChanged(object sender, PropertyChangedEventArgs e)
+    private void OnloggedUserStateChanged(object sender, PropertyChangedEventArgs e)
     {
         // Check if the property that changed is "LoggedUser"
-        if (e.PropertyName == nameof(LoggedUserState.LoggedUser))
+        if (e.PropertyName == nameof(loggedUserState.LoggedUser))
         {
-            if (LoggedUserState.LoggedUser != null)
+            if (loggedUserState.LoggedUser != null)
             {
-                LoggedUserState.LoggedUser.AppPreferences.PropertyChanged += OnAppPreferencesChanged;
+                loggedUserState.LoggedUser.AppPreferences.PropertyChanged += OnAppPreferencesChanged;
             }
+            backgroundImagePath = loggedUserState.GetBackgroundImage();
             StateHasChanged();
         }
     }
@@ -92,22 +96,22 @@
     {
         // Check if the property that changed is one of the AppPreferences properties
         // that you want to monitor
-        if (e.PropertyName == nameof(LoggedUserState.LoggedUser) ||
-            e.PropertyName == nameof(LoggedUserState.LoggedUser.AppPreferences.SelectedFont) ||
-            e.PropertyName == nameof(LoggedUserState.LoggedUser.AppPreferences.SelectedFontSize) ||
-            e.PropertyName == nameof(LoggedUserState.LoggedUser.AppPreferences.WebpageAnimalPreference))
+        if (e.PropertyName == nameof(loggedUserState.LoggedUser) ||
+            e.PropertyName == nameof(loggedUserState.LoggedUser.AppPreferences.SelectedFont) ||
+            e.PropertyName == nameof(loggedUserState.LoggedUser.AppPreferences.SelectedFontSize) ||
+            e.PropertyName == nameof(loggedUserState.LoggedUser.AppPreferences.WebpageAnimalPreference))
         {
+            backgroundImagePath = loggedUserState.GetBackgroundImage();
             StateHasChanged();
-            var test = LoggedUserState.PStyleTagCSS;
         }
     }
 
     public void Dispose()
     {
         // Unsubscribe from the PropertyChanged event of AppPreferences
-        if (LoggedUserState.LoggedUser != null && LoggedUserState.LoggedUser.AppPreferences != null)
+        if (loggedUserState.LoggedUser != null && loggedUserState.LoggedUser.AppPreferences != null)
         {
-            LoggedUserState.LoggedUser.AppPreferences.PropertyChanged -= OnAppPreferencesChanged;
+            loggedUserState.LoggedUser.AppPreferences.PropertyChanged -= OnAppPreferencesChanged;
         }
     }
 }

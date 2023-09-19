@@ -1,14 +1,14 @@
 ﻿@page "/"
-@inject LoggedUserState LoggedUserState
+@inject LoggedUserState loggedUserState
 
 <div class="background-container">
-    <img src="./Images/three_stooges.jpg" alt="buddies" class="background-image"/>
+    <img src=@backgroundImagePath alt="buddies" class="background-image"/>
     <div class="card">
         <div class="container">
             <div class="row">
-                <h1 style="@LoggedUserState.H1StyleTagCSS">Welcome to GreenPaws Veterinary Care</h1>
-                <p style="@LoggedUserState.PStyleTagCSS">Welcome to GreenPaws Veterinary Care, where we combine our love for animals with expertise in compassionate and nutritious care. Our team of dedicated professionals is committed to ensuring the well-being of your furry companions through specialized vegetarian services.</p>
-                <p style="@LoggedUserState.PStyleTagCSS">Join us in providing your pets with a healthier and happier life. We look forward to welcoming you and your pets to the GreenPaws family!</p>
+                <h1 style="@loggedUserState.H1StyleTagCSS">Welcome to GreenPaws Veterinary Care</h1>
+                <p style="@loggedUserState.PStyleTagCSS">Welcome to GreenPaws Veterinary Care, where we combine our love for animals with expertise in compassionate and nutritious care. Our team of dedicated professionals is committed to ensuring the well-being of your furry companions through specialized vegetarian services.</p>
+                <p style="@loggedUserState.PStyleTagCSS">Join us in providing your pets with a healthier and happier life. We look forward to welcoming you and your pets to the GreenPaws family!</p>
             </div>    
             <div class="row">
 
@@ -16,11 +16,11 @@
                     <iframe width="450" height="250" style="border:0" loading="lazy" allowfullscreen src="https://www.google.com/maps/embed/v1/place?q=place_id:ChIJP7Mmxcc1t2oRQMaOYlQ2AwQ&key=AIzaSyBQOpH-gIxNpdFL6QUkuI_mZHJVeGBIcX8"></iframe>
                 </div>
                 <div class="col">
-                    <p style="@LoggedUserState.PStyleTagCSS">
+                    <p style="@loggedUserState.PStyleTagCSS">
                         We are conveniently located at:<br>
                         <span class="location-info">Adelaide</span>
                     </p>
-                    <p style="@LoggedUserState.PStyleTagCSS">
+                    <p style="@loggedUserState.PStyleTagCSS">
                         Our business hours are:<br>
                         <span class="business-hours">
                             Monday - Friday: 8:00 AM - 6:00 PM<br>
@@ -36,7 +36,7 @@
 
 @code
 {
-
+    public string backgroundImagePath = "./Images/Background_Images/Dog_Background1.jpg";
     public event PropertyChangedEventHandler PropertyChanged;
 
     /// <summary>
@@ -44,13 +44,16 @@
     /// </summary>
     protected override void OnInitialized()
     {
-        LoggedUserState.PropertyChanged += OnLoggedUserStateChanged;
+        loggedUserState.PropertyChanged += OnLoggedUserStateChanged;
 
         // Subscribe to the PropertyChanged event of AppPreferences
-        if (LoggedUserState.LoggedUser != null && LoggedUserState.LoggedUser.AppPreferences != null)
+        if (loggedUserState.LoggedUser != null && loggedUserState.LoggedUser.AppPreferences != null)
         {
-            LoggedUserState.LoggedUser.AppPreferences.PropertyChanged += OnAppPreferencesChanged;
+            loggedUserState.LoggedUser.AppPreferences.PropertyChanged += OnAppPreferencesChanged;
         }
+
+        backgroundImagePath = loggedUserState.GetBackgroundImage();
+        StateHasChanged();
     }
 
     /// <summary>
@@ -61,12 +64,13 @@
     private void OnLoggedUserStateChanged(object sender, PropertyChangedEventArgs e)
     {
         // Check if the property that changed is "LoggedUser"
-        if (e.PropertyName == nameof(LoggedUserState.LoggedUser))
+        if (e.PropertyName == nameof(loggedUserState.LoggedUser))
         {
-            if(LoggedUserState.LoggedUser != null)
+            if(loggedUserState.LoggedUser != null)
             {
-                LoggedUserState.LoggedUser.AppPreferences.PropertyChanged += OnAppPreferencesChanged;
+                loggedUserState.LoggedUser.AppPreferences.PropertyChanged += OnAppPreferencesChanged;
             }
+            backgroundImagePath = loggedUserState.GetBackgroundImage();
             StateHasChanged();
         }
     }
@@ -76,11 +80,12 @@
     {
         // Check if the property that changed is one of the AppPreferences properties
         // that you want to monitor
-        if (e.PropertyName == nameof(LoggedUserState.LoggedUser) ||
-            e.PropertyName == nameof(LoggedUserState.LoggedUser.AppPreferences.SelectedFont) ||
-            e.PropertyName == nameof(LoggedUserState.LoggedUser.AppPreferences.SelectedFontSize) ||
-            e.PropertyName == nameof(LoggedUserState.LoggedUser.AppPreferences.WebpageAnimalPreference))
+        if (e.PropertyName == nameof(loggedUserState.LoggedUser) ||
+            e.PropertyName == nameof(loggedUserState.LoggedUser.AppPreferences.SelectedFont) ||
+            e.PropertyName == nameof(loggedUserState.LoggedUser.AppPreferences.SelectedFontSize) ||
+            e.PropertyName == nameof(loggedUserState.LoggedUser.AppPreferences.WebpageAnimalPreference))
         {
+            backgroundImagePath = loggedUserState.GetBackgroundImage();
             StateHasChanged();
         }
     }
@@ -88,9 +93,9 @@
     public void Dispose()
     {
         // Unsubscribe from the PropertyChanged event of AppPreferences
-        if (LoggedUserState.LoggedUser != null && LoggedUserState.LoggedUser.AppPreferences != null)
+        if (loggedUserState.LoggedUser != null && loggedUserState.LoggedUser.AppPreferences != null)
         {
-            LoggedUserState.LoggedUser.AppPreferences.PropertyChanged -= OnAppPreferencesChanged;
+            loggedUserState.LoggedUser.AppPreferences.PropertyChanged -= OnAppPreferencesChanged;
         }
     }
 }

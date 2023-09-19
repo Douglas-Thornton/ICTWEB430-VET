@@ -1,23 +1,23 @@
 ﻿@page "/ContactUs"
-@inject LoggedUserState LoggedUserState
+@inject LoggedUserState loggedUserState
 
 <div class="background-container">
-    <img src="./Images/cartoon_dog_and_cat.jpg" alt="buddies" class="background-image"/>
+    <img src=@backgroundImagePath alt="buddies" class="background-image"/>
     <div class="card">
         <div class="container">
-            <h1 style="@LoggedUserState.H1StyleTagCSS">Contact GreenPaws Veterinary Care</h1>
+            <h1 style="@loggedUserState.H1StyleTagCSS">Contact GreenPaws Veterinary Care</h1>
             <div class="row">
                 <div class="col">
-                    <p style="@LoggedUserState.PStyleTagCSS">Have questions or concerns? We're here to help! Get in touch with us using the following methods:</p>
+                    <p style="@loggedUserState.PStyleTagCSS">Have questions or concerns? We're here to help! Get in touch with us using the following methods:</p>
                     <div class="contact-details">
-                        <p style="@LoggedUserState.PStyleTagCSS"><span class="contact-method">Phone:</span> (123) 456-7890</p>
-                        <p style="@LoggedUserState.PStyleTagCSS"><span class="contact-method">Email:</span> info@greenpawsvet.com</p>
-                        <p style="@LoggedUserState.PStyleTagCSS"><span class="contact-method">Address:</span> 123 Pet Street, Pawsborough</p>
+                        <p style="@loggedUserState.PStyleTagCSS"><span class="contact-method">Phone:</span> (123) 456-7890</p>
+                        <p style="@loggedUserState.PStyleTagCSS"><span class="contact-method">Email:</span> info@greenpawsvet.com</p>
+                        <p style="@loggedUserState.PStyleTagCSS"><span class="contact-method">Address:</span> 123 Pet Street, Pawsborough</p>
                     </div>
                 </div>
                 <div class="col">
-                    <p style="@LoggedUserState.PStyleTagCSS">Feel free to reach out to us during our business hours:</p>
-                    <p style="@LoggedUserState.PStyleTagCSS">
+                    <p style="@loggedUserState.PStyleTagCSS">Feel free to reach out to us during our business hours:</p>
+                    <p style="@loggedUserState.PStyleTagCSS">
                         Monday - Friday: 8:00 AM - 6:00 PM<br>
                         Saturday: 9:00 AM - 4:00 PM<br>
                         Sunday: Closed
@@ -25,7 +25,7 @@
                 </div>
             </div>
             <div class="row">
-                <p style="@LoggedUserState.PStyleTagCSS">We value your feedback and are excited to assist you and your pets on their journey to a healthier lifestyle. Don't hesitate to contact us!</p>
+                <p style="@loggedUserState.PStyleTagCSS">We value your feedback and are excited to assist you and your pets on their journey to a healthier lifestyle. Don't hesitate to contact us!</p>
             </div>
         </div>
     </div>
@@ -34,6 +34,7 @@
 
 @code
 {
+    public string backgroundImagePath = "./Images/Background_Images/Dog_Background1.jpg";
 
     public event PropertyChangedEventHandler PropertyChanged;
 
@@ -42,13 +43,14 @@
     /// </summary>
     protected override void OnInitialized()
     {
-        LoggedUserState.PropertyChanged += OnLoggedUserStateChanged;
+        loggedUserState.PropertyChanged += OnloggedUserStateChanged;
 
         // Subscribe to the PropertyChanged event of AppPreferences
-        if (LoggedUserState.LoggedUser != null && LoggedUserState.LoggedUser.AppPreferences != null)
+        if (loggedUserState.LoggedUser != null && loggedUserState.LoggedUser.AppPreferences != null)
         {
-            LoggedUserState.LoggedUser.AppPreferences.PropertyChanged += OnAppPreferencesChanged;
+            loggedUserState.LoggedUser.AppPreferences.PropertyChanged += OnAppPreferencesChanged;
         }
+        backgroundImagePath = loggedUserState.GetBackgroundImage();
     }
 
     /// <summary>
@@ -56,12 +58,13 @@
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private void OnLoggedUserStateChanged(object sender, PropertyChangedEventArgs e)
+    private void OnloggedUserStateChanged(object sender, PropertyChangedEventArgs e)
     {
         // Check if the property that changed is "LoggedUser"
-        if (e.PropertyName == nameof(LoggedUserState.LoggedUser))
+        if (e.PropertyName == nameof(loggedUserState.LoggedUser))
         {
-            LoggedUserState.LoggedUser.AppPreferences.PropertyChanged += OnAppPreferencesChanged;
+            loggedUserState.LoggedUser.AppPreferences.PropertyChanged += OnAppPreferencesChanged;
+            backgroundImagePath = loggedUserState.GetBackgroundImage();
             StateHasChanged();
         }
     }
@@ -71,11 +74,12 @@
     {
         // Check if the property that changed is one of the AppPreferences properties
         // that you want to monitor
-        if (e.PropertyName == nameof(LoggedUserState.LoggedUser) ||
-            e.PropertyName == nameof(LoggedUserState.LoggedUser.AppPreferences.SelectedFont) ||
-            e.PropertyName == nameof(LoggedUserState.LoggedUser.AppPreferences.SelectedFontSize) ||
-            e.PropertyName == nameof(LoggedUserState.LoggedUser.AppPreferences.WebpageAnimalPreference))
+        if (e.PropertyName == nameof(loggedUserState.LoggedUser) ||
+            e.PropertyName == nameof(loggedUserState.LoggedUser.AppPreferences.SelectedFont) ||
+            e.PropertyName == nameof(loggedUserState.LoggedUser.AppPreferences.SelectedFontSize) ||
+            e.PropertyName == nameof(loggedUserState.LoggedUser.AppPreferences.WebpageAnimalPreference))
         {
+            backgroundImagePath = loggedUserState.GetBackgroundImage();
             StateHasChanged();
         }
     }
@@ -83,9 +87,9 @@
     public void Dispose()
     {
         // Unsubscribe from the PropertyChanged event of AppPreferences
-        if (LoggedUserState.LoggedUser != null && LoggedUserState.LoggedUser.AppPreferences != null)
+        if (loggedUserState.LoggedUser != null && loggedUserState.LoggedUser.AppPreferences != null)
         {
-            LoggedUserState.LoggedUser.AppPreferences.PropertyChanged -= OnAppPreferencesChanged;
+            loggedUserState.LoggedUser.AppPreferences.PropertyChanged -= OnAppPreferencesChanged;
         }
     }
 }

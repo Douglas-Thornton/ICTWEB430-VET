@@ -163,7 +163,8 @@ public enum ModalMode
 public enum UserAnimalPreference
 {
     Dog,
-    Cat
+    Cat,
+    Mixed
 }
 
 public enum AccessibleFonts
@@ -194,4 +195,56 @@ public enum AccessibleFontSizes
     Large = 20,
     XLarge = 24,
     XXLarge = 32
+}
+
+public enum PetImages 
+{
+    [Description("./Images/Background_Images/Dog_Background1.jpg")]
+    dogImage1,
+    //[Description("./Images/Background_Images/Dog_Background2.jpg")] // Wont Load in for some reason
+    //dogImage2,
+    [Description("./Images/Background_Images/Dog_Background3.jpg")]
+    dogImage3,
+    [Description("./Images/Background_Images/Mixed_Background1.jpg")]
+    mixedImage1,
+    [Description("./Images/Background_Images/Mixed_Background2.jpg")]
+    mixedImage2,
+    [Description("./Images/Background_Images/Mixed_Background3.jpg")]
+    mixedImage3,
+    [Description("./Images/Background_Images/Cat_Background1.jpg")]
+    catImage1,
+    [Description("./Images/Background_Images/Cat_Background2.jpg")]
+    catImage2,
+    [Description("./Images/Background_Images/Cat_Background3.jpg")]
+    catImage3
+}
+
+public enum DogImages
+{
+    [Description("./Images/Background_Images/Dog_Background1.jpg")]
+    dogImage1,
+    [Description("./Images/Background_Images/Dog_Background2.jpg")]
+    dogImage2,
+    [Description("./Images/Background_Images/Dog_Background3.jpg")]
+    dogImage3
+}
+
+public enum CatImages
+{
+    [Description("./Images/Background_Images/Cat_Background1.jpg")]
+    catImage1,
+    [Description("./Images/Background_Images/Cat_Background2.jpg")]
+    catImage2,
+    [Description("./Images/Background_Images/Cat_Background3.jpg")]
+    catImage3
+}
+
+public enum MixedImages
+{
+    [Description("./Images/Background_Images/Mixed_Background1.jpg")]
+    mixedImage1,
+    [Description("./Images/Background_Images/Mixed_Background2.jpg")]
+    mixedImage2,
+    [Description("./Images/Background_Images/Mixed_Background3.jpg")]
+    mixedImage3
 }

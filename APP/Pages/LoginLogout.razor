@@ -5,20 +5,20 @@
 @using APP.Data.Models;
 
 @inject IUserService userService;
-@inject LoggedUserState LoggedUserState
+@inject LoggedUserState loggedUserState
 
 <div class="background-container">
-    <img src="./Images/three_stooges.jpg" alt="buddies" class="background-image"/>
+    <img src=@backgroundImagePath alt="buddies" class="background-image"/>
     <div class="card">
 
-        @if (LoggedUserState.LoggedUser != null)
+        @if (loggedUserState.LoggedUser != null)
         {
             <button class="btn btn-primary" @onclick="Logout"> Logout</button>
         }
         else
         {
             <div class="centered title">
-                <h1 style="@LoggedUserState.H1StyleTagCSS">Login Page</h1>
+                <h1 style="@loggedUserState.H1StyleTagCSS">Login Page</h1>
             </div>
             <EditForm class="form-container" Model="loginRequest" OnValidSubmit="HandleValidLoginSubmit">
                 @if(Loading)
@@ -26,21 +26,21 @@
                     <LoadingSpinner></LoadingSpinner>
                 }
                 <div class="centered">
-                    <div style="@LoggedUserState.PStyleTagCSS">
+                    <div style="@loggedUserState.PStyleTagCSS">
                         <label for="loginUsername">Username:</label>
                         <InputText id="loginUsername" class="inputs" @bind-Value="loginRequest.LoginUsername" />
                         <ValidationMessage For="@(() => loginRequest.LoginUsername)" />
                     </div>
                 </div>
                 <div class="row-cols centered">
-                    <div style="@LoggedUserState.PStyleTagCSS">
+                    <div style="@loggedUserState.PStyleTagCSS">
                         <label for="loginPassword">Password:</label>
                         <InputText type="password" id="loginPassword" class="inputs" @bind-Value="loginRequest.LoginPassword" />
                         <ValidationMessage For="@(() => loginRequest.LoginPassword)" />
                     </div>
                 </div>
                 <div class="row-cols centered">
-                    <button style="@LoggedUserState.PStyleTagCSS" class="login-button" type="submit">Login</button>
+                    <button style="@loggedUserState.PStyleTagCSS" class="login-button" type="submit">Login</button>
                 </div>
             </EditForm>
         }
@@ -54,10 +54,11 @@
 
     private LoginRequest loginRequest = new LoginRequest();
     private List<User> users;
-
+    public string backgroundImagePath = "./Images/Background_Images/Dog_Background1.jpg";
+    
     protected override async Task OnInitializedAsync()
     {
-
+        backgroundImagePath = loggedUserState.GetBackgroundImage();
     }
 
 
@@ -65,8 +66,10 @@
     {
         Loading = true;
         StateHasChanged();
-        LoggedUserState.LoggedUser = await userService.LoginUser(loginRequest);
+        loggedUserState.LoggedUser = await userService.LoginUser(loginRequest);
+        backgroundImagePath = loggedUserState.GetBackgroundImage();
         Loading = false;
+        StateHasChanged();
     }
 
     private void HandleValidNewUserSubmit()
@@ -78,6 +81,8 @@
 
     public void Logout()
     {
-        LoggedUserState.LoggedUser = null;
+        loggedUserState.LoggedUser = null;
+        backgroundImagePath = loggedUserState.GetBackgroundImage();
+        StateHasChanged();
     }
 }

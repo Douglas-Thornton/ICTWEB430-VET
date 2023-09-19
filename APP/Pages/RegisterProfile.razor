@@ -8,7 +8,7 @@
 @using Newtonsoft.Json;
 
 @inject IUserService userService;
-@inject LoggedUserState LoggedUserState
+@inject LoggedUserState loggedUserState
 
 @if (isDogModalOpen)
 {
@@ -110,7 +110,7 @@
 }
 
 <div class="background-container">
-    <img src="./Images/dog_background.jpg" alt="buddies" class="background-image" />
+    <img src=@backgroundImagePath alt="buddies" class="background-image" />
     <div class="card wide-card">
         <div class="container">
             <div class="row">
@@ -219,8 +219,9 @@
     public event PropertyChangedEventHandler PropertyChanged;
 
     private Pet CurrentPet => DogModalMode == ModalMode.Create ? NewPet : TempPet;
-    private User CurrentUser => LoggedUserState.LoggedUser != null ? EditUser : NewUser;
-    private AppPreferences CurrentUserPreferences => LoggedUserState.LoggedUser != null ? EditUser.AppPreferences : NewUser.AppPreferences;
+    private User CurrentUser => loggedUserState.LoggedUser != null ? EditUser : NewUser;
+    private AppPreferences CurrentUserPreferences => loggedUserState.LoggedUser != null ? EditUser.AppPreferences : NewUser.AppPreferences;
+    public string backgroundImagePath = "./Images/Background_Images/Dog_Background1.jpg";
 
     private AppPreferences TempAppPreferences = new AppPreferences();
     //// <summary>
@@ -234,7 +235,7 @@
             StateHasChanged();
             var response = new ServiceResponse() { };
 
-            if (LoggedUserState.LoggedUser != null)
+            if (loggedUserState.LoggedUser != null)
             {
                 EditUser.Pets = Pets;
                 response = await userService.UpdateUserAsync(EditUser);
@@ -248,7 +249,7 @@
             StateHasChanged();
             if (response.success)
             {
-                LoggedUserState.LoggedUser = response.User;
+                loggedUserState.LoggedUser = response.User;
                 NewUser = new User();
                 EditUser = new User();
                 Pets = new List<Pet>();
@@ -295,8 +296,7 @@
         loadPage();
 
 
-
-        LoggedUserState.PropertyChanged += OnLoggedUserStateChanged;
+        loggedUserState.PropertyChanged += OnloggedUserStateChanged;
     }
 
     /// <summary>
@@ -308,12 +308,12 @@
         EditUser = new User();
         Pets = new List<Pet>();
 
-        if (LoggedUserState.LoggedUser != null)
+        if (loggedUserState.LoggedUser != null)
         {
-            EditUser = LoggedUserState.LoggedUser;
-            Pets = LoggedUserState.LoggedUser.Pets.ToList();
+            EditUser = loggedUserState.LoggedUser;
+            Pets = loggedUserState.LoggedUser.Pets.ToList();
         }
-
+        backgroundImagePath = loggedUserState.GetBackgroundImage();
         StateHasChanged();
     }
 
@@ -322,10 +322,10 @@
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private void OnLoggedUserStateChanged(object sender, PropertyChangedEventArgs e)
+    private void OnloggedUserStateChanged(object sender, PropertyChangedEventArgs e)
     {
         // Check if the property that changed is "LoggedUser"
-        if (e.PropertyName == nameof(LoggedUserState.LoggedUser))
+        if (e.PropertyName == nameof(loggedUserState.LoggedUser))
         {
             loadPage();
         }

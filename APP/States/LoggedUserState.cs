@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Reflection;
 using APP.Data.Models;
 
 namespace APP.States
@@ -201,6 +202,75 @@ namespace APP.States
                 default:
                     return "16"; // Default to Medium
             }
+        }
+
+        public string GetBackgroundImage() 
+        {
+
+            var enumValues1 = Enum.GetValues(typeof(PetImages));
+            var enumValues2 = Enum.GetValues(typeof(DogImages));
+            var enumValues3 = Enum.GetValues(typeof(CatImages));
+            var enumValues4 = Enum.GetValues(typeof(MixedImages));
+
+            if (LoggedUser == null) 
+            {
+                // Generate a random index
+                Random random1 = new Random();
+                int randomIndex1 = random1.Next(0, enumValues1.Length);
+
+                // Retrieve the enum value at the random index
+                PetImages randomPetImage = (PetImages)enumValues1.GetValue(randomIndex1);
+                return GetDescription(randomPetImage);
+            }
+            else 
+            {
+                switch (LoggedUser.AppPreferences.WebpageAnimalPreference) 
+                {
+                    case "Dog":
+                        Random random2 = new Random();
+                        int randomIndex2 = random2.Next(0, enumValues2.Length);
+
+                        // Retrieve the enum value at the random index
+                        DogImages randomDogImage = (DogImages)enumValues2.GetValue(randomIndex2);
+                        return GetDescription(randomDogImage);
+                        break;
+                    case "Cat":
+                        Random random3 = new Random();
+                        int randomIndex3 = random3.Next(0, enumValues3.Length);
+
+                        // Retrieve the enum value at the random index
+                        CatImages randomCatImage = (CatImages)enumValues3.GetValue(randomIndex3);
+                        return GetDescription(randomCatImage);
+                        break;
+                    case "Mixed":
+                    default:
+                        Random random4 = new Random();
+                        int randomIndex4 = random4.Next(0, enumValues1.Length);
+
+                        // Retrieve the enum value at the random index
+                        PetImages randomMixedImage = (PetImages)enumValues1.GetValue(randomIndex4);
+                        return GetDescription(randomMixedImage);
+                        break;
+                }
+            }
+
+
+        
+        
+        }
+        public static string GetDescription(Enum enumValue)
+        {
+            Type type = enumValue.GetType();
+            MemberInfo[] memberInfo = type.GetMember(enumValue.ToString());
+            if (memberInfo.Length > 0)
+            {
+                object[] attributes = memberInfo[0].GetCustomAttributes(typeof(DescriptionAttribute), false);
+                if (attributes.Length > 0)
+                {
+                    return ((DescriptionAttribute)attributes[0]).Description;
+                }
+            }
+            return enumValue.ToString(); // Default to enum value if no description is found
         }
     }
 }
