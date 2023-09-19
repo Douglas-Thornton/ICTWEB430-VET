@@ -204,7 +204,7 @@ namespace VETAPPAPI.Controllers
             try
             {
                 // Check if a user with the given UserID exists in the database
-                var existingUser = _dbContext.Users.Include(p => p.Pets).FirstOrDefault(u => u.UserID == updatedUser.UserID);
+                var existingUser = _dbContext.Users.Include(p => p.Pets).Include(ap => ap.AppPreferences).FirstOrDefault(u => u.UserID == updatedUser.UserID);
 
                 if (existingUser == null)
                 {
@@ -232,6 +232,7 @@ namespace VETAPPAPI.Controllers
                 existingUser.Postcode = updatedUser.Postcode;
                 existingUser.LoginUsername = updatedUser.LoginUsername;
                 existingUser.LoginPassword = updatedUser.LoginPassword;
+                existingUser.AppPreferences = updatedUser.AppPreferences;
 
                 // You can also handle updating the user's pets if needed
                 foreach (var updatedPet in updatedUser.Pets)
@@ -263,6 +264,7 @@ namespace VETAPPAPI.Controllers
                         existingUser.Pets.Remove(existingPet);
                     }
                 }
+
                 _dbContext.SaveChanges();
 
                 response.IsSuccess = true;

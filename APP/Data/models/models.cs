@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 namespace APP.Data.Models;
 
 
-public class User
+public class User : INotifyPropertyChanged
 {
     public int UserID { get; set; }
     public string? FirstName { get; set; }
@@ -20,12 +20,30 @@ public class User
     public string LoginUsername { get; set; }
     [Required(ErrorMessage = "Password is required.")]
     public string LoginPassword { get; set; }
-    public AppPreferences? AppPreferences { get; set; } = new AppPreferences();
 
 
     public virtual ICollection<Pet> Pets { get; set; }
 
+    private AppPreferences? _appPreferences = new AppPreferences();
 
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    public AppPreferences? AppPreferences
+    {
+        get => _appPreferences;
+        set
+        {
+            if (_appPreferences != value)
+            {
+                _appPreferences = value;
+                OnPropertyChanged(nameof(AppPreferences));
+            }
+        }
+    }
+    protected virtual void OnPropertyChanged(string propertyName)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
 }
 
 public class Pet
@@ -56,13 +74,70 @@ public class Pet
     public IBrowserFile PetPhotoUpload { get; set; }
     public virtual User Owner { get; set; }
 }
+public class AppPreferences : INotifyPropertyChanged
+{
+    private int _userID;
+    public int UserID
+    {
+        get => _userID;
+        set
+        {
+            if (_userID != value)
+            {
+                _userID = value;
+                OnPropertyChanged(nameof(UserID));
+            }
+        }
+    }
 
-public class AppPreferences
-{ 
-    public int UserID { get; set; }
-    public string WebpageAnimalPreference { get; set; } = UserAnimalPreference.Dog.ToString();
-    public string SelectedFontSize { get; set; } = AccessibleFontSizes.Medium.ToString();
-    public string SelectedFont { get; set; } = AccessibleFonts.Arial.ToString();
+    private string _webpageAnimalPreference = UserAnimalPreference.Dog.ToString();
+    public string WebpageAnimalPreference
+    {
+        get => _webpageAnimalPreference;
+        set
+        {
+            if (_webpageAnimalPreference != value)
+            {
+                _webpageAnimalPreference = value;
+                OnPropertyChanged(nameof(WebpageAnimalPreference));
+            }
+        }
+    }
+
+    private string _selectedFontSize = AccessibleFontSizes.Medium.ToString();
+    public string SelectedFontSize
+    {
+        get => _selectedFontSize;
+        set
+        {
+            if (_selectedFontSize != value)
+            {
+                _selectedFontSize = value;
+                OnPropertyChanged(nameof(SelectedFontSize));
+            }
+        }
+    }
+
+    private string _selectedFont = AccessibleFonts.Arial.ToString();
+    public string SelectedFont
+    {
+        get => _selectedFont;
+        set
+        {
+            if (_selectedFont != value)
+            {
+                _selectedFont = value;
+                OnPropertyChanged(nameof(SelectedFont));
+            }
+        }
+    }
+
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    protected virtual void OnPropertyChanged(string propertyName)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
 }
 
 public class LoginRequest

@@ -33,7 +33,7 @@ namespace APP.States
         /// <summary>
         /// Returns combined family and size required to style a H1 tag. 
         /// </summary>
-        public string H1StyleTag
+        public string H1StyleTagCSS
         {
             get
             {
@@ -91,7 +91,7 @@ namespace APP.States
             {
                 if (LoggedUser != null)
                 {
-                    if (Enum.TryParse(LoggedUser.AppPreferences.SelectedFont, out AccessibleFontSizes selectedFontSize))
+                    if (Enum.TryParse(LoggedUser.AppPreferences.SelectedFontSize, out AccessibleFontSizes selectedFontSize))
                     {
                         switch (selectedFontSize)
                         {
@@ -130,7 +130,7 @@ namespace APP.States
             {
                 if (LoggedUser != null)
                 {
-                    if (Enum.TryParse(LoggedUser.AppPreferences.SelectedFont, out AccessibleFontSizes selectedFontSize))
+                    if (Enum.TryParse(LoggedUser.AppPreferences.SelectedFontSize, out AccessibleFontSizes selectedFontSize))
                     {
                         switch (selectedFontSize)
                         {
@@ -145,17 +145,17 @@ namespace APP.States
                             case AccessibleFontSizes.XXLarge:
                                 return "font-size: 56px;";
                             default:
-                                return "font-size: 16px;"; // Default to Medium
+                                return "font-size: 32px;"; // Default to Medium
                         }
                     }
                     else
                     {
-                        return "font-size: 16px;"; // Default to Medium
+                        return "font-size: 32px;"; // Default to Medium
                     }
                 }
                 else
                 {
-                    return "font-size: 16px;"; // Default to Medium
+                    return "font-size: 32px;"; // Default to Medium
                 }
 
             }

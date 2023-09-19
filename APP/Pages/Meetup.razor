@@ -1,11 +1,12 @@
 ﻿@using APP.Data.Models;
 @using APP.Interfaces;
 @using APP.Services;
+@inject LoggedUserState LoggedUserState
 
 <div class="background-container">
     <img src="./Images/cartoon_dog_and_cat.jpg" alt="buddies" class="background-image"/>
-    <div class="card">
-        <h3>Meetup</h3>
+    <div class="card" style="@LoggedUserState.PStyleTagCSS">
+        <h1 style="@LoggedUserState.H1StyleTagCSS">Meetup</h1>
         <label>Your Name</label>
         <input placeholder="Insert your name here"/>
         <label>Your Pets Name</label>
@@ -42,12 +43,71 @@
         }
         catch(Exception)
         {
-            
+
         }
     }
 
     public async Task LoadDataAsync()
     {
         petList = await petService.GetAllPets();
+    }
+
+
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    /// <summary>
+    /// On initialized setup propertyChanged event and load the page data.
+    /// </summary>
+    protected override void OnInitialized()
+    {
+        LoggedUserState.PropertyChanged += OnLoggedUserStateChanged;
+
+        // Subscribe to the PropertyChanged event of AppPreferences
+        if (LoggedUserState.LoggedUser != null && LoggedUserState.LoggedUser.AppPreferences != null)
+        {
+            LoggedUserState.LoggedUser.AppPreferences.PropertyChanged += OnAppPreferencesChanged;
+        }
+    }
+
+    /// <summary>
+    /// If the user logs in; update the data on this page.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void OnLoggedUserStateChanged(object sender, PropertyChangedEventArgs e)
+    {
+        // Check if the property that changed is "LoggedUser"
+        if (e.PropertyName == nameof(LoggedUserState.LoggedUser))
+        {
+            if (LoggedUserState.LoggedUser != null)
+            {
+                LoggedUserState.LoggedUser.AppPreferences.PropertyChanged += OnAppPreferencesChanged;
+            }
+            StateHasChanged();
+        }
+    }
+
+    // Handle changes to the AppPreferences or its sub-properties
+    private void OnAppPreferencesChanged(object sender, PropertyChangedEventArgs e)
+    {
+        // Check if the property that changed is one of the AppPreferences properties
+        // that you want to monitor
+        if (e.PropertyName == nameof(LoggedUserState.LoggedUser) ||
+            e.PropertyName == nameof(LoggedUserState.LoggedUser.AppPreferences.SelectedFont) ||
+            e.PropertyName == nameof(LoggedUserState.LoggedUser.AppPreferences.SelectedFontSize) ||
+            e.PropertyName == nameof(LoggedUserState.LoggedUser.AppPreferences.WebpageAnimalPreference))
+        {
+            StateHasChanged();
+            var test = LoggedUserState.PStyleTagCSS;
+        }
+    }
+
+    public void Dispose()
+    {
+        // Unsubscribe from the PropertyChanged event of AppPreferences
+        if (LoggedUserState.LoggedUser != null && LoggedUserState.LoggedUser.AppPreferences != null)
+        {
+            LoggedUserState.LoggedUser.AppPreferences.PropertyChanged -= OnAppPreferencesChanged;
+        }
     }
 }

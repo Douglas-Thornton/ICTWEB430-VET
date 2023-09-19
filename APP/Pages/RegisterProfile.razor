@@ -59,45 +59,45 @@
 
 @if (isUserPreferencesModalOpen)
 {
-    <Modal ModalTitle="User Preferences"
+    <Modal ModalTitle="User Preferences - Will be in effect instantly; for these to be permanent you must save your profile."
            OnClose="CloseUserPrefModal">
-        <EditForm class="form-container" Model="@CurrentUserPreferences" OnValidSubmit="HandleValidPrefencesSubmit">
+        <EditForm class="form-container" Model="@CurrentUser.AppPreferences" OnValidSubmit="HandleValidPrefencesSubmit">
             <DataAnnotationsValidator />
             <div>
                 <label for="petName">Animal preference:</label>
-                <InputSelect id="petName" class="form-control" @bind-Value="CurrentUserPreferences.WebpageAnimalPreference">
+                <InputSelect id="petName" class="form-control" @bind-Value="CurrentUser.AppPreferences.WebpageAnimalPreference">
                     @foreach (var animal in Enum.GetValues(typeof(UserAnimalPreference)))
                     {
                         <option value="@animal">@animal</option>
                     }
                 </InputSelect>
-                <ValidationMessage For="@(() => CurrentUserPreferences.WebpageAnimalPreference)" />
+                <ValidationMessage For="@(() => CurrentUser.AppPreferences.WebpageAnimalPreference)" />
             </div>
             <div>
                 <label for="petBreed">Font:</label>
-                <InputSelect id="petBreed" class="form-control" @bind-Value="CurrentUserPreferences.SelectedFont">
+                <InputSelect id="petBreed" class="form-control" @bind-Value="CurrentUser.AppPreferences.SelectedFont">
                     @foreach (var font in Enum.GetValues(typeof(AccessibleFonts)))
                     {
                         <option value="@font">@font</option>
                     }
                 </InputSelect>
-                <ValidationMessage For="@(() => CurrentUserPreferences.WebpageAnimalPreference)" />
+                <ValidationMessage For="@(() => CurrentUser.AppPreferences.WebpageAnimalPreference)" />
             </div>
             <div>
                 <label for="petAge">Font size:</label>
-                <InputSelect id="petAge" class="form-control" @bind-Value="CurrentUserPreferences.SelectedFontSize">
+                <InputSelect id="petAge" class="form-control" @bind-Value="CurrentUser.AppPreferences.SelectedFontSize">
                     @foreach (var fontsize in Enum.GetValues(typeof(AccessibleFontSizes)))
                     {
                         <option value="@fontsize">@fontsize</option>
                     }
                 </InputSelect>
-                <ValidationMessage For="@(() => CurrentUserPreferences.WebpageAnimalPreference)" />
+                <ValidationMessage For="@(() => CurrentUser.AppPreferences.WebpageAnimalPreference)" />
             </div>
             <div>
                 <p>
                     Example:
                 </p>
-                <p style="@PStyleTagCSS">
+                <p style="@PStyleTagCSS" class="small-scrollable-container">
                     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
                 </p>
             </div>
@@ -119,6 +119,11 @@
                         <div class="row">
                             <div class="col">
                                 <EditForm class="form-container" Model="CurrentUser" OnValidSubmit="HandleValidUserSubmit">
+                                    @if(Loading)
+                                    {
+                                        <LoadingSpinner></LoadingSpinner>
+                                    }
+
                                     <DataAnnotationsValidator />
 
                                     <div>
@@ -206,7 +211,7 @@
     private Pet PetToEdit = new Pet();
     private List<Pet> Pets = new List<Pet>();
     private Pet TempPet = new Pet();
-
+    private bool Loading = false;
     public bool isDogModalOpen = false;
     public bool isUserPreferencesModalOpen = false;
     public ModalMode DogModalMode = ModalMode.Edit;
@@ -217,31 +222,38 @@
     private User CurrentUser => LoggedUserState.LoggedUser != null ? EditUser : NewUser;
     private AppPreferences CurrentUserPreferences => LoggedUserState.LoggedUser != null ? EditUser.AppPreferences : NewUser.AppPreferences;
 
+    private AppPreferences TempAppPreferences = new AppPreferences();
     //// <summary>
     /// If the editForm is valid; create the new user.
     /// </summary>
     private async void HandleValidUserSubmit()
     {
-        var response = new ServiceResponse() { };
+        if (!isDogModalOpen && !isUserPreferencesModalOpen)
+        {
+            Loading = true;
+            StateHasChanged();
+            var response = new ServiceResponse() { };
 
-        if (LoggedUserState.LoggedUser != null)
-        {
-            EditUser.Pets = Pets;
-            response = await userService.UpdateUserAsync(EditUser);
-        }
-        else
-        {
-            NewUser.Pets = Pets;
-            response = await userService.CreateUserAsync(NewUser);
-        }
-
-        if (response.success)
-        {
-            LoggedUserState.LoggedUser = response.User;
-            NewUser = new User();
-            EditUser = new User();
-            Pets = new List<Pet>();
-            loadPage();
+            if (LoggedUserState.LoggedUser != null)
+            {
+                EditUser.Pets = Pets;
+                response = await userService.UpdateUserAsync(EditUser);
+            }
+            else
+            {
+                NewUser.Pets = Pets;
+                response = await userService.CreateUserAsync(NewUser);
+            }
+            Loading = false;
+            StateHasChanged();
+            if (response.success)
+            {
+                LoggedUserState.LoggedUser = response.User;
+                NewUser = new User();
+                EditUser = new User();
+                Pets = new List<Pet>();
+                loadPage();
+            }
         }
     }
 
@@ -281,6 +293,9 @@
     protected override void OnInitialized()
     {
         loadPage();
+
+
+
         LoggedUserState.PropertyChanged += OnLoggedUserStateChanged;
     }
 
@@ -436,7 +451,7 @@
         get
         {
 
-            if (Enum.TryParse(CurrentUser.AppPreferences.SelectedFont, out AccessibleFonts selectedFont))
+            if (Enum.TryParse(CurrentUserPreferences.SelectedFont, out AccessibleFonts selectedFont))
             {
                 switch (selectedFont)
                 {
@@ -469,7 +484,7 @@
     {
         get
         {
-            if (Enum.TryParse(CurrentUser.AppPreferences.SelectedFontSize, out AccessibleFontSizes selectedFontSize))
+            if (Enum.TryParse(CurrentUserPreferences.SelectedFontSize, out AccessibleFontSizes selectedFontSize))
             {
                 switch (selectedFontSize)
                 {

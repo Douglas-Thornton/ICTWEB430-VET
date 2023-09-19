@@ -88,6 +88,10 @@ a, .btn-link {
     overflow-y: auto; /* Enable vertical scrollbar */
 }
 
+.small-scrollable-container {
+    height: 100px; /* Set a fixed height */
+    overflow-y: auto; /* Enable vertical scrollbar */
+}
 
 /* Assuming the form elements are wrapped in a class named "form-container" */
 .form-container {
