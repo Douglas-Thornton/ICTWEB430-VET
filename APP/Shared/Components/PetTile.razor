@@ -1,0 +1,132 @@
+﻿@using APP.Data.Models;
+@using System.ComponentModel;
+
+<div class="container">
+    <div class="row">
+        <div class="col-3">
+            <img src="@(ImageDataUrl != null ? ImageDataUrl : "images\\file_placeholder.png")"
+                 width="50" height="50" alt="Picture of @pet.PetName" />
+        </div>
+        <div class="col">
+            <div class="row">
+                <div class="col-8">
+                    <h2>@pet.PetName</h2>
+                </div>
+                <div class="col-4 text-end">
+                    @if (DeleteEnabled)
+                    {
+                        <button class="btn btn-close btn-sm" @onclick="() => DeletePet()"></button>
+                    }
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <p>Breed: @pet.PetBreed</p>
+                    <p>Age: @pet.PetAge</p>
+                </div>
+                <div class="col">
+                    <p>Gender: @pet.PetGender</p>
+                    <p>Discoverable: @(pet.PetDiscoverability ? "Visible" : "Hidden")</p>
+                </div>
+                @if (EditEnabled)
+                {
+                    <div class="col">
+                        <button class="btn btn-link btn-sm" @onclick="() => EditPet()">Edit</button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@code
+{
+
+    [Parameter]
+    public Pet pet { get; set; }
+
+    [Parameter]
+    public bool DeleteEnabled { get; set; } = false;
+
+
+    [Parameter]
+    public bool EditEnabled { get; set; } = false;
+
+    /// <summary>
+    /// Event on delete button pressed.
+    /// </summary>
+    [Parameter]
+    public EventCallback<Pet> OnDelete { get; set; }
+
+    /// <summary>
+    /// Event on edit button pressed.
+    /// </summary>
+    [Parameter]
+    public EventCallback<Pet> OnEdit { get; set; }
+
+    private byte[] previousPetPhoto;
+
+    private string ImageDataUrl { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if(pet.PetPhoto != null)
+        {
+            previousPetPhoto = pet.PetPhoto;
+        }
+        convertImage();
+    }
+
+    /// <summary>
+    /// Deletes the current pet.
+    /// </summary>
+    /// <returns>Task</returns>
+    private Task DeletePet()
+    {
+        if (DeleteEnabled)
+        {
+            return OnDelete.InvokeAsync(pet);
+        }
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Edit the current pet.
+    /// </summary>
+    /// <returns>Task</returns>
+    private Task EditPet()
+    {
+        if (EditEnabled)
+        {
+            return OnEdit.InvokeAsync(pet);
+        }
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Convert the BASE64 image to a regular image.
+    /// </summary>
+    private void convertImage()
+    {
+        // Convert the byte[] to a Base64-encoded string
+        if (pet.PetPhoto != null)
+        {
+            ImageDataUrl = $"data:image/jpeg;base64,{Convert.ToBase64String(pet.PetPhoto)}";
+        }
+    }
+
+    /// <summary>
+    /// Update the current pet photo after a new one is uploaded.
+    /// </summary>
+    protected override void OnParametersSet()
+    {
+        // Check if the value of petPhoto has changed
+        if (pet.PetPhoto != null && !pet.PetPhoto.SequenceEqual(previousPetPhoto))
+        {
+            convertImage();
+            previousPetPhoto = pet.PetPhoto.ToArray(); // Update the previous value
+        }
+    }
+
+}

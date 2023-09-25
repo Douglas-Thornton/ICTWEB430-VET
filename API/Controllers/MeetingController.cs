@@ -62,7 +62,7 @@ namespace VETAPPAPI.Controllers
                              PetBreed = m.Pet.PetBreed,
                              PetAge = m.Pet.PetAge,
                              PetGender = m.Pet.PetGender,
-                             PetPhotoFileLocation = m.Pet.PetPhotoFileLocation,
+                             PetPhoto = m.Pet.PetPhoto,
                              PetDiscoverability = m.Pet.PetDiscoverability
                          }
                      }).ToList(),
@@ -144,7 +144,7 @@ namespace VETAPPAPI.Controllers
                              PetBreed = m.Pet.PetBreed,
                              PetAge = m.Pet.PetAge,
                              PetGender = m.Pet.PetGender,
-                             PetPhotoFileLocation = m.Pet.PetPhotoFileLocation,
+                             PetPhoto = m.Pet.PetPhoto,
                              PetDiscoverability = m.Pet.PetDiscoverability
                          }
                      }).ToList(),
@@ -224,7 +224,7 @@ namespace VETAPPAPI.Controllers
                              PetBreed = m.Pet.PetBreed,
                              PetAge = m.Pet.PetAge,
                              PetGender = m.Pet.PetGender,
-                             PetPhotoFileLocation = m.Pet.PetPhotoFileLocation,
+                             PetPhoto = m.Pet.PetPhoto,
                              PetDiscoverability = m.Pet.PetDiscoverability
                          }
                      }).ToList(),
@@ -305,7 +305,7 @@ namespace VETAPPAPI.Controllers
                              PetBreed = m.Pet.PetBreed,
                              PetAge = m.Pet.PetAge,
                              PetGender = m.Pet.PetGender,
-                             PetPhotoFileLocation = m.Pet.PetPhotoFileLocation,
+                             PetPhoto = m.Pet.PetPhoto,
                              PetDiscoverability = m.Pet.PetDiscoverability
                          }
                      }).ToList(),

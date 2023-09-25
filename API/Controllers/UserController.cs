@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using VETAPPAPI.Data;
 using VETAPPAPI.Models;
 
@@ -47,7 +48,7 @@ namespace VETAPPAPI.Controllers
                         PetBreed = p.PetBreed,
                         PetAge = p.PetAge,
                         PetGender = p.PetGender,
-                        PetPhotoFileLocation = p.PetPhotoFileLocation,
+                        PetPhoto = p.PetPhoto,
                         PetDiscoverability = p.PetDiscoverability,
                         OwnerID = p.OwnerID // Include the OwnerID property if needed
                     }).ToList()
@@ -96,7 +97,7 @@ namespace VETAPPAPI.Controllers
                         PetBreed = p.PetBreed,
                         PetAge = p.PetAge,
                         PetGender = p.PetGender,
-                        PetPhotoFileLocation = p.PetPhotoFileLocation,
+                        PetPhoto = p.PetPhoto,
                         PetDiscoverability = p.PetDiscoverability,
                         OwnerID = p.OwnerID // Include the OwnerID property if needed
                     }).ToList()
@@ -145,7 +146,7 @@ namespace VETAPPAPI.Controllers
                         PetBreed = p.PetBreed,
                         PetAge = p.PetAge,
                         PetGender = p.PetGender,
-                        PetPhotoFileLocation = p.PetPhotoFileLocation,
+                        PetPhoto = p.PetPhoto,
                         PetDiscoverability = p.PetDiscoverability,
                         OwnerID = p.OwnerID // Include the OwnerID property if needed
                     }).ToList()
@@ -194,73 +195,37 @@ namespace VETAPPAPI.Controllers
         }
 
         /// <summary>
-        /// Creates a new user.
-        /// </summary>
-        /// <param name="user">The user to be created.</param>
-        /// <returns>Success or failure of the creation.</returns>
-        [HttpPost]
-        public async Task<IActionResult> CreateUser(User user)
-        {
-            try
-            {
-                // Validate the input data
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-
-                // Map the UserModel data to your User entity (if needed) and create the new user
-                //var newUser = new User
-                //{
-                //    FirstName = user.FirstName,
-                //    Surname = user.Surname,
-                //    PhoneNumber = user.PhoneNumber,
-                //    Email = user.Email,
-                //    Suburb = user.Suburb,
-                //    Postcode = user.Postcode,
-                //    LoginUsername = user.LoginUsername,
-                //    LoginPassword = user.LoginPassword,
-                //    WebpageAnimalPreference = user.WebpageAnimalPreference
-                //};
-
-                // Add the new user to the DbContext and save changes
-                _dbContext.Users.Add(user);
-                await _dbContext.SaveChangesAsync();
-
-                // Return a response indicating success and the new user's ID
-                return Ok($"User created successfully with ID: {user.UserID}");
-            }
-            catch (Exception ex)
-            {
-                // Handle any exceptions or errors
-                return StatusCode(500, $"Error creating user. {ex.Message}");
-            }
-        }
-
-        /// <summary>
         /// Update an exisiting user with new data.
         /// </summary>
         /// <param name="updatedUser">The user to update.</param>
         /// <returns>Success or failure of the updated user.</returns>
-        [HttpPut("{id:int}")]
-        public async Task<IActionResult> UpdateUser(User updatedUser)
+        [HttpPut("update")]
+        public IActionResult UpdateUser([FromBody] User updatedUser)
         {
+            var response = new MainResponse();
             try
             {
-                // Validate the input data
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
+                // Check if a user with the given UserID exists in the database
+                var existingUser = _dbContext.Users.Include(p => p.Pets).FirstOrDefault(u => u.UserID == updatedUser.UserID);
 
-                // Get the existing user from the database
-                var existingUser = await _dbContext.Users.FindAsync(updatedUser.UserID);
                 if (existingUser == null)
                 {
-                    return NotFound($"User with ID {updatedUser.UserID} not found.");
+                    // If the user does not exist, return a not found response
+                    response.IsSuccess = false;
+                    response.ErrorMessage = "User not found.";
+                    return NotFound(response); // Return a 404 Not Found status
                 }
 
-                // Update the user's properties with the new values
+                // Check if the updated username conflicts with other users
+                if (_dbContext.Users.Any(u => u.LoginUsername == updatedUser.LoginUsername && u.UserID != updatedUser.UserID))
+                {
+                    // Another user with the same username already exists, return an error response
+                    response.IsSuccess = false;
+                    response.ErrorMessage = "Username is not unique. Please choose a different username.";
+                    return BadRequest(response); // Return a 400 Bad Request status
+                }
+
+                // Update the existing user's information with the data from the updatedUser object
                 existingUser.FirstName = updatedUser.FirstName;
                 existingUser.Surname = updatedUser.Surname;
                 existingUser.PhoneNumber = updatedUser.PhoneNumber;
@@ -271,18 +236,110 @@ namespace VETAPPAPI.Controllers
                 existingUser.LoginPassword = updatedUser.LoginPassword;
                 existingUser.WebpageAnimalPreference = updatedUser.WebpageAnimalPreference;
 
-                // Save the changes to the database
-                await _dbContext.SaveChangesAsync();
+                // You can also handle updating the user's pets if needed
+                foreach (var updatedPet in updatedUser.Pets)
+                {
+                    var existingPet = existingUser.Pets.FirstOrDefault(p => p.PetID == updatedPet.PetID);
 
-                // Return a response indicating success
-                return Ok($"User with ID {existingUser.UserID} updated successfully.");
+                    if (existingPet == null)
+                    {
+                        // If the pet doesn't exist in the user's current list, add it
+                        existingUser.Pets.Add(updatedPet);
+                    }
+                    else
+                    {
+                        // If the pet exists, update its information
+                        existingPet.PetName = updatedPet.PetName;
+                        existingPet.PetBreed = updatedPet.PetBreed;
+                        existingPet.PetAge = updatedPet.PetAge;
+                        existingPet.PetGender = updatedPet.PetGender;
+                        existingPet.PetPhoto = updatedPet.PetPhoto;
+                        // Update other pet properties as needed
+                    }
+                }
+
+                // Remove pets that are absent from the updated user's pet list
+                foreach (var existingPet in existingUser.Pets.ToList())
+                {
+                    if (!updatedUser.Pets.Any(p => p.PetID == existingPet.PetID))
+                    {
+                        existingUser.Pets.Remove(existingPet);
+                    }
+                }
+                _dbContext.SaveChanges();
+
+                response.IsSuccess = true;
+                response.Content = existingUser; // Return the updated user object
             }
             catch (Exception ex)
             {
-                // Handle any exceptions or errors
-                return StatusCode(500, $"Error updating user. {ex.Message}");
+                response.ErrorMessage = ex.Message;
+                response.IsSuccess = false;
             }
+
+            return Ok(response);
         }
 
+        /// <summary>
+        /// Create a new user.
+        /// </summary>
+        /// <param name="newUser">The user to create.</param>
+        /// <returns></returns>
+        [HttpPost("create")]
+        public IActionResult CreateUser([FromBody] User newUser)
+        {
+            var response = new MainResponse();
+            try
+            {
+                // You can add validation and other necessary logic here
+                if (_dbContext.Users.Any(u => u.LoginUsername == newUser.LoginUsername))
+                {
+                    // A user with the same username already exists, return an error response
+                    response.IsSuccess = false;
+                    response.ErrorMessage = "Username is not unique. Please choose a different username.";
+                    return BadRequest(response); // Return a 400 Bad Request status
+                }
+
+                // Save the new user to your database or perform any other required operations
+                //newUser.UserID = null;
+                _dbContext.Users.Add(newUser);
+                _dbContext.SaveChanges();
+
+                response.IsSuccess = true;
+                response.Content = _dbContext.Users.Where(u => u.LoginUsername == newUser.LoginUsername && u.LoginPassword == newUser.LoginPassword)
+                               .Select(u => new User
+                               {
+                                   UserID = u.UserID,
+                                   FirstName = u.FirstName,
+                                   Surname = u.Surname,
+                                   PhoneNumber = u.PhoneNumber,
+                                   Email = u.Email,
+                                   Suburb = u.Suburb,
+                                   Postcode = u.Postcode,
+                                   LoginUsername = u.LoginUsername,
+                                   LoginPassword = u.LoginPassword,
+                                   WebpageAnimalPreference = u.WebpageAnimalPreference,
+                                   Pets = u.Pets.Select(p => new Pet
+                                   {
+                                       PetID = p.PetID,
+                                       PetName = p.PetName,
+                                       PetBreed = p.PetBreed,
+                                       PetAge = p.PetAge,
+                                       PetGender = p.PetGender,
+                                       PetPhoto = p.PetPhoto,
+                                       PetDiscoverability = p.PetDiscoverability,
+                                       OwnerID = p.OwnerID // Include the OwnerID property if needed
+                                   }).ToList()
+                               })
+                               .ToList();
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = ex.Message;
+                response.IsSuccess = false;
+            }
+
+            return Ok(response);
+        }
     }
 }
