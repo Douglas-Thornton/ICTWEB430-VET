@@ -42,7 +42,9 @@
             </div>
             <div>
                 <label for="petDiscoverability">Pet Discoverability:</label>
-                <InputCheckbox type="checkbox" class="form-check-input" id="petDiscoverability" @bind-Value="@CurrentPet.PetDiscoverability" />
+                <div class="form-check form-switch">
+                    <InputCheckbox type="checkbox" class="form-check-input" id="petDiscoverability" @bind-Value="@CurrentPet.PetDiscoverability" />
+                </div>
                 <ValidationMessage For="@(() => CurrentPet.PetDiscoverability)" />
             </div>
             <div>
