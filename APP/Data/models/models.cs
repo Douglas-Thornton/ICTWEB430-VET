@@ -199,52 +199,52 @@ public enum AccessibleFontSizes
 
 public enum PetImages 
 {
-    [Description("./Images/Background_Images/Dog_Background1.jpg")]
+    [Description("./Images/Background_Images/Dog_1.jpg")]
     dogImage1,
-    //[Description("./Images/Background_Images/Dog_Background2.jpg")] // Wont Load in for some reason
-    //dogImage2,
-    [Description("./Images/Background_Images/Dog_Background3.jpg")]
+    [Description("./Images/Background_Images/Dog_2.jpg")]
+    dogImage2,
+    [Description("./Images/Background_Images/Dog_3.jpg")] // wont load
     dogImage3,
-    [Description("./Images/Background_Images/Mixed_Background1.jpg")]
+    [Description("./Images/Background_Images/Mixed_1.jpg")]
     mixedImage1,
-    [Description("./Images/Background_Images/Mixed_Background2.jpg")]
+    [Description("./Images/Background_Images/Mixed_2.jpg")]
     mixedImage2,
-    [Description("./Images/Background_Images/Mixed_Background3.jpg")]
+    [Description("./Images/Background_Images/Mixed_3.jpg")]
     mixedImage3,
-    [Description("./Images/Background_Images/Cat_Background1.jpg")]
+    [Description("./Images/Background_Images/Cat_1.jpg")] // wont load
     catImage1,
-    [Description("./Images/Background_Images/Cat_Background2.jpg")]
+    [Description("./Images/Background_Images/Cat_2.jpg")]
     catImage2,
-    [Description("./Images/Background_Images/Cat_Background3.jpg")]
+    [Description("./Images/Background_Images/Cat_3.jpg")]
     catImage3
 }
 
 public enum DogImages
 {
-    [Description("./Images/Background_Images/Dog_Background1.jpg")]
+    [Description("./Images/Background_Images/Dog_1.jpg")]
     dogImage1,
-    [Description("./Images/Background_Images/Dog_Background2.jpg")]
+    [Description("./Images/Background_Images/Dog_2.jpg")]
     dogImage2,
-    [Description("./Images/Background_Images/Dog_Background3.jpg")]
+    [Description("./Images/Background_Images/Dog_3.jpg")]
     dogImage3
 }
 
 public enum CatImages
 {
-    [Description("./Images/Background_Images/Cat_Background1.jpg")]
+    [Description("./Images/Background_Images/Cat_1.jpg")]
     catImage1,
-    [Description("./Images/Background_Images/Cat_Background2.jpg")]
+    [Description("./Images/Background_Images/Cat_2.jpg")]
     catImage2,
-    [Description("./Images/Background_Images/Cat_Background3.jpg")]
+    [Description("./Images/Background_Images/Cat_3.jpg")]
     catImage3
 }
 
 public enum MixedImages
 {
-    [Description("./Images/Background_Images/Mixed_Background1.jpg")]
+    [Description("./Images/Background_Images/Mixed_1.jpg")]
     mixedImage1,
-    [Description("./Images/Background_Images/Mixed_Background2.jpg")]
+    [Description("./Images/Background_Images/Mixed_2.jpg")]
     mixedImage2,
-    [Description("./Images/Background_Images/Mixed_Background3.jpg")]
+    [Description("./Images/Background_Images/Mixed_3.jpg")]
     mixedImage3
 }
