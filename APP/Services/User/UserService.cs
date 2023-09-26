@@ -4,6 +4,7 @@ using System.Net.Http.Json;
 using APP.Interfaces;
 using System.Net;
 using System.Text;
+using System;
 
 namespace APP.Services;
 
@@ -165,4 +166,10 @@ public class UserService : IUserService
             return serviceResponse;
         }
     }
+
+    //public async Task<bool> ValidateAddress(User userToValidate) 
+    //{ 
+    
+
+    //}
 }
