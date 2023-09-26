@@ -1,0 +1,30 @@
+﻿.title {
+    display: flex;
+    justify-content: center;
+    font-size: 32px;
+    font-weight: bolder;
+    margin: 20px auto;
+}
+
+.login-button {
+    border-radius: 15px;
+    background-color: royalblue;
+    min-width: 200px;
+    color: white;
+}
+
+.centered {
+    justify-content: center;
+}
+
+label {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.inputs {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}

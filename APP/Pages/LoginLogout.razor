@@ -5,98 +5,71 @@
 @using APP.Data.Models;
 
 @inject IUserService userService;
-@inject LoggedUserState LoggedUserState
-
-
+@inject LoggedUserState loggedUserState
 
 <div class="background-container">
-    <img src="./Images/three_stooges.jpg" alt="buddies" class="background-image"/>
+    <img src=@backgroundImagePath alt="@backgroundImagePath" class="background-image"/>
     <div class="card">
-        @if (LoggedUserState.LoggedUser != null)
+
+        @if (loggedUserState.LoggedUser != null)
         {
             <button class="btn btn-primary" @onclick="Logout"> Logout</button>
         }
-        else{
+        else
+        {
             <div class="centered title">
-                <h2>Login Page</h2>
+                <h1 style="@loggedUserState.H1StyleTagCSS">Login Page</h1>
             </div>
             <EditForm class="form-container" Model="loginRequest" OnValidSubmit="HandleValidLoginSubmit">
-            
+                @if(Loading)
+                {
+                    <LoadingSpinner></LoadingSpinner>
+                }
                 <div class="centered">
-                    <div>
+                    <div style="@loggedUserState.PStyleTagCSS">
                         <label for="loginUsername">Username:</label>
                         <InputText id="loginUsername" class="inputs" @bind-Value="loginRequest.LoginUsername" />
                         <ValidationMessage For="@(() => loginRequest.LoginUsername)" />
                     </div>
                 </div>
                 <div class="row-cols centered">
-                    <div>
+                    <div style="@loggedUserState.PStyleTagCSS">
                         <label for="loginPassword">Password:</label>
                         <InputText type="password" id="loginPassword" class="inputs" @bind-Value="loginRequest.LoginPassword" />
                         <ValidationMessage For="@(() => loginRequest.LoginPassword)" />
                     </div>
                 </div>
                 <div class="row-cols centered">
-                    <button class="login-button" type="submit">Login</button>
+                    <button style="@loggedUserState.PStyleTagCSS" class="login-button" type="submit">Login</button>
                 </div>
             </EditForm>
         }
     </div>
 </div>
 
-<style>
-    .title{
-        display: flex;
-        justify-content: center;
-        font-size: 32px;
-        font-weight: bolder;
-        margin: 20px auto;
-    }
-    .login-button{
-        border-radius: 15px;
-        background-color: royalblue;
-        min-width: 200px;
-        color: white;
-    }
-
-    .centered{
-        justify-content: center;
-    }
-    label{
-        font-size: 18px;
-        font-weight: bold;
-    }
-    .inputs {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 3px;
-    }
-
-
-
-</style>
-
 @code 
 {
+
+    private bool Loading = false;
+
     private LoginRequest loginRequest = new LoginRequest();
     private List<User> users;
-
+    public string backgroundImagePath = "./Images/Background_Images/Dog_Background1.jpg";
+    
     protected override async Task OnInitializedAsync()
     {
-
+        backgroundImagePath = loggedUserState.GetBackgroundImage();
     }
 
 
     private async Task HandleValidLoginSubmit()
     {
-        LoggedUserState.LoggedUser = await userService.LoginUser(loginRequest);
-    }
-
-    public async Task Login()
-    {
-        users = await userService.GetAllUsersList();
-        LoggedUserState.LoggedUser = users.FirstOrDefault();
+        Loading = true;
+        StateHasChanged();
+        loggedUserState.LoggedUser = await userService.LoginUser(loginRequest);
+        backgroundImagePath = loggedUserState.GetBackgroundImage();
+        Loading = false;
+        StateHasChanged();
     }
 
     private void HandleValidNewUserSubmit()
@@ -108,6 +81,8 @@
 
     public void Logout()
     {
-        LoggedUserState.LoggedUser = null;
+        loggedUserState.LoggedUser = null;
+        backgroundImagePath = loggedUserState.GetBackgroundImage();
+        StateHasChanged();
     }
 }

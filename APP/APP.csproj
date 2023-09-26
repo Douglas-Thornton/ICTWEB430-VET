@@ -50,11 +50,15 @@
     </ItemGroup>
 
     <ItemGroup>
+      <None Remove="Pages\LoginLogout.razor.css" />
       <None Remove="Pages\OurServices.razor.css" />
+      <None Remove="Shared\Components\LoadingSpinner.razor.css" />
     </ItemGroup>
 
     <ItemGroup>
+      <Content Include="Pages\LoginLogout.razor.css" />
       <Content Include="Pages\OurServices.razor.css" />
+      <Content Include="Shared\Components\LoadingSpinner.razor.css" />
     </ItemGroup>
 
     <ItemGroup>

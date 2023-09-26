@@ -5,14 +5,15 @@
 @using System.ComponentModel;
 @using APP.Data.Models;
 @using APP.Interfaces;
+@using Newtonsoft.Json;
 
 @inject IUserService userService;
-@inject LoggedUserState LoggedUserState
+@inject LoggedUserState loggedUserState
 
 @if (isDogModalOpen)
 {
     <Modal ModalTitle="Dog Creation"
-           OnClose="CloseModal">
+           OnClose="CloseDogModal">
         <EditForm class="form-container" Model="@CurrentPet" OnValidSubmit="HandleValidPetSubmit">
             <DataAnnotationsValidator />
             <div>
@@ -41,7 +42,9 @@
             </div>
             <div>
                 <label for="petDiscoverability">Pet Discoverability:</label>
-                <InputCheckbox type="checkbox" class="form-check-input" id="petDiscoverability" @bind-Value="@CurrentPet.PetDiscoverability" />
+                <div class="form-check form-switch">
+                    <InputCheckbox type="checkbox" class="form-check-input" id="petDiscoverability" @bind-Value="@CurrentPet.PetDiscoverability" />
+                </div>
                 <ValidationMessage For="@(() => CurrentPet.PetDiscoverability)" />
             </div>
             <div>
@@ -49,15 +52,67 @@
                 <InputFile accept="image/*" OnChange="(e) => HandleImageUpload(e, CurrentPet)" />
             </div>
             <div class="modal-footer">
-                <button type="button" @onclick="CloseModal" class="btn btn-danger">Cancel</button>
+                <button type="button" @onclick="CloseDogModal" class="btn btn-danger">Cancel</button>
                 <button type="submit" class="btn btn-primary">Save</button>
             </div>
         </EditForm>
     </Modal>
 }
 
+@if (isUserPreferencesModalOpen)
+{
+    <Modal ModalTitle="User Preferences - Will be in effect instantly; for these to be permanent you must save your profile."
+           OnClose="CloseUserPrefModal">
+        <EditForm class="form-container" Model="@CurrentUser.AppPreferences" OnValidSubmit="HandleValidPrefencesSubmit">
+            <DataAnnotationsValidator />
+            <div>
+                <label for="petName">Animal preference:</label>
+                <InputSelect id="petName" class="form-control" @bind-Value="CurrentUser.AppPreferences.WebpageAnimalPreference">
+                    @foreach (var animal in Enum.GetValues(typeof(UserAnimalPreference)))
+                    {
+                        <option value="@animal">@animal</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="@(() => CurrentUser.AppPreferences.WebpageAnimalPreference)" />
+            </div>
+            <div>
+                <label for="petBreed">Font:</label>
+                <InputSelect id="petBreed" class="form-control" @bind-Value="CurrentUser.AppPreferences.SelectedFont">
+                    @foreach (var font in Enum.GetValues(typeof(AccessibleFonts)))
+                    {
+                        <option value="@font">@font</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="@(() => CurrentUser.AppPreferences.WebpageAnimalPreference)" />
+            </div>
+            <div>
+                <label for="petAge">Font size:</label>
+                <InputSelect id="petAge" class="form-control" @bind-Value="CurrentUser.AppPreferences.SelectedFontSize">
+                    @foreach (var fontsize in Enum.GetValues(typeof(AccessibleFontSizes)))
+                    {
+                        <option value="@fontsize">@fontsize</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="@(() => CurrentUser.AppPreferences.WebpageAnimalPreference)" />
+            </div>
+            <div>
+                <p>
+                    Example:
+                </p>
+                <p style="@PStyleTagCSS" class="small-scrollable-container">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Close</button>
+            </div>
+        </EditForm>
+    </Modal>
+
+}
+
 <div class="background-container">
-    <img src="./Images/dog_background.jpg" alt="buddies" class="background-image" />
+    <img src=@backgroundImagePath alt="buddies" class="background-image" />
     <div class="card wide-card">
         <div class="container">
             <div class="row">
@@ -65,116 +120,70 @@
                     <div class="container">
                         <div class="row">
                             <div class="col">
-                                @if (LoggedUserState.LoggedUser == null)
-                                {
-                                    <EditForm class="form-container" Model="NewUser" OnValidSubmit="HandleValidNewUserSubmit">
-                                        <DataAnnotationsValidator />
+                                <EditForm class="form-container" Model="CurrentUser" OnValidSubmit="HandleValidUserSubmit">
+                                    @if(Loading)
+                                    {
+                                        <LoadingSpinner></LoadingSpinner>
+                                    }
 
-                                        <div>
-                                            <label for="firstName">First Name:</label>
-                                            <InputText id="firstName" class="form-control" @bind-Value="NewUser.FirstName" />
-                                            <ValidationMessage For="@(() => NewUser.FirstName)" />
+                                    <DataAnnotationsValidator />
+
+                                    <div>
+                                        <label for="firstName">First Name:</label>
+                                        <InputText id="firstName" class="form-control" @bind-Value="CurrentUser.FirstName" />
+                                        <ValidationMessage For="@(() => CurrentUser.FirstName)" />
+                                    </div>
+
+                                    <div>
+                                        <label for="surname">Surname:</label>
+                                        <InputText id="surname" class="form-control" @bind-Value="CurrentUser.Surname" />
+                                        <ValidationMessage For="@(() => CurrentUser.Surname)" />
+                                    </div>
+
+                                    <div>
+                                        <label for="phoneNumber">Phone Number:</label>
+                                        <InputText id="phoneNumber" class="form-control" @bind-Value="CurrentUser.PhoneNumber" />
+                                        <ValidationMessage For="@(() => CurrentUser.PhoneNumber)" />
+                                    </div>
+
+                                    <div>
+                                        <label for="email">Email:</label>
+                                        <InputText id="email" class="form-control" @bind-Value="CurrentUser.Email" />
+                                        <ValidationMessage For="@(() => CurrentUser.Email)" />
+                                    </div>
+
+                                    <div>
+                                        <label for="suburb">Suburb:</label>
+                                        <InputText id="suburb" class="form-control" @bind-Value="CurrentUser.Suburb" />
+                                        <ValidationMessage For="@(() => CurrentUser.Suburb)" />
+                                    </div>
+
+                                    <div>
+                                        <label for="postcode">Postcode:</label>
+                                        <InputText id="postcode" class="form-control" @bind-Value="CurrentUser.Postcode" />
+                                        <ValidationMessage For="@(() => CurrentUser.Postcode)" />
+                                    </div>
+
+                                    <div>
+                                        <label for="loginUsername">Login Username:</label>
+                                        <InputText id="loginUsername" class="form-control" @bind-Value="CurrentUser.LoginUsername" />
+                                        <ValidationMessage For="@(() => CurrentUser.LoginUsername)" />
+                                    </div>
+
+                                    <div>
+                                        <label for="loginCurrentUsername">Login Password:</label>
+                                        <InputText id="loginCurrentUsername" class="form-control" type="password" @bind-Value="CurrentUser.LoginPassword" />
+                                        <ValidationMessage For="@(() => CurrentUser.LoginPassword)" />
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <button class="btn btn-secondary" @onclick=OpenUserPrefModal>Change app preferences</button>
                                         </div>
-
-                                        <div>
-                                            <label for="surname">Surname:</label>
-                                            <InputText id="surname" class="form-control" @bind-Value="NewUser.Surname" />
-                                            <ValidationMessage For="@(() => NewUser.Surname)" />
+                                        <div class="col">
+                                            <button class="btn btn-primary" type="submit">Save Changes</button>
                                         </div>
-
-                                        <div>
-                                            <label for="phoneNumber">Phone Number:</label>
-                                            <InputText id="phoneNumber" class="form-control" @bind-Value="NewUser.PhoneNumber" />
-                                            <ValidationMessage For="@(() => NewUser.PhoneNumber)" />
-                                        </div>
-
-                                        <div>
-                                            <label for="email">Email:</label>
-                                            <InputText id="email" class="form-control" @bind-Value="NewUser.Email" />
-                                            <ValidationMessage For="@(() => NewUser.Email)" />
-                                        </div>
-
-                                        <div>
-                                            <label for="suburb">Suburb:</label>
-                                            <InputText id="suburb" class="form-control" @bind-Value="NewUser.Suburb" />
-                                            <ValidationMessage For="@(() => NewUser.Suburb)" />
-                                        </div>
-
-                                        <div>
-                                            <label for="postcode">Postcode:</label>
-                                            <InputText id="postcode" class="form-control" @bind-Value="NewUser.Postcode" />
-                                            <ValidationMessage For="@(() => NewUser.Postcode)" />
-                                        </div>
-
-                                        <div>
-                                            <label for="loginNewUsername">Login Username:</label>
-                                            <InputText id="loginNewUsername" class="form-control" @bind-Value="NewUser.LoginUsername" />
-                                            <ValidationMessage For="@(() => NewUser.LoginUsername)" />
-                                        </div>
-
-                                        <div>
-                                            <label for="loginNewUsername">Login Password:</label>
-                                            <InputText id="loginNewUsername" class="form-control" type="password" @bind-Value="NewUser.LoginPassword" />
-                                            <ValidationMessage For="@(() => NewUser.LoginPassword)" />
-                                        </div>
-
-                                        <div>
-                                            <label for="webpageAnimalPreference">Webpage Animal Preference:</label>
-                                            <InputText id="webpageAnimalPreference" class="form-control" @bind-Value="NewUser.WebpageAnimalPreference" />
-                                            <ValidationMessage For="@(() => NewUser.WebpageAnimalPreference)" />
-                                        </div>
-
-                                        <button class="btn btn-primary" type="submit">Save Changes</button>
-                                    </EditForm>
-                                }
-                                else
-                                {
-                                    <EditForm Model="EditUser" class="form-container" OnValidSubmit="HandleValidEditUserSubmit">
-                                        <DataAnnotationsValidator />
-                                        <div>
-                                            <label for="firstName">First Name:</label>
-                                            <InputText id="firstName" class="form-control" @bind-Value="EditUser.FirstName" />
-                                            <ValidationMessage For="@(() => EditUser.FirstName)" />
-                                        </div>
-
-                                        <div>
-                                            <label for="surname">Surname:</label>
-                                            <InputText id="surname" class="form-control" @bind-Value="EditUser.Surname" />
-                                            <ValidationMessage For="@(() => EditUser.Surname)" />
-                                        </div>
-
-                                        <div>
-                                            <label for="phoneNumber">Phone Number:</label>
-                                            <InputText id="phoneNumber" class="form-control" @bind-Value="EditUser.PhoneNumber" />
-                                            <ValidationMessage For="@(() => EditUser.PhoneNumber)" />
-                                        </div>
-
-                                        <div>
-                                            <label for="email">Email:</label>
-                                            <InputText id="email" class="form-control" @bind-Value="EditUser.Email" />
-                                            <ValidationMessage For="@(() => EditUser.Email)" />
-                                        </div>
-
-                                        <div>
-                                            <label for="suburb">Suburb:</label>
-                                            <InputText id="suburb" class="form-control" @bind-Value="EditUser.Suburb" />
-                                            <ValidationMessage For="@(() => EditUser.Suburb)" />
-                                        </div>
-
-                                        <div>
-                                            <label for="postcode">Postcode:</label>
-                                            <InputText id="postcode" class="form-control" @bind-Value="EditUser.Postcode" />
-                                            <ValidationMessage For="@(() => EditUser.Postcode)" />
-                                        </div
-
-                                        <div>
-                                            <label for="webpageAnimalPreference">Webpage Animal Preference:</label>
-                                            <InputText id="webpageAnimalPreference" class="form-control" @bind-Value="EditUser.WebpageAnimalPreference" />
-                                            <ValidationMessage For="@(() => EditUser.WebpageAnimalPreference)" />
-                                        </div>
-                                        <button class="btn btn-primary" type="submit">Save Changes</button>
-                                    </EditForm>
-                                }
+                                    </div>
+                                </EditForm>
                             </div>
                             <div class="col">
                                 <div class="col">
@@ -182,7 +191,7 @@
                                     <div class="scrollable-container">
                                         @foreach (Pet pet in Pets)
                                         {
-                                           <PetTile pet="pet" DeleteEnabled=true EditEnabled=true OnDelete="()=>DeletePet(pet)" OnEdit="()=>EditPet(pet)"></PetTile>
+                                            <PetTile pet="pet" DeleteEnabled=true EditEnabled=true OnDelete="()=>DeletePet(pet)" OnEdit="()=>EditPet(pet)"></PetTile>
                                         }
                                     </div>
                                 </div>
@@ -203,50 +212,51 @@
     private Pet NewPet = new Pet();
     private Pet PetToEdit = new Pet();
     private List<Pet> Pets = new List<Pet>();
-
+    private Pet TempPet = new Pet();
+    private bool Loading = false;
     public bool isDogModalOpen = false;
+    public bool isUserPreferencesModalOpen = false;
     public ModalMode DogModalMode = ModalMode.Edit;
 
     public event PropertyChangedEventHandler PropertyChanged;
 
-    private Pet CurrentPet => DogModalMode == ModalMode.Create ? NewPet : PetToEdit;
+    private Pet CurrentPet => DogModalMode == ModalMode.Create ? NewPet : TempPet;
+    private User CurrentUser => loggedUserState.LoggedUser != null ? EditUser : NewUser;
+    private AppPreferences CurrentUserPreferences => loggedUserState.LoggedUser != null ? EditUser.AppPreferences : NewUser.AppPreferences;
+    public string backgroundImagePath = "./Images/Background_Images/Dog_Background1.jpg";
 
+    private AppPreferences TempAppPreferences = new AppPreferences();
     //// <summary>
     /// If the editForm is valid; create the new user.
     /// </summary>
-    private async void HandleValidNewUserSubmit()
+    private async void HandleValidUserSubmit()
     {
-        NewUser.Pets = Pets;
-        var response = await userService.CreateUserAsync(NewUser);
-        // Perform further processing, such as saving the user data
-        // You can access user.Username, user.Email, etc.
-
-        if(response.success)
+        if (!isDogModalOpen && !isUserPreferencesModalOpen)
         {
-            LoggedUserState.LoggedUser = response.User;
-            NewUser = new User();
-            EditUser = new User();
-            Pets = new List<Pet>();
-            loadPage();
-        }
-    }
+            Loading = true;
+            StateHasChanged();
+            var response = new ServiceResponse() { };
 
-    /// <summary>
-    /// If the editform is valid; save the edited user.
-    /// </summary>
-    /// <returns></returns>
-    private async Task HandleValidEditUserSubmit()
-    {
-        EditUser.Pets = Pets;
-        var response = await userService.UpdateUserAsync(EditUser);
-
-        if(response.success)
-        {
-            LoggedUserState.LoggedUser = response.User;
-            NewUser = new User();
-            EditUser = new User();
-            Pets = new List<Pet>();
-            loadPage();
+            if (loggedUserState.LoggedUser != null)
+            {
+                EditUser.Pets = Pets;
+                response = await userService.UpdateUserAsync(EditUser);
+            }
+            else
+            {
+                NewUser.Pets = Pets;
+                response = await userService.CreateUserAsync(NewUser);
+            }
+            Loading = false;
+            StateHasChanged();
+            if (response.success)
+            {
+                loggedUserState.LoggedUser = response.User;
+                NewUser = new User();
+                EditUser = new User();
+                Pets = new List<Pet>();
+                loadPage();
+            }
         }
     }
 
@@ -256,18 +266,28 @@
     /// <returns></returns>
     private async Task HandleValidPetSubmit()
     {
-        switch(DogModalMode)
+        switch (DogModalMode)
         {
             case ModalMode.Create:
                 Pets.Add(NewPet);
-                NewPet = new Pet();
-                CloseModal();
                 break;
             case ModalMode.Edit:
-                CloseModal();
+                Pets.Remove(PetToEdit);
+                Pets.Add(TempPet);
                 break;
         }
+        CloseDogModal();
+        StateHasChanged();
+    }
 
+    /// <summary>
+    /// If the editform is valid; update or create the pet.
+    /// </summary>
+    /// <returns></returns>
+    private async Task HandleValidPrefencesSubmit()
+    {
+        CloseUserPrefModal();
+        StateHasChanged();
     }
 
     /// <summary>
@@ -276,7 +296,9 @@
     protected override void OnInitialized()
     {
         loadPage();
-        LoggedUserState.PropertyChanged += OnLoggedUserStateChanged;
+
+
+        loggedUserState.PropertyChanged += OnloggedUserStateChanged;
     }
 
     /// <summary>
@@ -288,12 +310,12 @@
         EditUser = new User();
         Pets = new List<Pet>();
 
-        if (LoggedUserState.LoggedUser != null)
+        if (loggedUserState.LoggedUser != null)
         {
-            EditUser = LoggedUserState.LoggedUser;
-            Pets = LoggedUserState.LoggedUser.Pets.ToList();
+            EditUser = loggedUserState.LoggedUser;
+            Pets = loggedUserState.LoggedUser.Pets.ToList();
         }
-
+        backgroundImagePath = loggedUserState.GetBackgroundImage();
         StateHasChanged();
     }
 
@@ -302,10 +324,10 @@
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private void OnLoggedUserStateChanged(object sender, PropertyChangedEventArgs e)
+    private void OnloggedUserStateChanged(object sender, PropertyChangedEventArgs e)
     {
         // Check if the property that changed is "LoggedUser"
-        if (e.PropertyName == nameof(LoggedUserState.LoggedUser))
+        if (e.PropertyName == nameof(loggedUserState.LoggedUser))
         {
             loadPage();
         }
@@ -355,6 +377,19 @@
     /// <param name="petToEdit"></param>
     private void EditPet(Pet petToEdit)
     {
+        TempPet = new Pet
+            {
+                PetName = petToEdit.PetName,
+                PetBreed = petToEdit.PetBreed,
+                PetAge = petToEdit.PetAge,
+                PetGender = petToEdit.PetGender,
+                PetID = PetToEdit.PetID,
+                PetPhotoUpload = petToEdit.PetPhotoUpload,
+                PetPhoto = petToEdit.PetPhoto,
+                PetDiscoverability = petToEdit.PetDiscoverability,
+                PetPhotoFileLocation = PetToEdit.PetPhotoFileLocation
+            };
+
         PetToEdit = petToEdit;
         DogModalMode = ModalMode.Edit;
         isDogModalOpen = true;
@@ -372,8 +407,9 @@
     /// <summary>
     /// Close the modal and clear the edit and new pets.
     /// </summary>
-    private void CloseModal()
+    private void CloseDogModal()
     {
+        TempPet = new Pet();
         NewPet = new Pet();
         PetToEdit = new Pet();
         isDogModalOpen = false;
@@ -381,6 +417,97 @@
 
     private void DogModalOnClose(bool confirm)
     {
-        CloseModal();
+        CloseDogModal();
+    }
+
+    /// <summary>
+    /// Close the modal.
+    /// </summary>
+    private void CloseUserPrefModal()
+    {
+        isUserPreferencesModalOpen = false;
+    }
+
+    /// <summary>
+    /// Close the modal and clear the edit and new pets.
+    /// </summary>
+    private void OpenUserPrefModal()
+    {
+        isUserPreferencesModalOpen = true;
+    }
+
+    /// <summary>
+    /// Returns combined family and size required to style a P tag.
+    /// </summary>
+    public string PStyleTagCSS
+    {
+        get
+        {
+            return GetFontFamilyCSS + " " + GetFontSizePCSS;
+        }
+    }
+
+    // Properties for font family for CSS.
+    public string GetFontFamilyCSS
+    {
+        get
+        {
+
+            if (Enum.TryParse(CurrentUserPreferences.SelectedFont, out AccessibleFonts selectedFont))
+            {
+                switch (selectedFont)
+                {
+                    case AccessibleFonts.Arial:
+                        return "font-family: Arial, sans-serif  !important;";
+                    case AccessibleFonts.TimesNewRoman:
+                        return "font-family: Times New Roman, serif !important;";
+                    case AccessibleFonts.Verdana:
+                        return "font-family: Verdana, sans-serif !important;";
+                    case AccessibleFonts.Tahoma:
+                        return "font-family: Tahoma, sans-serif !important;";
+                    case AccessibleFonts.Calibri:
+                        return "font-family: Calibri, sans-serif !important;";
+                    case AccessibleFonts.Helvetica:
+                        return "font-family: Helvetica, sans-serif !important;";
+                    default:
+                        return "font-family: Arial, sans-serif !important;";
+                }
+            }
+            else
+            {
+                // Handle the case where the string doesn't match any enum value
+                return "font-family: Arial, sans-serif !important;";
+            }
+        }
+    }
+
+    // Properties for font size for a P tag for CSS.
+    public string GetFontSizePCSS
+    {
+        get
+        {
+            if (Enum.TryParse(CurrentUserPreferences.SelectedFontSize, out AccessibleFontSizes selectedFontSize))
+            {
+                switch (selectedFontSize)
+                {
+                    case AccessibleFontSizes.Small:
+                        return "font-size: 12px;";
+                    case AccessibleFontSizes.Medium:
+                        return "font-size: 16px;";
+                    case AccessibleFontSizes.Large:
+                        return "font-size: 20px;";
+                    case AccessibleFontSizes.XLarge:
+                        return "font-size: 24px;";
+                    case AccessibleFontSizes.XXLarge:
+                        return "font-size: 28px;";
+                    default:
+                        return "font-size: 16px;"; // Default to Medium
+                }
+            }
+            else
+            {
+                return "font-size: 16px;"; // Default to Medium
+            }
+        }
     }
 }

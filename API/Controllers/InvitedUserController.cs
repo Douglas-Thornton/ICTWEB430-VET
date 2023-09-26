@@ -48,7 +48,6 @@ namespace VETAPPAPI.Controllers
                                 Postcode = m.User.Postcode,
                                 LoginUsername = m.User.LoginUsername,
                                 LoginPassword = m.User.LoginPassword,
-                                WebpageAnimalPreference = m.User.WebpageAnimalPreference
                             },
                             Meeting = new Meeting
                             {

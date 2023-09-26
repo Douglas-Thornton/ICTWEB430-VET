@@ -64,12 +64,4 @@
             </BlazorWebView.RootComponents>
         </BlazorWebView>
     </ContentPage>
-    <ContentPage 
-        Title="Fetch Data">
-        <BlazorWebView HostPage="wwwroot/index.html">
-            <BlazorWebView.RootComponents>
-                <RootComponent Selector="#app" ComponentType="{x:Type pages:FetchData}" />
-            </BlazorWebView.RootComponents>
-        </BlazorWebView>
-    </ContentPage>
 </TabbedPage>

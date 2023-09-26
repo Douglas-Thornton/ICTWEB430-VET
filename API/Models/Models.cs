@@ -17,7 +17,7 @@ namespace VETAPPAPI.Models
         public string? Postcode { get; set; }
         public string LoginUsername { get; set; }
         public string LoginPassword { get; set; }
-        public string? WebpageAnimalPreference { get; set; }
+        public AppPreferences? AppPreferences { get; set; }
 
 
         public virtual ICollection<Pet>? Pets { get; set; }
@@ -106,6 +106,16 @@ namespace VETAPPAPI.Models
         public virtual Meeting? Meeting { get; set; }
         [ForeignKey("InviteID")]
         public virtual InvitedUser? InvitedUser { get; set; }
+    }
+
+    [Table("AppPreferences")]
+    public class AppPreferences
+    {
+        [Key]
+        public int UserID { get; set; }
+        public string WebpageAnimalPreference { get; set; }
+        public string SelectedFontSize { get; set; }
+        public string SelectedFont { get; set; }
     }
 
     public class LoginRequest

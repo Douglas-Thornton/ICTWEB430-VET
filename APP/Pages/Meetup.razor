@@ -1,11 +1,12 @@
 ﻿@using APP.Data.Models;
 @using APP.Interfaces;
 @using APP.Services;
+@inject LoggedUserState loggedUserState
 
 <div class="background-container">
-    <img src="./Images/cartoon_dog_and_cat.jpg" alt="buddies" class="background-image"/>
-    <div class="card">
-        <h3>Meetup</h3>
+    <img src=@backgroundImagePath alt="@backgroundImagePath" class="background-image"/>
+    <div class="card" style="@loggedUserState.PStyleTagCSS">
+        <h1 style="@loggedUserState.H1StyleTagCSS">Meetup</h1>
         <label>Your Name</label>
         <input placeholder="Insert your name here"/>
         <label>Your Pets Name</label>
@@ -31,6 +32,7 @@
 
 @code 
 {
+    public string backgroundImagePath = "./Images/Background_Images/Dog_Background1.jpg";
 
     List<Pet> petList = new();
     IPetService petService = new PetService();
@@ -39,15 +41,77 @@
         try
         {
             await LoadDataAsync();
+            backgroundImagePath = loggedUserState.GetBackgroundImage();
         }
         catch(Exception)
         {
-            
+
         }
     }
 
     public async Task LoadDataAsync()
     {
         petList = await petService.GetAllPets();
+    }
+
+
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    /// <summary>
+    /// On initialized setup propertyChanged event and load the page data.
+    /// </summary>
+    protected override void OnInitialized()
+    {
+        loggedUserState.PropertyChanged += OnloggedUserStateChanged;
+
+        // Subscribe to the PropertyChanged event of AppPreferences
+        if (loggedUserState.LoggedUser != null && loggedUserState.LoggedUser.AppPreferences != null)
+        {
+            loggedUserState.LoggedUser.AppPreferences.PropertyChanged += OnAppPreferencesChanged;
+        }
+        backgroundImagePath = loggedUserState.GetBackgroundImage();
+    }
+
+    /// <summary>
+    /// If the user logs in; update the data on this page.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void OnloggedUserStateChanged(object sender, PropertyChangedEventArgs e)
+    {
+        // Check if the property that changed is "LoggedUser"
+        if (e.PropertyName == nameof(loggedUserState.LoggedUser))
+        {
+            if (loggedUserState.LoggedUser != null)
+            {
+                loggedUserState.LoggedUser.AppPreferences.PropertyChanged += OnAppPreferencesChanged;
+            }
+            backgroundImagePath = loggedUserState.GetBackgroundImage();
+            StateHasChanged();
+        }
+    }
+
+    // Handle changes to the AppPreferences or its sub-properties
+    private void OnAppPreferencesChanged(object sender, PropertyChangedEventArgs e)
+    {
+        // Check if the property that changed is one of the AppPreferences properties
+        // that you want to monitor
+        if (e.PropertyName == nameof(loggedUserState.LoggedUser) ||
+            e.PropertyName == nameof(loggedUserState.LoggedUser.AppPreferences.SelectedFont) ||
+            e.PropertyName == nameof(loggedUserState.LoggedUser.AppPreferences.SelectedFontSize) ||
+            e.PropertyName == nameof(loggedUserState.LoggedUser.AppPreferences.WebpageAnimalPreference))
+        {
+            backgroundImagePath = loggedUserState.GetBackgroundImage();
+            StateHasChanged();
+        }
+    }
+
+    public void Dispose()
+    {
+        // Unsubscribe from the PropertyChanged event of AppPreferences
+        if (loggedUserState.LoggedUser != null && loggedUserState.LoggedUser.AppPreferences != null)
+        {
+            loggedUserState.LoggedUser.AppPreferences.PropertyChanged -= OnAppPreferencesChanged;
+        }
     }
 }

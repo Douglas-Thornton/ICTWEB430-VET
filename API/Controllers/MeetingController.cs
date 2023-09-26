@@ -46,7 +46,6 @@ namespace VETAPPAPI.Controllers
                          Postcode = m.User.Postcode,
                          LoginUsername = m.User.LoginUsername,
                          LoginPassword = m.User.LoginPassword,
-                         WebpageAnimalPreference = m.User.WebpageAnimalPreference
                      },
                      InvitedPets = m.InvitedPets.Select(m => new InvitedPet
                      {
@@ -84,7 +83,6 @@ namespace VETAPPAPI.Controllers
                              Postcode = m.User.Postcode,
                              LoginUsername = m.User.LoginUsername,
                              LoginPassword = m.User.LoginPassword,
-                             WebpageAnimalPreference = m.User.WebpageAnimalPreference
                          },
                      }).ToList()
                  }).ToList();
@@ -128,7 +126,6 @@ namespace VETAPPAPI.Controllers
                          Postcode = m.User.Postcode,
                          LoginUsername = m.User.LoginUsername,
                          LoginPassword = m.User.LoginPassword,
-                         WebpageAnimalPreference = m.User.WebpageAnimalPreference
                      },
                      InvitedPets = m.InvitedPets.Select(m => new InvitedPet
                      {
@@ -166,7 +163,6 @@ namespace VETAPPAPI.Controllers
                              Postcode = m.User.Postcode,
                              LoginUsername = m.User.LoginUsername,
                              LoginPassword = m.User.LoginPassword,
-                             WebpageAnimalPreference = m.User.WebpageAnimalPreference
                          },
                      }).ToList()
                  }).Where(m => m.MeetingID == id).ToList();
@@ -208,7 +204,6 @@ namespace VETAPPAPI.Controllers
                          Postcode = m.User.Postcode,
                          LoginUsername = m.User.LoginUsername,
                          LoginPassword = m.User.LoginPassword,
-                         WebpageAnimalPreference = m.User.WebpageAnimalPreference
                      },
                      InvitedPets = m.InvitedPets.Select(m => new InvitedPet
                      {
@@ -246,7 +241,6 @@ namespace VETAPPAPI.Controllers
                              Postcode = m.User.Postcode,
                              LoginUsername = m.User.LoginUsername,
                              LoginPassword = m.User.LoginPassword,
-                             WebpageAnimalPreference = m.User.WebpageAnimalPreference
                          },
                      }).ToList()
                  }).Where(m => m.UserCreated == id).ToList();
@@ -289,7 +283,6 @@ namespace VETAPPAPI.Controllers
                          Postcode = m.User.Postcode,
                          LoginUsername = m.User.LoginUsername,
                          LoginPassword = m.User.LoginPassword,
-                         WebpageAnimalPreference = m.User.WebpageAnimalPreference
                      },
                      InvitedPets = m.InvitedPets.Select(m => new InvitedPet
                      {
@@ -327,7 +320,6 @@ namespace VETAPPAPI.Controllers
                              Postcode = m.User.Postcode,
                              LoginUsername = m.User.LoginUsername,
                              LoginPassword = m.User.LoginPassword,
-                             WebpageAnimalPreference = m.User.WebpageAnimalPreference
                          },
                      }).ToList()
                  }).Where(m => m.InvitedUsers.Any(u => u.UserID == userId)).ToList();
