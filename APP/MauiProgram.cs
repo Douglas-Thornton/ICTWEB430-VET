@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using APP.Services;
 using APP.Interfaces;
-using APP.Services.Email;
 
 namespace APP
 {
