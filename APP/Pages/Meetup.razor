@@ -10,9 +10,9 @@
     <div class="card" style="@loggedUserState.PStyleTagCSS">
         <h1 style="@loggedUserState.H1StyleTagCSS">Meetup</h1>
         <label>Your Name</label>
-        <input placeholder="Insert your name here"/>
+        <input @bind-value="nameOfSender" placeholder="Insert your name here" />
         <label>Your Pets Name</label>
-        <input placeholder="Insert your name here" />
+        <input placeholder="Insert your pets name here" />
         <label>Is your pet a dog or cat?</label>
         <select>
             <option>Select an option</option>
@@ -20,7 +20,7 @@
             <option value="cat">Cat</option>
         </select>
         <label>Select your playdate</label>
-        <select>
+        <select @bind="selectedPet.PetID">
             <option value="none">select</option>
             @foreach (var pet in petList)
             {
@@ -34,8 +34,9 @@
 
 @code 
 {
+    Pet selectedPet = new();
     public string backgroundImagePath = "./Images/Background_Images/Dog_Background1.jpg";
-
+    string nameOfSender = string.Empty;
     List<Pet> petList = new();
     IPetService petService = new PetService();
     protected override async Task OnInitializedAsync()
@@ -55,7 +56,6 @@
     {
         petList = await petService.GetAllPets();
     }
-
 
     public event PropertyChangedEventHandler PropertyChanged;
 
@@ -121,5 +121,7 @@
     {
         EmailService service = new(Configuration);
         await service.SendEmail(Configuration["TestEmailName"], "This is a test email", Configuration["TestEmail"]);
+        // Commented out as this will actually send emails to whomever we pass through. Use the Test configuration above to determine if functionality is working as expected
+        // await service.SendEmail(nameOfSender, $"Hey there! {selectedPet.Owner.FirstName} I was wondering if you would like to meetup for a play date with our furry friends. I see {selectedPet.PetName} would be a great match to meetup with.", selectedPet.Owner.Email);
     }
 }
