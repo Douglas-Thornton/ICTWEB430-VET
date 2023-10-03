@@ -29,7 +29,8 @@
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
         <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
-    </PropertyGroup>
+      <UserSecretsId>54aea10c-d16a-41c6-9d66-d80393b1f589</UserSecretsId>
+  </PropertyGroup>
 
     <ItemGroup>
         <!-- App Icon -->
@@ -62,19 +63,30 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Helpers\" />
-      <Folder Include="JS\" />
     </ItemGroup>
 
 	<ItemGroup>
 		<None Include="wwwroot\**">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <AndroidResource Remove="Helpers\**" />
+	  <AndroidResource Remove="JS\**" />
+	  <Compile Remove="Helpers\**" />
+	  <Compile Remove="JS\**" />
+	  <Content Remove="Helpers\**" />
+	  <Content Remove="JS\**" />
+	  <EmbeddedResource Remove="Helpers\**" />
+	  <EmbeddedResource Remove="JS\**" />
+	  <MauiXaml Remove="Helpers\**" />
+	  <MauiXaml Remove="JS\**" />
+	  <None Remove="Helpers\**" />
+	  <None Remove="JS\**" />
 	</ItemGroup>
 
 </Project>

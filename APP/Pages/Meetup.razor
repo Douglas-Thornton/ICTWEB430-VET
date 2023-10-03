@@ -1,6 +1,8 @@
 ﻿@using APP.Data.Models;
 @using APP.Interfaces;
+@using Microsoft.Extensions.Configuration;
 @using APP.Services;
+@inject IConfiguration Configuration;
 @inject LoggedUserState loggedUserState
 
 <div class="background-container">
@@ -25,7 +27,7 @@
                 <option value="@pet.PetID">@pet.PetName</option>
             }
         </select>
-        <button>Submit</button>
+        <button @onclick="SendEmail">Submit</button>
     </div>
 </div>
 
@@ -113,5 +115,11 @@
         {
             loggedUserState.LoggedUser.AppPreferences.PropertyChanged -= OnAppPreferencesChanged;
         }
+    }
+
+    public async Task SendEmail()
+    {
+        EmailService service = new(Configuration);
+        await service.SendEmail(Configuration["TestEmailName"], "This is a test email", Configuration["TestEmail"]);
     }
 }

@@ -1,8 +1,9 @@
 ﻿using APP.States;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 using APP.Services;
 using APP.Interfaces;
-using APP.Data;
+using APP.Services.Email;
 
 namespace APP
 {
@@ -17,6 +18,7 @@ namespace APP
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 });
+            builder.Services.AddSingleton<IConfiguration>(builder.Configuration.AddUserSecrets<App>().Build());
 
             builder.Services.AddMauiBlazorWebView();
 
@@ -27,6 +29,7 @@ namespace APP
 
             builder.Services.AddSingleton<IUserService, UserService>();
             builder.Services.AddSingleton<IPetService, PetService>();
+            builder.Services.AddSingleton<IEmailService, EmailService>();
             builder.Services.AddSingleton<LoggedUserState>();
             builder.Services.AddSingleton<App>();
 
