@@ -7,7 +7,7 @@
 @inject IConfiguration Configuration;
 @inject LoggedUserState loggedUserState
 
-@if(loggedUserState != null)
+@if(loggedUserState.LoggedUser == null)
 {
     <div class="background-container">
         <img src=@backgroundImagePath alt="@backgroundImagePath" class="background-image" />
