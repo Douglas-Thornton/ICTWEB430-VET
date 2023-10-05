@@ -7,31 +7,42 @@
 @inject IConfiguration Configuration;
 @inject LoggedUserState loggedUserState
 
-<div class="background-container">
-    <img src=@backgroundImagePath alt="@backgroundImagePath" class="background-image"/>
-    <div class="card" style="@loggedUserState.PStyleTagCSS">
-        <h1 style="@loggedUserState.H1StyleTagCSS">Meetup</h1>
-        <label>Your Name</label>
-        <input @bind-value="nameOfSender" placeholder="Insert your name here" />
-        <label>Your Pets Name</label>
-        <input placeholder="Insert your pets name here" />
-        <label>Is your pet a dog or cat?</label>
-        <select>
-            <option>Select an option</option>
-            <option value="dog">Dog</option>
-            <option value="cat">Cat</option>
-        </select>
-        <label>Select your playdate</label>
-        <select @bind="selectedPet.PetID">
-            <option value="none">select</option>
-            @foreach (var pet in petList)
-            {
-                <option value="@pet.PetID">@pet.PetName</option>
-            }
-        </select>
-        <button @onclick="SendEmail">Submit</button>
+@if(loggedUserState != null)
+{
+    <div class="background-container">
+        <img src=@backgroundImagePath alt="@backgroundImagePath" class="background-image" />
+        <div class="card" style="@loggedUserState.PStyleTagCSS">
+            <h1>You need to be logged in to view this page</h1>
+        </div>
     </div>
-</div>
+}
+else{
+    <div class="background-container">
+        <img src=@backgroundImagePath alt="@backgroundImagePath" class="background-image"/>
+        <div class="card" style="@loggedUserState.PStyleTagCSS">
+            <h1 style="@loggedUserState.H1StyleTagCSS">Meetup</h1>
+            <label>Your Name</label>
+            <input @bind-value="nameOfSender" placeholder="Insert your name here" />
+            <label>Your Pets Name</label>
+            <input placeholder="Insert your pets name here" />
+            <label>Is your pet a dog or cat?</label>
+            <select>
+                <option>Select an option</option>
+                <option value="dog">Dog</option>
+                <option value="cat">Cat</option>
+            </select>
+            <label>Select your playdate</label>
+            <select @bind="selectedPet.PetID">
+                <option value="none">select</option>
+                @foreach (var pet in petList)
+                {
+                    <option value="@pet.PetID">@pet.PetName</option>
+                }
+            </select>
+            <button @onclick="SendEmail">Submit</button>
+        </div>
+    </div>
+}
 
 
 @code 
