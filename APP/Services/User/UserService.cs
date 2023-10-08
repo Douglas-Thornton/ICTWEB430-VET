@@ -2,9 +2,7 @@
 using Newtonsoft.Json;
 using System.Net.Http.Json;
 using APP.Interfaces;
-using System.Net;
 using System.Text;
-using System;
 
 namespace APP.Services;
 

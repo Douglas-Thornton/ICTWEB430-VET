@@ -46,6 +46,35 @@ public class User : INotifyPropertyChanged
     }
 }
 
+public class Meeting
+{
+    public int MeetingID { get; set; }
+    public int? UserCreated { get; set; }
+    public DateTime? MeetingDate { get; set; }
+    public string? MeetingLocation { get; set; }
+    public DateTime? MeetingCreationDate { get; set; }
+    public DateTime? MeetingCancelledDate { get; set; }
+    public string? MeetingName { get; set; }
+    public string? MeetingMessage { get; set; }
+}
+
+
+public class InvitedUser
+{
+    public int InviteID { get; set; }
+    public int UserID { get; set; }
+    public int MeetingID { get; set; }
+    public bool? Accepted { get; set; }
+    public DateTime? ResponseDate { get; set; }
+}
+
+public class InvitedPet
+{
+    public int InvitedPetID { get; set; }
+    public int PetID { get; set; }
+    public int MeetingID { get; set; }
+    public int InviteID { get; set; }
+}
 public class Pet
 {
     public int PetID { get; set; }

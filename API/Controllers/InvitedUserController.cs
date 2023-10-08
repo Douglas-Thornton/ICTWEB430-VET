@@ -126,7 +126,7 @@ namespace VETAPPAPI.Controllers
             }
 
             [HttpPut("{id:int}")]
-            public async Task<MainResponse> UpdateInvitedUser(int id, InvitedUser invitedUser)
+            public async Task<MainResponse> UpdateInvitedUser(int id)
             {
                 var response = new MainResponse();
                 try
