@@ -26,7 +26,11 @@
                 </div>
                 <div class="col">
                     <p>Gender: @pet.PetGender</p>
-                    <p>Discoverable: @(pet.PetDiscoverability ? "Visible" : "Hidden")</p>
+
+                    @if (ShowVisability)
+                    {
+                        <p>Discoverable: @(pet.PetDiscoverability ? "Visible" : "Hidden")</p>
+                    }
                 </div>
                 @if (InviteEnabled)
                 {
@@ -55,6 +59,8 @@
     [Parameter]
     public bool DeleteEnabled { get; set; } = false;
 
+    [Parameter]
+    public bool ShowVisability { get; set; } = true;
 
     [Parameter]
     public bool EditEnabled { get; set; } = false;

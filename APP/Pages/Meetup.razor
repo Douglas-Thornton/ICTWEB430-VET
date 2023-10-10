@@ -21,9 +21,9 @@
 }
 else
 {
-    if(CancellationModalOpen)
+    if (CancellationModalOpen)
     {
-        
+
         <Modal OnClose="CloseCancellationModal" ModalTitle="Cancel Meeting">
             <div>
                 <h1>Are you sure you want to cancel this meeting?</h1>
@@ -34,7 +34,7 @@ else
 
     if (MeetingModalOpen)
     {
-        <Modal OnClose="CloseMeetingModal" ModalTitle="@(MeetingModalMode == ModalMode.Create ? "Create Meeting" : "Edit Meeting")">
+        <Modal OnClose="CloseMeetingModal" ModalTitle="@(MeetingModalMode == ModalMode.Create ? "Create Meeting" : "Edit Meeting")" ModalWidth="modal-90">
             <div class="container">
                 <div class="row">
                     <div class="col">
@@ -75,8 +75,8 @@ else
                     </div>
 
                     <div class="col">
+                        <h3>Invited pets:</h3>
                         <div class="scrollable-container">
-                            <h3>Invited pets:</h3>
                             @if (CurrentMeeting.InvitedUsers != null)
                             {
                                 foreach (InvitedUser invitedUser in CurrentMeeting.InvitedUsers)
@@ -84,7 +84,7 @@ else
                                     foreach (InvitedPet invitedPet in invitedUser.InvitedPets)
                                     {
                                         var pet = petList.SingleOrDefault(p => p.PetID == invitedPet.PetID);
-                                        <PetTile pet="pet" DeleteEnabled=true EditEnabled=false OnDelete="()=>DeletePet(pet)"></PetTile>
+                                        <PetTile pet="pet" DeleteEnabled=true EditEnabled=false ShowVisability="false" OnDelete="()=>DeletePet(pet)"></PetTile>
 
                                     }
                                 }
@@ -92,21 +92,21 @@ else
                         </div>
                     </div>
                     <div class="col">
-                        <div class="scrollable-container">
-                            <h3>Inviteable pets:</h3>
-                            @if (petList != null)
-                            {
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="petSearch" placeholder="Search for a pet" @onchange=SearchPets>
-                                    <label for="petSearch">Search:</label>
-                                </div>
+                        <h3>Inviteable pets:</h3>
+                        @if (petList != null)
+                        {
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" id="petSearch" placeholder="Search for a pet" @onchange=SearchPets>
+                                <label for="petSearch">Search:</label>
+                            </div>
+                            <div class="scrollable-container">
 
-                                foreach (Pet pet in FilteredPetList)
+                                @foreach (Pet pet in FilteredPetList)
                                 {
-                                    <PetTile pet="pet" InviteEnabled="true" OnInvite="()=>InvitePet(pet)"></PetTile>
+                                    <PetTile pet="pet" InviteEnabled="true" ShowVisability="false" OnInvite="()=>InvitePet(pet)"></PetTile>
                                 }
-                            }
-                        </div>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
@@ -124,12 +124,12 @@ else
             <div class="container">
                 <div class="row">
                     <div class="col">
-                        @if(meetingsCreatedByLoggedUser != null)
+                        @if (meetingsCreatedByLoggedUser != null)
                         {
                             <h2>Meetings you have created</h2>
                             <button class="btn btn-primary p-1 m-1" @onclick=CreateNewMeeting>Create a new meeting</button>
 
-                            @foreach(Meeting meeting in meetingsCreatedByLoggedUser.OrderByDescending(x => x.MeetingCreationDate))
+                            @foreach (Meeting meeting in meetingsCreatedByLoggedUser.OrderByDescending(x => x.MeetingCreationDate))
                             {
                                 <MeetupTile meeting="meeting" EditEnabled=true OnEdit="EditMeeting" CancelEnabled=true OnCancel="OpenCancelMeetingModal"></MeetupTile>
                             }
@@ -195,12 +195,13 @@ else
                 }
                 var unused = petList.Where(p => !usedpetIds.Contains(p.PetID)).ToList();
 
-                if(!string.IsNullOrEmpty(searchPet))
+                if (!string.IsNullOrEmpty(searchPet))
                 {
                     FilteredPetList = unused.Where(p => p.PetName.ToLower().Contains(searchPet.ToLower()) || p.PetBreed.ToLower().Contains(searchPet.ToLower())).ToList();
-                }else
+                }
+                else
                 {
-                    FilteredPetList = unused;    
+                    FilteredPetList = unused;
                 }
 
 
@@ -289,7 +290,7 @@ else
 
     private async void HandleValidMeetingSubmit()
     {
-        switch(MeetingModalMode)
+        switch (MeetingModalMode)
         {
             case ModalMode.Create:
                 CurrentMeeting.MeetingCreationDate = DateTime.Now;
@@ -336,21 +337,29 @@ else
     /// <param name="petToInvite"></param>
     private void InvitePet(Pet petToInvite)
     {
-        var userToInvite = Users.SingleOrDefault(u => u.UserID == petToInvite.OwnerID);
-        InvitedUser invitedUser = new InvitedUser();
-        invitedUser.UserID = userToInvite.UserID;
-        invitedUser.InvitedPets = new List<InvitedPet>();
-        InvitedPet invitedPet = new InvitedPet();
-        invitedPet.PetID = petToInvite.PetID;
-
-        invitedUser.InvitedPets.Add(invitedPet);
         if (CurrentMeeting.InvitedUsers == null)
         {
             CurrentMeeting.InvitedUsers = new List<InvitedUser>();
         }
 
-        CurrentMeeting.InvitedUsers.Add(invitedUser);
+        var invitedUser = CurrentMeeting.InvitedUsers.FirstOrDefault(u => u.UserID == petToInvite.OwnerID);
+
+        if (invitedUser == null)
+        {
+            invitedUser = new InvitedUser()
+                {
+                    UserID = petToInvite.OwnerID,
+                    InvitedPets = new List<InvitedPet>()
+                };
+            CurrentMeeting.InvitedUsers.Add(invitedUser);
+        }
+
+        invitedUser.InvitedPets.Add(new InvitedPet()
+            {
+                PetID = petToInvite.PetID
+            });
     }
+
 
     /// <summary>
     /// Open tbe meeting modal in edit mode.
@@ -428,7 +437,7 @@ else
         newMeeting = new Meeting();
         MeetingModalOpen = false;
         StateHasChanged();
-    }    
+    }
 
     /// <summary>
     /// Close the modal and clear the edit and new pets.

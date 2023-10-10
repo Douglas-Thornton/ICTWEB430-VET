@@ -2,3 +2,8 @@
 {
     display: block;
 }
+
+.modal-90
+{
+    max-width: 90%;
+}
