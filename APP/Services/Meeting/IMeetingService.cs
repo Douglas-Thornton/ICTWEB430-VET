@@ -4,5 +4,5 @@ namespace APP.Services;
 
 public interface IMeetingService
 {
-    public Task<List<Meeting>> GetMeetingsByInvitedUserId(int userId);
+    public Task<List<Meeting>> GetMeetingsByMeetingId(int userId);
 }

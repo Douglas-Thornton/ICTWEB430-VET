@@ -26,9 +26,11 @@ namespace APP
 		builder.Logging.AddDebug();
 #endif
 
-            builder.Services.AddSingleton<IUserService, UserService>();
-            builder.Services.AddSingleton<IPetService, PetService>();
-            builder.Services.AddSingleton<IEmailService, EmailService>();
+            builder.Services.AddTransient<IUserService, UserService>();
+            builder.Services.AddTransient<IPetService, PetService>();
+            builder.Services.AddTransient<IEmailService, EmailService>();
+            builder.Services.AddTransient<IInvitedUserService, InvitedUserService>();
+            builder.Services.AddTransient<IMeetingService, MeetingService>();
             builder.Services.AddSingleton<LoggedUserState>();
             builder.Services.AddSingleton<App>();
 

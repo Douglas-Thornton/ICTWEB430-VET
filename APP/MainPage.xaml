@@ -64,4 +64,15 @@
             </BlazorWebView.RootComponents>
         </BlazorWebView>
     </ContentPage>
+    <ContentPage
+        Title="Test Page">
+        <BlazorWebView
+            HostPage="wwwroot/index.html">
+            <BlazorWebView.RootComponents>
+                <RootComponent
+                    Selector="#app"
+                    ComponentType="{x:Type pages:TestPage}" />
+            </BlazorWebView.RootComponents>
+        </BlazorWebView>
+    </ContentPage>
 </TabbedPage>

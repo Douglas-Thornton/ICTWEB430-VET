@@ -7,14 +7,14 @@ public class InvitedUserService: IInvitedUserService
 {
     private readonly string _baseUrl = "https://localhost:7020/";
 
-    public async Task<List<InvitedUser>> GetInvitedUserByMeetingId(int meetingId)
+    public async Task<List<InvitedUser>> GetInvitedUserById(int id)
     {
 
         try
         {
             using var client = new HttpClient();
 
-            string url = $"{_baseUrl}api/bymeeting/{meetingId}";
+            string url = $"{_baseUrl}api/invitedUserController/byId/{id}";
 
             var apiResponse = await client.GetAsync(url);
 
@@ -23,9 +23,11 @@ public class InvitedUserService: IInvitedUserService
                 throw new Exception("failed to get the users");
             }
 
-            var content = await apiResponse.Content.ReadAsStringAsync();
-            var users = JsonConvert.DeserializeObject<List<InvitedUser>>(content);
+            var response = await apiResponse.Content.ReadAsStringAsync();
+            var deserilizeResponse = JsonConvert.DeserializeObject<MainResponseModel>(response);
 
+            var users = JsonConvert.DeserializeObject<List<InvitedUser>>(deserilizeResponse.Content.ToString());
+            
             return users;
         }
         catch (Exception)

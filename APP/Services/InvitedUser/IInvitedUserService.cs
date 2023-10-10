@@ -1,9 +1,8 @@
-﻿
-using APP.Data.Models;
+﻿using APP.Data.Models;
 
 namespace APP.Services;
 
 public interface IInvitedUserService
 {
-    public Task<List<InvitedUser>> GetInvitedUserByMeetingId(int meetingId);
+    public Task<List<InvitedUser>> GetInvitedUserById(int meetingId);
 }

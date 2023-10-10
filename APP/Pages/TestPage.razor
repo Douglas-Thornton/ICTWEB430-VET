@@ -1,0 +1,48 @@
+﻿@page "/test-page"
+@using APP.Services;
+@using APP.Data.Models;
+@using Newtonsoft.Json;
+
+@inject IInvitedUserService invitedUserService;
+@inject IMeetingService meetingService;
+<h3>TestPage</h3>
+
+<p>UserId: @user.UserID</p>
+@foreach(var meeting in meetings)
+{
+    if(meeting.MeetingID == user.MeetingID)
+    {
+    <p>Message: @meeting.MeetingMessage</p>
+    }
+}
+
+@code {
+    List<InvitedUser> users = new();
+    User user = new();
+    List<Meeting> meetings = new();
+    public async Task GetInvitedUsers()
+    {
+        users = await invitedUserService.GetInvitedUserById(1);
+    }
+
+    public string ConvertToString(InvitedUser user)
+    {
+        return JsonConvert.SerializeObject(user);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetInvitedUsers();
+        foreach(var user in users)
+        {
+            await GetMeetings(user.MeetingID);
+        }
+
+    }
+
+    public async Task GetMeetings(int meetingId)
+    {
+        var response = await meetingService.GetMeetingsByMeetingId(meetingId);
+        meetings.AddRange(response);
+    }
+}

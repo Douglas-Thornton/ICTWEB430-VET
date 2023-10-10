@@ -21,6 +21,59 @@ namespace VETAPPAPI.Controllers
                 _dbContext = dbContext;
             }
 
+            [HttpGet("byId/{id:int}")]
+            public async Task<MainResponse> GetInvitedUsersById(int id)
+            {
+                var response = new MainResponse();
+                try
+                {
+                    response.Content = _dbContext.InvitedUsers
+                        .Include(ip => ip.User)
+                        .Include(ip => ip.Meeting)
+                        .Select(m => new InvitedUser
+                        {
+                            InviteID = m.InviteID,
+                            UserID = m.UserID,
+                            MeetingID = m.InviteID,
+                            Accepted = m.Accepted,
+                            ResponseDate = m.ResponseDate,
+                            User = new User
+                            {
+                                UserID = m.User.UserID,
+                                FirstName = m.User.FirstName,
+                                Surname = m.User.Surname,
+                                PhoneNumber = m.User.PhoneNumber,
+                                Email = m.User.Email,
+                                Suburb = m.User.Suburb,
+                                Postcode = m.User.Postcode,
+                                LoginUsername = m.User.LoginUsername,
+                                LoginPassword = m.User.LoginPassword,
+                            },
+                            Meeting = new Meeting
+                            {
+                                MeetingID = m.Meeting.MeetingID,
+                                UserCreated = m.Meeting.UserCreated,
+                                MeetingDate = m.Meeting.MeetingDate,
+                                MeetingLocation = m.Meeting.MeetingLocation,
+                                MeetingCreationDate = m.Meeting.MeetingCreationDate,
+                                MeetingCancellationDate = m.Meeting.MeetingCancellationDate,
+                                MeetingName = m.Meeting.MeetingName,
+                                MeetingMessage = m.Meeting.MeetingMessage
+                            }
+                        }).Where(user => user.UserID == id).ToList();
+
+                    response.IsSuccess = true;
+                }
+                catch (Exception ex)
+                {
+                    response.ErrorMessage = ex.Message;
+                    response.IsSuccess = false;
+                }
+
+                return response;
+            }
+
+
             [HttpGet]
             public async Task<MainResponse> GetInvitedUsers()
             {

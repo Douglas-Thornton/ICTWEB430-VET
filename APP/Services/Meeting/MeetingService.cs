@@ -7,24 +7,26 @@ public class MeetingService : IMeetingService
 {
     private readonly string _baseUrl = "https://localhost:7020/";
 
-    public async Task<List<Meeting>> GetMeetingsByInvitedUserId(int userId)
+    public async Task<List<Meeting>> GetMeetingsByMeetingId(int meetingId)
     {
 
         try
         {
             using var client = new HttpClient();
 
-            string url = $"{_baseUrl}api/HasInvitedUser/{userId}";
+            string url = $"{_baseUrl}api/meetingController/{meetingId}";
 
             var apiResponse = await client.GetAsync(url);
 
-            if (!apiResponse.IsSuccessStatusCode) 
+            if (!apiResponse.IsSuccessStatusCode)
             {
-                throw new Exception("failed to get meetings");
+                throw new Exception("failed to get the users");
             }
 
-            var content = await apiResponse.Content.ReadAsStringAsync();
-            var meetings = JsonConvert.DeserializeObject<List<Meeting>>(content);
+            var response = await apiResponse.Content.ReadAsStringAsync();
+            var deserilizeResponse = JsonConvert.DeserializeObject<MainResponseModel>(response);
+
+            var meetings = JsonConvert.DeserializeObject<List<Meeting>>(deserilizeResponse.Content.ToString());
 
             return meetings;
         }
