@@ -1,5 +1,7 @@
 ﻿@page "/"
+@using Microsoft.Extensions.Configuration;
 @inject LoggedUserState loggedUserState
+@inject IConfiguration configuration;
 
 <div class="background-container">
     <img src=@backgroundImagePath alt="@backgroundImagePath" class="background-image"/>
@@ -11,10 +13,19 @@
                 <p style="@loggedUserState.PStyleTagCSS">Join us in providing your pets with a healthier and happier life. We look forward to welcoming you and your pets to the GreenPaws family!</p>
             </div>    
             <div class="row">
-
-                <div class="col">
-                    <iframe width="450" height="250" style="border:0" loading="lazy" allowfullscreen></iframe>
-                </div>
+                @if (!String.IsNullOrEmpty(googleMapsAPIKey))
+                {
+                    <div class="col">
+                        <iframe width="450"
+                                height="250"
+                                frameborder="0" style="border:0"
+                                referrerpolicy="no-referrer-when-downgrade"
+                                src="https://www.google.com/maps/embed/v1/place?key=@googleMapsAPIKey&q=EjFsdmwgNC80NSBHcmVuZmVsbCBTdCwgQWRlbGFpZGUgU0EgNTAwMCwgQXVzdHJhbGlhIiEaHwoWChQKEgltla751s6wahHICqdoB_lG0xIFbHZsIDQ
+lvl 4/45 Grenfell St, Adelaide SA 5000, Australia"
+                                allowfullscreen>
+                        </iframe>
+                    </div>
+                }
                 <div class="col">
                     <p style="@loggedUserState.PStyleTagCSS">
                         We are conveniently located at:<br>
@@ -39,11 +50,16 @@
     public string backgroundImagePath = "./Images/Background_Images/Dog_Background1.jpg";
     public event PropertyChangedEventHandler PropertyChanged;
 
+    public string googleMapsAPIKey = "";
+
     /// <summary>
     /// On initialized setup propertyChanged event and load the page data.
     /// </summary>
     protected override void OnInitialized()
     {
+
+        googleMapsAPIKey = configuration["MapsAPIKey"];
+
         loggedUserState.PropertyChanged += OnLoggedUserStateChanged;
 
         // Subscribe to the PropertyChanged event of AppPreferences
