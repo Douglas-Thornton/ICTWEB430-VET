@@ -27,7 +27,7 @@ else
         <Modal OnClose="CloseCancellationModal" ModalTitle="Cancel Meeting">
             <div>
                 <h1>Are you sure you want to cancel this meeting?</h1>
-                <button @onclick="() => CancelMeeting(editMeeting)"> Cancel Meeting</button>
+                <button class="btn btn-danger btn-lg p-1 m-1" @onclick="() => CancelMeeting(editMeeting)"> Cancel Meeting</button>
             </div>
         </Modal>
     }
@@ -127,7 +127,7 @@ else
                         @if(meetingsCreatedByLoggedUser != null)
                         {
                             <h2>Meetings you have created</h2>
-                            <button @onclick=CreateNewMeeting>Create a new meeting</button>
+                            <button class="btn btn-primary p-1 m-1" @onclick=CreateNewMeeting>Create a new meeting</button>
 
                             @foreach(Meeting meeting in meetingsCreatedByLoggedUser.OrderByDescending(x => x.MeetingCreationDate))
                             {
@@ -239,7 +239,7 @@ else
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private void OnloggedUserStateChanged(object sender, PropertyChangedEventArgs e)
+    private async void OnloggedUserStateChanged(object sender, PropertyChangedEventArgs e)
     {
         // Check if the property that changed is "LoggedUser"
         if (e.PropertyName == nameof(loggedUserState.LoggedUser))
@@ -250,7 +250,7 @@ else
                 CurrentMeeting.UserCreated = loggedUserState.LoggedUser.UserID;
             }
             backgroundImagePath = loggedUserState.GetBackgroundImage();
-            LoadDataAsync();
+            await LoadDataAsync();
             StateHasChanged();
         }
     }

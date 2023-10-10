@@ -12,10 +12,10 @@
             <div class="row">
                 <div class="col">
                     <p>Message: @meeting.MeetingMessage</p>
+                    <p>Location: @meeting.MeetingLocation</p>
                 </div>
                 <div class="col">
                     <p>Date: @meeting.MeetingDate</p>
-                    <p>Location: @meeting.MeetingLocation</p>
                     @if (meeting.MeetingCancellationDate != null)
                     {
                         <p>Cancellation date: @meeting.MeetingCancellationDate.Value.ToString("hh:mm tt MM/dd/yyyy")</p>
@@ -25,18 +25,17 @@
                         <p>Cancellation date: Not cancelled</p>
                     }
                 </div>
-                @if (EditEnabled)
-                {
-                    <div class="col">
-                        <button class="btn btn-primary btn-sm" @onclick="() => EditMeeting()">Edit</button>
-                    </div>
-                }
-                @if (CancelEnabled)
-                {
-                    <div class="col">
-                        <button class="btn btn-primary btn-sm" @onclick="() => CancelMeeting()">Cancel</button>
-                    </div>
-                }
+                <div class="col">
+                    @if (EditEnabled)
+                    {
+                        <button class="btn btn-primary btn-lg p-1 m-1" @onclick="() => EditMeeting()">Edit</button>
+                    }
+                    @if (CancelEnabled)
+                    {
+                        <button class="btn btn-danger btn-lg p-1 m-1" @onclick="() => CancelMeeting()">Cancel</button>
+                    }
+                </div>
+
             </div>
         </div>
     </div>
