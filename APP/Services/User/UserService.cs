@@ -106,7 +106,7 @@ public class UserService : IUserService
                 else 
                 { 
                     serviceResponse.success= false;
-                    serviceResponse.Response = "Failed to login to new user";
+                    serviceResponse.Response = "Failed to create new user";
                 }
             }
             else
@@ -156,7 +156,7 @@ public class UserService : IUserService
                 else
                 {
                     serviceResponse.success = false;
-                    serviceResponse.Response = "Failed to login to new user";
+                    serviceResponse.Response = "Failed to update user";
                 }
             }
             else
