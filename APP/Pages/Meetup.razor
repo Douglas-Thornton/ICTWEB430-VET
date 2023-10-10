@@ -76,7 +76,7 @@ else
 
                     <div class="col">
                         <div class="scrollable-container">
-
+                            <h3>Invited pets:</h3>
                             @if (CurrentMeeting.InvitedUsers != null)
                             {
                                 foreach (InvitedUser invitedUser in CurrentMeeting.InvitedUsers)
@@ -93,27 +93,17 @@ else
                     </div>
                     <div class="col">
                         <div class="scrollable-container">
-
+                            <h3>Inviteable pets:</h3>
                             @if (petList != null)
                             {
-                                if (CurrentMeeting != null && CurrentMeeting.InvitedUsers != null)
-                                {
-                                    List<int> usedpetIds = CurrentMeeting.InvitedUsers
-                                    .SelectMany(iu => iu.InvitedPets.Select(ip => ip.PetID))
-                                    .ToList();
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="petSearch" placeholder="Search for a pet" @onchange=SearchPets>
+                                    <label for="petSearch">Search:</label>
+                                </div>
 
-                                    foreach (Pet pet in petList.Where(p => !usedpetIds.Contains(p.PetID)))
-                                    {
-                                        <PetTile pet="pet" InviteEnabled="true" OnInvite="()=>InvitePet(pet)"></PetTile>
-                                    }
-                                }
-                                else
+                                foreach (Pet pet in FilteredPetList)
                                 {
-                                    foreach (Pet pet in petList)
-                                    {
-                                        <PetTile pet="pet" InviteEnabled="true" OnInvite="()=>InvitePet(pet)"></PetTile>
-                                    }
-
+                                    <PetTile pet="pet" InviteEnabled="true" OnInvite="()=>InvitePet(pet)"></PetTile>
                                 }
                             }
                         </div>
@@ -165,10 +155,14 @@ else
     public Meeting CurrentMeeting => MeetingModalMode == ModalMode.Create ? newMeeting : editMeeting;
 
     List<Pet> petList = new();
+    List<Pet> FilteredPetList = new();
+
     List<User> Users = new();
 
     public bool CancellationModalOpen = false;
     public bool MeetingModalOpen = false;
+
+    public string searchPet = string.Empty;
 
     List<Meeting> meetingsCreatedByLoggedUser = new List<Meeting>();
     protected override async Task OnInitializedAsync()
@@ -194,6 +188,22 @@ else
             if (loggedUserState.LoggedUser != null)
             {
                 petList = await petService.GetAllPets();
+                List<int> usedpetIds = new List<int>();
+                if (CurrentMeeting.InvitedUsers != null)
+                {
+                    usedpetIds = CurrentMeeting.InvitedUsers.SelectMany(iu => iu.InvitedPets.Select(ip => ip.PetID)).ToList();
+                }
+                var unused = petList.Where(p => !usedpetIds.Contains(p.PetID)).ToList();
+
+                if(!string.IsNullOrEmpty(searchPet))
+                {
+                    FilteredPetList = unused.Where(p => p.PetName.ToLower().Contains(searchPet.ToLower()) || p.PetBreed.ToLower().Contains(searchPet.ToLower())).ToList();
+                }else
+                {
+                    FilteredPetList = unused;    
+                }
+
+
                 Users = await userService.GetAllUsersList();
                 meetingsCreatedByLoggedUser = await meetingService.GetMeetingsByCreatedUserId(loggedUserState.LoggedUser.UserID);
             }
@@ -405,6 +415,7 @@ else
     {
         meetingToCancel.MeetingCancellationDate = DateTime.Now;
         await meetingService.UpdateMeetingAsync(meetingToCancel);
+        await LoadDataAsync();
         CloseCancellationModal();
     }
 
@@ -430,4 +441,10 @@ else
         StateHasChanged();
     }
 
+    public async Task SearchPets(ChangeEventArgs e)
+    {
+        searchPet = e.Value.ToString();
+        await LoadDataAsync();
+        StateHasChanged();
+    }
 }
