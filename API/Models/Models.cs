@@ -12,7 +12,10 @@ namespace VETAPPAPI.Models
         public string? Surname { get; set; }
         public string? PhoneNumber { get; set; }
         public string? Email { get; set; }
+        public string? AddressLine1 { get; set; }
+        public string? AddressLine2 { get; set; }
         public string? Suburb { get; set; }
+        public string? State { get; set; }
         public string? Postcode { get; set; }
         public string LoginUsername { get; set; }
         public string LoginPassword { get; set; }
