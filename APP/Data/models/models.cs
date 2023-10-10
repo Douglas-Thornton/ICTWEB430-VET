@@ -45,7 +45,41 @@ public class User : INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }
+public class Meeting
+{
+    public int MeetingID { get; set; }
+    public int? UserCreated { get; set; }
+    [Required(ErrorMessage = "Give your meeting a name!")]
+    public string? MeetingName { get; set; }
+    public string? MeetingMessage { get; set; }
+    public string? MeetingLocation { get; set; }
+    public DateTime? MeetingDate { get; set; }
+    public DateTime? MeetingCreationDate { get; set; }
+    public DateTime? MeetingCancellationDate { get; set; }
 
+    public virtual ICollection<InvitedUser> InvitedUsers { get; set; }
+    //public virtual ICollection<InvitedPet> InvitedPets { get; set; }
+
+}
+
+
+public class InvitedUser
+{
+    public int InviteID { get; set; }
+    public int UserID { get; set; }
+    public int MeetingID { get; set; }
+    public bool? Accepted { get; set; }
+    public DateTime? ResponseDate { get; set; }
+    public virtual ICollection<InvitedPet> InvitedPets { get; set; }
+}
+
+public class InvitedPet
+{
+    public int InvitedPetID { get; set; }
+    public int PetID { get; set; }
+    public int MeetingID { get; set; }
+    public int InviteID { get; set; }
+}
 public class Pet
 {
     public int PetID { get; set; }
@@ -151,6 +185,13 @@ public class ServiceResponse
     public string? Response { get; set; }
     public bool success { get; set; }
     public User? User { get; set; }
+
+    public Meeting? Meeting { get; set; }
+
+    public Pet? Pet { get; set; }
+
+    public InvitedPet? InvitedPet { get; set; }
+    public InvitedUser? InvitedUser { get; set; }
 
 }
 

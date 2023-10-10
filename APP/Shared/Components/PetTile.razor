@@ -28,10 +28,16 @@
                     <p>Gender: @pet.PetGender</p>
                     <p>Discoverable: @(pet.PetDiscoverability ? "Visible" : "Hidden")</p>
                 </div>
+                @if (InviteEnabled)
+                {
+                    <div class="col">
+                        <button class="btn btn-primary btn-sm" @onclick="() => InvitePet()">Invite</button>
+                    </div>
+                }
                 @if (EditEnabled)
                 {
                     <div class="col">
-                        <button class="btn btn-link btn-sm" @onclick="() => EditPet()">Edit</button>
+                        <button class="btn btn-primary btn-sm" @onclick="() => EditPet()">Edit</button>
                     </div>
                 }
             </div>
@@ -53,6 +59,9 @@
     [Parameter]
     public bool EditEnabled { get; set; } = false;
 
+    [Parameter]
+    public bool InviteEnabled { get; set; } = false;
+
     /// <summary>
     /// Event on delete button pressed.
     /// </summary>
@@ -60,10 +69,23 @@
     public EventCallback<Pet> OnDelete { get; set; }
 
     /// <summary>
+    /// Event on invite button pressed.
+    /// </summary>
+    [Parameter]
+    public EventCallback<Pet> OnInvite { get; set; }
+
+    /// <summary>
     /// Event on edit button pressed.
     /// </summary>
     [Parameter]
     public EventCallback<Pet> OnEdit { get; set; }
+
+
+    /// <summary>
+    /// Event on edit button pressed.
+    /// </summary>
+    [Parameter]
+    public EventCallback<Pet> OnAdd { get; set; }
 
     private byte[] previousPetPhoto;
 
@@ -87,6 +109,19 @@
         if (DeleteEnabled)
         {
             return OnDelete.InvokeAsync(pet);
+        }
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Invites the current pet.
+    /// </summary>
+    /// <returns>Task</returns>
+    private Task InvitePet()
+    {
+        if (InviteEnabled)
+        {
+            return OnInvite.InvokeAsync(pet);
         }
         return Task.CompletedTask;
     }

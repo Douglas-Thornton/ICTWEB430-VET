@@ -29,6 +29,7 @@ namespace APP
             builder.Services.AddSingleton<IUserService, UserService>();
             builder.Services.AddSingleton<IPetService, PetService>();
             builder.Services.AddSingleton<IEmailService, EmailService>();
+            builder.Services.AddSingleton<IMeetingService, MeetingService>();
             builder.Services.AddSingleton<LoggedUserState>();
             builder.Services.AddSingleton<App>();
 
