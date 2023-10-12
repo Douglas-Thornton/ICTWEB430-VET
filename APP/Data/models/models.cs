@@ -13,18 +13,23 @@ public class User : INotifyPropertyChanged
     [StringLength(16, ErrorMessage = "Phone number too long.(20 character limit).")]
     public string? PhoneNumber { get; set; }
     public string? Email { get; set; }
+    public string? AddressLine1 { get; set; }
+    public string? AddressLine2 { get; set; }
+
     public string? Suburb { get; set; }
+    public string? State { get; set; }
+
     [StringLength(10, ErrorMessage = "Post code too long.(10 character limit).")]
     public string? Postcode { get; set; }
     [Required(ErrorMessage = "Username is required.")]
     public string LoginUsername { get; set; }
     [Required(ErrorMessage = "Password is required.")]
     public string LoginPassword { get; set; }
-
+    public List<string> ErrorMessages { get; set; }
 
     public virtual ICollection<Pet> Pets { get; set; }
 
-    private AppPreferences? _appPreferences = new AppPreferences();
+    private AppPreferences? _appPreferences = new();
 
     public event PropertyChangedEventHandler PropertyChanged;
 
@@ -45,7 +50,47 @@ public class User : INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }
+public class Meeting
+{
+    public int MeetingID { get; set; }
+    public int? UserCreated { get; set; }
+    [Required(ErrorMessage = "Give your meeting a name!")]
+    public string? MeetingName { get; set; }
+    public string? MeetingMessage { get; set; }
+    public string? MeetingLocation { get; set; }
+    public DateTime? MeetingDate { get; set; }
+    public DateTime? MeetingCreationDate { get; set; }
+    public DateTime? MeetingCancellationDate { get; set; }
 
+    public virtual ICollection<InvitedUser> InvitedUsers { get; set; }
+    //public virtual ICollection<InvitedPet> InvitedPets { get; set; }
+
+}
+
+
+public class InvitedUser
+{
+    public int InviteID { get; set; }
+    public int UserID { get; set; }
+    public int MeetingID { get; set; }
+    public bool? Accepted { get; set; }
+    public DateTime? ResponseDate { get; set; }
+
+    public virtual User User { get; set; }
+    public virtual ICollection<InvitedPet> InvitedPets { get; set; }
+    public virtual Meeting Meeting { get; set; }
+}
+
+public class InvitedPet
+{
+    public int InvitedPetID { get; set; }
+    public int PetID { get; set; }
+    public int MeetingID { get; set; }
+    public int InviteID { get; set; }
+
+    public virtual Pet Pet { get; set; }
+    public virtual InvitedUser InvitedUser { get; set; }
+}
 public class Pet
 {
     public int PetID { get; set; }
@@ -152,7 +197,52 @@ public class ServiceResponse
     public bool success { get; set; }
     public User? User { get; set; }
 
+    public Meeting? Meeting { get; set; }
+
+    public Pet? Pet { get; set; }
+
+    public InvitedPet? InvitedPet { get; set; }
+    public InvitedUser? InvitedUser { get; set; }
+
 }
+
+public class AddressVerificationResponse
+{
+    public bool Matched { get; set; }
+    public bool Success { get; set; }
+    public string Id { get; set; }
+    public string FullAddress { get; set; }
+    public string AddressLine1 { get; set; }
+    public string AddressLine2 { get; set; }
+    public string AddressLineCombined { get; set; }
+    public string LocalityName { get; set; }
+    public string StateTerritory { get; set; }
+    public string Postcode { get; set; }
+    public double? Latitude { get; set; }
+    public double? Longitude { get; set; }
+    public string BoxIdentifier { get; set; }
+    public string BoxType { get; set; }
+    public int StreetNumber1 { get; set; }
+    public int? StreetNumber2 { get; set; }
+    public string UnitIdentifier { get; set; }
+    public string UnitType { get; set; }
+    public string LevelNumber { get; set; }
+    public string LevelType { get; set; }
+    public string LotIdentifier { get; set; }
+    public string SiteName { get; set; }
+    public string StreetName { get; set; }
+    public string StreetType { get; set; }
+    public string StreetSuffix { get; set; }
+    public string Street { get; set; }
+    public string Meshblock { get; set; }
+    public string Sa1Id { get; set; }
+    public string Sa2Id { get; set; }
+    public string LgaName { get; set; }
+    public string LgaTypeCode { get; set; }
+    public string GnafId { get; set; }
+    public string LegalParcelId { get; set; }
+}
+
 
 public enum ModalMode 
 { 
@@ -247,4 +337,10 @@ public enum MixedImages
     mixedImage2,
     [Description("./Images/Background_Images/Mixed_3.jpg")]
     mixedImage3
+}
+
+public class CreatedMeetingResponse
+{
+    public int MeetingID { get; set; }
+    public string Message { get; set; }
 }

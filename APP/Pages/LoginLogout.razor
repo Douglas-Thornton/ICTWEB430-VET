@@ -3,64 +3,140 @@
 @using APP.Interfaces;
 @using APP.States;
 @using APP.Data.Models;
+@using Microsoft.Extensions.Configuration;
 
 @inject IUserService userService;
 @inject LoggedUserState loggedUserState
+@inject IInvitedUserService invitedUserService;
 
 <div class="background-container">
-    <img src=@backgroundImagePath alt="@backgroundImagePath" class="background-image"/>
-    <div class="card">
+    <img src=@backgroundImagePath alt="@backgroundImagePath" class="background-image" />
 
-        @if (loggedUserState.LoggedUser != null)
-        {
-            <button class="btn btn-primary" @onclick="Logout"> Logout</button>
-        }
-        else
-        {
-            <div class="centered title">
-                <h1 style="@loggedUserState.H1StyleTagCSS">Login Page</h1>
-            </div>
-            <EditForm class="form-container" Model="loginRequest" OnValidSubmit="HandleValidLoginSubmit">
-                @if(Loading)
+    <div class="invite-Container">
+        <div class="contrainer">
+            <div class="row">
+                @if (pendingInvites != null && pendingInvites.Count > 0)
                 {
-                    <LoadingSpinner></LoadingSpinner>
+                    <h2>Pending Invites:</h2>
+                    <div class="scrollable-invite-container">
+                        @foreach (var invite in pendingInvites)
+                        {
+                            <div class="alert alert-primary" role="alert">
+                                <div>
+                                    <b>Meeting Name:</b> @invite.Meeting.MeetingName
+                                </div>
+                                <div>
+                                    <b> Message: </b>@invite.Meeting.MeetingMessage
+                                </div>
+                                <div>
+                                    <b>Location:</b> @invite.Meeting.MeetingLocation
+                                </div>
+                                <div>
+                                    <b> Date: </b>@invite.Meeting.MeetingDate
+                                </div>
+                                <div>
+                                    <ul>
+                                        @foreach (InvitedPet invitedpet in invite.InvitedPets)
+                                        {
+                                            <li>
+                                                <b>@invitedpet.Pet.PetName</b> - @invitedpet.Pet.PetBreed
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                                <button class="btn btn-primary" @onclick="() => AcceptClicked(invite)">Accept</button>
+                                <button class="btn btn-danger" @onclick="() => RejectClicked(invite)">Reject</button>
+                            </div>
+                        }
+                    </div>
                 }
-                <div class="centered">
-                    <div style="@loggedUserState.PStyleTagCSS">
-                        <label for="loginUsername">Username:</label>
-                        <InputText id="loginUsername" class="inputs" @bind-Value="loginRequest.LoginUsername" />
-                        <ValidationMessage For="@(() => loginRequest.LoginUsername)" />
+            </div>
+            <div class="row">
+                @if (loggedUserState.LoggedUser != null)
+                {
+                    <button class="btn btn-primary mt-1" @onclick="Logout"> Logout</button>
+                }
+                else
+                {
+                    <div class="centered title">
+                        <h1 style="@loggedUserState.H1StyleTagCSS">Login Page</h1>
                     </div>
-                </div>
-                <div class="row-cols centered">
-                    <div style="@loggedUserState.PStyleTagCSS">
-                        <label for="loginPassword">Password:</label>
-                        <InputText type="password" id="loginPassword" class="inputs" @bind-Value="loginRequest.LoginPassword" />
-                        <ValidationMessage For="@(() => loginRequest.LoginPassword)" />
-                    </div>
-                </div>
-                <div class="row-cols centered">
-                    <button style="@loggedUserState.PStyleTagCSS" class="login-button" type="submit">Login</button>
-                </div>
-            </EditForm>
-        }
+                    <EditForm class="form-container" Model="loginRequest" OnValidSubmit="HandleValidLoginSubmit">
+                        @if (Loading)
+                        {
+                            <LoadingSpinner></LoadingSpinner>
+                        }
+                        <div class="centered">
+                            <div style="@loggedUserState.PStyleTagCSS">
+                                <label for="loginUsername">Username:</label>
+                                <InputText id="loginUsername" class="inputs" @bind-Value="loginRequest.LoginUsername" />
+                                <ValidationMessage For="@(() => loginRequest.LoginUsername)" />
+                            </div>
+                        </div>
+                        <div class="row-cols centered">
+                            <div style="@loggedUserState.PStyleTagCSS">
+                                <label for="loginPassword">Password:</label>
+                                <InputText type="password" id="loginPassword" class="inputs" @bind-Value="loginRequest.LoginPassword" />
+                                <ValidationMessage For="@(() => loginRequest.LoginPassword)" />
+                            </div>
+                        </div>
+                        <div class="row-cols centered">
+                            <button style="@loggedUserState.PStyleTagCSS" class="login-button" type="submit">Login</button>
+                        </div>
+                    </EditForm>
+                }
+            </div>
+            
+        </div>
     </div>
 </div>
 
-@code 
+@code
 {
-
+    private bool notifications = false;
     private bool Loading = false;
 
     private LoginRequest loginRequest = new LoginRequest();
-    private List<User> users;
+    private List<InvitedUser> pendingInvites;
     public string backgroundImagePath = "./Images/Background_Images/Dog_Background1.jpg";
-    
+
+    [Parameter]
+    public EventCallback<bool> OnAccept { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnReject { get; set; }
+
+    private async Task AcceptClicked(InvitedUser invite)
+    {
+        invite.Accepted = true;
+        invite.ResponseDate = DateTime.Now;
+        await invitedUserService.AcceptOrRejectInvite(invite);
+        await GetInvitedUsers();
+        StateHasChanged();
+    }
+
+    private async Task RejectClicked(InvitedUser invite)
+    {
+        invite.Accepted = false;
+        invite.ResponseDate = DateTime.Now;
+        await invitedUserService.AcceptOrRejectInvite(invite);
+        await GetInvitedUsers();
+        StateHasChanged();
+    }
+
     protected override async Task OnInitializedAsync()
     {
         backgroundImagePath = loggedUserState.GetBackgroundImage();
     }
 
+    public async Task GetInvitedUsers()
+    {
+        if (loggedUserState.LoggedUser != null)
+        {
+            var allInvites = await invitedUserService.GetInvitedUserById(loggedUserState.LoggedUser.UserID);
+            pendingInvites = allInvites.Where(invite => invite.Accepted == null).ToList();
+        }
+    }
 
     private async Task HandleValidLoginSubmit()
     {
@@ -69,6 +145,7 @@
         loggedUserState.LoggedUser = await userService.LoginUser(loginRequest);
         backgroundImagePath = loggedUserState.GetBackgroundImage();
         Loading = false;
+        await GetInvitedUsers();
         StateHasChanged();
     }
 
@@ -82,6 +159,7 @@
     public void Logout()
     {
         loggedUserState.LoggedUser = null;
+        pendingInvites = null;
         backgroundImagePath = loggedUserState.GetBackgroundImage();
         StateHasChanged();
     }

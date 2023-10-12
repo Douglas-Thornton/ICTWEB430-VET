@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
 
 namespace VETAPPAPI.Models
 {
@@ -13,7 +12,10 @@ namespace VETAPPAPI.Models
         public string? Surname { get; set; }
         public string? PhoneNumber { get; set; }
         public string? Email { get; set; }
+        public string? AddressLine1 { get; set; }
+        public string? AddressLine2 { get; set; }
         public string? Suburb { get; set; }
+        public string? State { get; set; }
         public string? Postcode { get; set; }
         public string LoginUsername { get; set; }
         public string LoginPassword { get; set; }
@@ -58,21 +60,17 @@ namespace VETAPPAPI.Models
         [Key]
         public int MeetingID { get; set; }
         public int UserCreated { get; set; }
-        public DateTime? MeetingDate { get; set; }
-        public string? MeetingLocation { get; set; }
-        public DateTime? MeetingCreationDate { get; set; }
-        public DateTime? MeetingCancellationDate { get; set; }
         public string? MeetingName { get; set; }
         public string? MeetingMessage { get; set; }
+        public string? MeetingLocation { get; set; }
+        public DateTime? MeetingDate { get; set; }
+        public DateTime? MeetingCreationDate { get; set; }
+        public DateTime? MeetingCancellationDate { get; set; }
 
         [ForeignKey("UserCreated")]
         public virtual User? User { get; set; }
-
-
         public virtual ICollection<InvitedUser>? InvitedUsers { get; set; }
 
-
-        public virtual ICollection<InvitedPet>? InvitedPets { get; set; }
     }
 
     [Table("InvitedUser")]
@@ -88,7 +86,7 @@ namespace VETAPPAPI.Models
         [ForeignKey("UserID")]
         public virtual User? User { get; set; }
 
-
+        public virtual List<InvitedPet>? InvitedPets { get; set; }
         public virtual Meeting? Meeting { get; set; }
     }
 
@@ -98,12 +96,9 @@ namespace VETAPPAPI.Models
         [Key]
         public int InvitedPetID { get; set; }
         public int PetID { get; set; }
-        public int MeetingID { get; set; }
         public int InviteID { get; set; }
         [ForeignKey("PetID")]
         public virtual Pet? Pet { get; set; }
-        [ForeignKey("MeetingID")]
-        public virtual Meeting? Meeting { get; set; }
         [ForeignKey("InviteID")]
         public virtual InvitedUser? InvitedUser { get; set; }
     }
@@ -121,7 +116,13 @@ namespace VETAPPAPI.Models
     public class LoginRequest
     {
         public string LoginUsername { get; set; }
-        public string LoginPassword{ get; set; }
+        public string LoginPassword { get; set; }
     }
 
+
+    public class CreatedMeetingResponse
+    {
+        public int MeetingID { get; set; }
+        public string Message { get; set; }
+    }
 }

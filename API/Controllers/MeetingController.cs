@@ -23,8 +23,7 @@ namespace VETAPPAPI.Controllers
             var response = new MainResponse();
             try
             {
-                response.Content = _dbContext.Meetings
-                 .Include(m => m.InvitedPets).Include(m => m.InvitedUsers).Include(m => m.User)
+                response.Content = _dbContext.Meetings.Include(m => m.User).Include(m => m.InvitedUsers).ThenInclude(iu => iu.InvitedPets)
                  .Select(m => new Meeting
                  {
                      MeetingID = m.MeetingID,
@@ -47,24 +46,6 @@ namespace VETAPPAPI.Controllers
                          LoginUsername = m.User.LoginUsername,
                          LoginPassword = m.User.LoginPassword,
                      },
-                     InvitedPets = m.InvitedPets.Select(m => new InvitedPet
-                     {
-                         InvitedPetID = m.InvitedPetID,
-                         PetID = m.PetID,
-                         MeetingID = m.MeetingID,
-                         InviteID = m.InviteID,
-                         Pet = new Pet
-                         {
-                             PetID = m.Pet.PetID,
-                             OwnerID = m.Pet.OwnerID,
-                             PetName = m.Pet.PetName,
-                             PetBreed = m.Pet.PetBreed,
-                             PetAge = m.Pet.PetAge,
-                             PetGender = m.Pet.PetGender,
-                             PetPhoto = m.Pet.PetPhoto,
-                             PetDiscoverability = m.Pet.PetDiscoverability
-                         }
-                     }).ToList(),
                      InvitedUsers = m.InvitedUsers.Select(m => new InvitedUser
                      {
                          InviteID = m.InviteID,
@@ -84,6 +65,23 @@ namespace VETAPPAPI.Controllers
                              LoginUsername = m.User.LoginUsername,
                              LoginPassword = m.User.LoginPassword,
                          },
+                         InvitedPets = m.InvitedPets.Select(m => new InvitedPet
+                         {
+                             InvitedPetID = m.InvitedPetID,
+                             PetID = m.PetID,
+                             InviteID = m.InviteID,
+                             Pet = new Pet
+                             {
+                                 PetID = m.Pet.PetID,
+                                 OwnerID = m.Pet.OwnerID,
+                                 PetName = m.Pet.PetName,
+                                 PetBreed = m.Pet.PetBreed,
+                                 PetAge = m.Pet.PetAge,
+                                 PetGender = m.Pet.PetGender,
+                                 PetPhoto = m.Pet.PetPhoto,
+                                 PetDiscoverability = m.Pet.PetDiscoverability
+                             }
+                         }).ToList(),
                      }).ToList()
                  }).ToList();
                 response.IsSuccess = true;
@@ -103,8 +101,7 @@ namespace VETAPPAPI.Controllers
             var response = new MainResponse();
             try
             {
-                response.Content = _dbContext.Meetings
-                 .Include(m => m.InvitedPets).Include(m => m.InvitedUsers).Include(m => m.User)
+                response.Content = _dbContext.Meetings.Include(m => m.InvitedUsers).ThenInclude(ip => ip.InvitedPets).Include(m => m.User)
                  .Select(m => new Meeting
                  {
                      MeetingID = m.MeetingID,
@@ -127,24 +124,6 @@ namespace VETAPPAPI.Controllers
                          LoginUsername = m.User.LoginUsername,
                          LoginPassword = m.User.LoginPassword,
                      },
-                     InvitedPets = m.InvitedPets.Select(m => new InvitedPet
-                     {
-                         InvitedPetID = m.InvitedPetID,
-                         PetID = m.PetID,
-                         MeetingID = m.MeetingID,
-                         InviteID = m.InviteID,
-                         Pet = new Pet
-                         {
-                             PetID = m.Pet.PetID,
-                             OwnerID = m.Pet.OwnerID,
-                             PetName = m.Pet.PetName,
-                             PetBreed = m.Pet.PetBreed,
-                             PetAge = m.Pet.PetAge,
-                             PetGender = m.Pet.PetGender,
-                             PetPhoto = m.Pet.PetPhoto,
-                             PetDiscoverability = m.Pet.PetDiscoverability
-                         }
-                     }).ToList(),
                      InvitedUsers = m.InvitedUsers.Select(m => new InvitedUser
                      {
                          InviteID = m.InviteID,
@@ -164,6 +143,23 @@ namespace VETAPPAPI.Controllers
                              LoginUsername = m.User.LoginUsername,
                              LoginPassword = m.User.LoginPassword,
                          },
+                         InvitedPets = m.InvitedPets.Select(m => new InvitedPet
+                         {
+                             InvitedPetID = m.InvitedPetID,
+                             PetID = m.PetID,
+                             InviteID = m.InviteID,
+                             Pet = new Pet
+                             {
+                                 PetID = m.Pet.PetID,
+                                 OwnerID = m.Pet.OwnerID,
+                                 PetName = m.Pet.PetName,
+                                 PetBreed = m.Pet.PetBreed,
+                                 PetAge = m.Pet.PetAge,
+                                 PetGender = m.Pet.PetGender,
+                                 PetPhoto = m.Pet.PetPhoto,
+                                 PetDiscoverability = m.Pet.PetDiscoverability
+                             }
+                         }).ToList(),
                      }).ToList()
                  }).Where(m => m.MeetingID == id).ToList();
             }
@@ -181,8 +177,8 @@ namespace VETAPPAPI.Controllers
             var response = new MainResponse();
             try
             {
-                response.Content = _dbContext.Meetings
-                 .Include(m => m.InvitedPets).Include(m => m.InvitedUsers).Include(m => m.User)
+                response.Content = _dbContext.Meetings.Include(m => m.InvitedUsers)
+                 .ThenInclude(m => m.InvitedPets).Include(m => m.User)
                  .Select(m => new Meeting
                  {
                      MeetingID = m.MeetingID,
@@ -205,24 +201,6 @@ namespace VETAPPAPI.Controllers
                          LoginUsername = m.User.LoginUsername,
                          LoginPassword = m.User.LoginPassword,
                      },
-                     InvitedPets = m.InvitedPets.Select(m => new InvitedPet
-                     {
-                         InvitedPetID = m.InvitedPetID,
-                         PetID = m.PetID,
-                         MeetingID = m.MeetingID,
-                         InviteID = m.InviteID,
-                         Pet = new Pet
-                         {
-                             PetID = m.Pet.PetID,
-                             OwnerID = m.Pet.OwnerID,
-                             PetName = m.Pet.PetName,
-                             PetBreed = m.Pet.PetBreed,
-                             PetAge = m.Pet.PetAge,
-                             PetGender = m.Pet.PetGender,
-                             PetPhoto = m.Pet.PetPhoto,
-                             PetDiscoverability = m.Pet.PetDiscoverability
-                         }
-                     }).ToList(),
                      InvitedUsers = m.InvitedUsers.Select(m => new InvitedUser
                      {
                          InviteID = m.InviteID,
@@ -242,8 +220,26 @@ namespace VETAPPAPI.Controllers
                              LoginUsername = m.User.LoginUsername,
                              LoginPassword = m.User.LoginPassword,
                          },
+                         InvitedPets = m.InvitedPets.Select(m => new InvitedPet
+                         {
+                             InvitedPetID = m.InvitedPetID,
+                             PetID = m.PetID,
+                             InviteID = m.InviteID,
+                             Pet = new Pet
+                             {
+                                 PetID = m.Pet.PetID,
+                                 OwnerID = m.Pet.OwnerID,
+                                 PetName = m.Pet.PetName,
+                                 PetBreed = m.Pet.PetBreed,
+                                 PetAge = m.Pet.PetAge,
+                                 PetGender = m.Pet.PetGender,
+                                 PetPhoto = m.Pet.PetPhoto,
+                                 PetDiscoverability = m.Pet.PetDiscoverability
+                             }
+                         }).ToList(),
                      }).ToList()
                  }).Where(m => m.UserCreated == id).ToList();
+                response.IsSuccess = true;
             }
             catch (Exception ex)
             {
@@ -261,7 +257,7 @@ namespace VETAPPAPI.Controllers
             try
             {
                 response.Content = _dbContext.Meetings
-                 .Include(m => m.InvitedPets).Include(m => m.InvitedUsers).Include(m => m.User)
+                 .Include(m => m.InvitedUsers).ThenInclude(m => m.InvitedPets).Include(m => m.User)
                  .Select(m => new Meeting
                  {
                      MeetingID = m.MeetingID,
@@ -284,24 +280,6 @@ namespace VETAPPAPI.Controllers
                          LoginUsername = m.User.LoginUsername,
                          LoginPassword = m.User.LoginPassword,
                      },
-                     InvitedPets = m.InvitedPets.Select(m => new InvitedPet
-                     {
-                         InvitedPetID = m.InvitedPetID,
-                         PetID = m.PetID,
-                         MeetingID = m.MeetingID,
-                         InviteID = m.InviteID,
-                         Pet = new Pet
-                         {
-                             PetID = m.Pet.PetID,
-                             OwnerID = m.Pet.OwnerID,
-                             PetName = m.Pet.PetName,
-                             PetBreed = m.Pet.PetBreed,
-                             PetAge = m.Pet.PetAge,
-                             PetGender = m.Pet.PetGender,
-                             PetPhoto = m.Pet.PetPhoto,
-                             PetDiscoverability = m.Pet.PetDiscoverability
-                         }
-                     }).ToList(),
                      InvitedUsers = m.InvitedUsers.Select(m => new InvitedUser
                      {
                          InviteID = m.InviteID,
@@ -319,8 +297,8 @@ namespace VETAPPAPI.Controllers
                              Suburb = m.User.Suburb,
                              Postcode = m.User.Postcode,
                              LoginUsername = m.User.LoginUsername,
-                             LoginPassword = m.User.LoginPassword,
-                         },
+                             LoginPassword = m.User.LoginPassword
+                         }
                      }).ToList()
                  }).Where(m => m.InvitedUsers.Any(u => u.UserID == userId)).ToList();
             }
@@ -333,7 +311,7 @@ namespace VETAPPAPI.Controllers
             return Ok(response);
         }
 
-        [HttpPost]
+        [HttpPost("create")]
         public async Task<IActionResult> CreateMeeting(Meeting meeting)
         {
             try
@@ -344,9 +322,14 @@ namespace VETAPPAPI.Controllers
                 }
 
                 _dbContext.Meetings.Add(meeting);
-                await _dbContext.SaveChangesAsync();
+                _dbContext.SaveChanges();
+                CreatedMeetingResponse response = new()
+                {
+                    MeetingID = meeting.MeetingID,
+                    Message = $"Meeting created successfully with ID: {meeting.MeetingID}"
+                };
 
-                return Ok($"Meeting created successfully with ID: {meeting.MeetingID}");
+                return Ok(response);
             }
             catch (Exception ex)
             {
@@ -354,36 +337,39 @@ namespace VETAPPAPI.Controllers
             }
         }
 
-        [HttpPut("{id:int}")]
-        public async Task<IActionResult> UpdateMeeting(int id, Meeting updatedMeeting)
+        [HttpPut("update")]
+        public async Task<MainResponse> UpdateMeeting(Meeting updatedMeeting)
         {
+            var response = new MainResponse();
+
             try
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
 
-                var existingMeeting = await _dbContext.Meetings.FindAsync(id);
+                var existingMeeting = await _dbContext.Meetings.FindAsync(updatedMeeting.MeetingID);
                 if (existingMeeting == null)
                 {
-                    return NotFound($"Meeting with ID {id} not found.");
+                    throw new Exception($"Meeting with ID {updatedMeeting.MeetingID} not found.");
                 }
 
                 // Update the meeting's properties with the new values
                 existingMeeting.MeetingName = updatedMeeting.MeetingName;
                 existingMeeting.MeetingMessage = updatedMeeting.MeetingMessage;
                 existingMeeting.MeetingDate = updatedMeeting.MeetingDate;
+                existingMeeting.MeetingCancellationDate = updatedMeeting.MeetingCancellationDate;
+                existingMeeting.InvitedUsers = updatedMeeting.InvitedUsers;
                 // Update other properties as needed
 
                 await _dbContext.SaveChangesAsync();
 
-                return Ok($"Meeting with ID {id} updated successfully.");
+                response.IsSuccess = true;
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Error updating meeting. {ex.Message}");
+                response.IsSuccess = false;
+                response.ErrorMessage = ex.Message;
             }
+
+            return response;
         }
 
         [HttpDelete("{id:int}")]
@@ -407,6 +393,8 @@ namespace VETAPPAPI.Controllers
                 return StatusCode(500, $"Error deleting meeting with ID {id}. {ex.Message}");
             }
         }
+
+
 
     }
 }
