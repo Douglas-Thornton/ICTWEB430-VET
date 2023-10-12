@@ -186,6 +186,7 @@
                                         <ValidationMessage For="@(() => CurrentUser.Postcode)" />
                                     </div>
 
+                                    @if (loggedUserState.LoggedUser == null){
                                     <div>
                                         <label for="loginUsername">Login Username:</label>
                                         <InputText id="loginUsername" class="form-control" @bind-Value="CurrentUser.LoginUsername" />
@@ -197,6 +198,7 @@
                                         <InputText id="loginCurrentUsername" class="form-control" type="password" @bind-Value="CurrentUser.LoginPassword" />
                                         <ValidationMessage For="@(() => CurrentUser.LoginPassword)" />
                                     </div>
+                                    }
                                     <div class="row">
                                         <div class="col">
                                             <button class="btn btn-secondary" @onclick=OpenUserPrefModal>Change app preferences</button>

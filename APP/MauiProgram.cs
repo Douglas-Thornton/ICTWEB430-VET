@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using APP.Services;
 using APP.Interfaces;
+using APP.Shared;
 
 namespace APP
 {
@@ -32,6 +33,7 @@ namespace APP
             builder.Services.AddTransient<IInvitedUserService, InvitedUserService>();
             builder.Services.AddTransient<IMeetingService, MeetingService>();
             builder.Services.AddSingleton<LoggedUserState>();
+            builder.Services.AddSingleton<PasswordHasher>();
             builder.Services.AddSingleton<App>();
 
             return builder.Build();
