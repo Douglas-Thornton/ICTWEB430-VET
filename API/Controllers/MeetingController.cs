@@ -333,8 +333,8 @@ namespace VETAPPAPI.Controllers
             return Ok(response);
         }
 
-        [HttpPost("/createMeeting")]
-        public async Task<IActionResult> CreateMeeting([FromBody] Meeting meeting)
+        [HttpPost("createMeeting")]
+        public IActionResult CreateMeeting([FromBody] Meeting meeting)
         {
             try
             {
@@ -344,7 +344,7 @@ namespace VETAPPAPI.Controllers
                 }
 
                 _dbContext.Meetings.Add(meeting);
-                await _dbContext.SaveChangesAsync();
+                _dbContext.SaveChanges();
                 CreatedMeetingResponse response = new()
                 {
                     MeetingID = meeting.MeetingID,

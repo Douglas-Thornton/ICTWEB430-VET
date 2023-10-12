@@ -1,14 +1,16 @@
-﻿@using APP.Data.Models;
+﻿@page "/meetup";
+
+@using APP.Data.Models;
 @using APP.Interfaces;
 @using Microsoft.Extensions.Configuration;
 @using APP.Services;
 @using APP.States;
 @using System.ComponentModel;
 @inject IConfiguration Configuration;
-@inject MeetingService meetingService;
-@inject LoggedUserState loggedUserState
-@inject InvitedUserService inviteUserService;
-@inject PetService petService;
+@inject IMeetingService meetingService;
+@inject LoggedUserState loggedUserState;
+@inject IInvitedUserService inviteUserService;
+@inject IPetService petService;
 
 @if(loggedUserState.LoggedUser == null)
 {
@@ -20,49 +22,66 @@
     </div>
 }
 else{
-    <div class="background-container">
-        <img src=@backgroundImagePath alt="@backgroundImagePath" class="background-image"/>
-        <div class="card" style="@loggedUserState.PStyleTagCSS">
-            <h1 style="@loggedUserState.H1StyleTagCSS">Meetup</h1>
-            <label>Your Name</label>
-            <input placeholder="Insert your name here" />
-            <label>Your Pets Name</label>
-            <input placeholder="Insert your pets name here" />
-            <label>Is your pet a dog or cat?</label>
-            <select>
-                <option>Select an option</option>
-                <option value="dog">Dog</option>
-                <option value="cat">Cat</option>
-            </select>
-            <label>Select your playdate</label>
-            <select @bind="selectedPet.PetID">
-                <option value="none">select</option>
-                @foreach (var pet in petList)
-                {
-                    <option value="@pet.PetID">@pet.PetName</option>
-                }
-            </select>
-            Date: <input type="datetime" class="form-control" asp-for="date" asp-format="{0:yyyy-MM-ddTHH:mm}" />
-            Address: <input type="text" class="form-control" asp-for="location" />
-            <label>Message</label>
-            <input @bind-value="message" placeholder="input message you want to send to the owner" />
-            <button @onclick="SendEmail">Submit</button>
-
+    @if(error)
+    {
+        <div class="background-container">
+            <img src=@backgroundImagePath alt="@backgroundImagePath" class="background-image" />
+            <div class="card" style="@loggedUserState.PStyleTagCSS">
+                <p>@errorMessage</p>
+            </div>
         </div>
-    </div>
+    }
+    else
+    {
+        <div class="background-container">
+            <img src=@backgroundImagePath alt="@backgroundImagePath" class="background-image" />
+            <div class="card" style="@loggedUserState.PStyleTagCSS">
+                <h1 style="@loggedUserState.H1StyleTagCSS">Meetup</h1>
+                <label>Your Name</label>
+                <input placeholder="Insert your name here" />
+                <label>Your Pets Name</label>
+                <input placeholder="Insert your pets name here" />
+                <label>Is your pet a dog or cat?</label>
+                <select>
+                    <option>Select an option</option>
+                    <option value="dog">Dog</option>
+                    <option value="cat">Cat</option>
+                </select>
+                <label>Select your playdate</label>
+                <select @bind="selectedPet">
+                    <option value="none">select</option>
+                    @foreach (var pet in petList)
+                    {
+                        <option value="@pet.PetID">@pet.PetName</option>
+                    }
+                </select>
+                <label for="datePicker">Date:</label>
+                <InputDate id="datePicker" @bind-Value="selectedDate" />
+                Address: <input type="text" class="form-control" asp-for="location" />
+                <label>Message</label>
+                <input @bind-value="message" placeholder="input message you want to send to the owner" />
+                <button @onclick="SendEmail">Submit</button>
+            </div>
+        </div>
+    }
+    
 }
 
 
 @code 
 {
-    public event PropertyChangedEventHandler PropertyChanged;
     private string message = string.Empty;
     private string location = string.Empty;
     private string backgroundImagePath = string.Empty;
+    private string errorMessage = string.Empty;
+    private DateTime? selectedDate;
 
-    DateTime date = new();
-    Pet selectedPet = new();
+    bool error = false;
+
+    string userInput;
+    Pet selectedPet;
     List<Pet> petList = new();
+    public event PropertyChangedEventHandler PropertyChanged;
 
     protected override async Task OnInitializedAsync()
     {
@@ -81,7 +100,7 @@ else{
         }
         catch(Exception e)
         {
-            Console.WriteLine(e.Message);
+            error = true;
         }
     }
 
@@ -139,27 +158,38 @@ else{
     {
         EmailService service = new(Configuration);
         var now = DateTime.Now.Date;
+
+        if(!selectedDate.HasValue) 
+        { 
+            error = true;
+            errorMessage = "please input a valid date";
+            return;
+        }
+
+        // Successfully parsed, now you can use 'parsedDatetime' for further processing or save it to the database
+        // For example, call a service to save it to the database
         Meeting meeting = new()
-        {
-            UserCreated = loggedUserState.LoggedUser.UserID,
-            MeetingDate = date,
-            MeetingLocation = location,
-            MeetingCreationDate = now,
-            MeetingCancelledDate = now.AddDays(10),
-            MeetingName = $"Meeting with {selectedPet.PetName}",
-            MeetingMessage = message
-        };
+            {
+                UserCreated = loggedUserState.LoggedUser.UserID,
+                MeetingDate = selectedDate.Value,
+                MeetingLocation = location,
+                MeetingCreationDate = now,
+                MeetingCancelledDate = now.AddDays(10),
+                MeetingName = $"Meeting with {selectedPet.PetName}",
+                MeetingMessage = message
+            };
         var meetingResponse = await meetingService.CreateMeeting(meeting);
 
         InvitedUser newInvite = new()
-        {
-           UserID = selectedPet.OwnerID,
-           MeetingID = meetingResponse.MeetingID,
-        };
+            {
+                UserID = selectedPet.OwnerID,
+                MeetingID = meetingResponse.MeetingID,
+            };
+        await inviteUserService.CreateInvitedUser(newInvite);
+
         await service.SendEmail(Configuration["TestEmailName"], "This is a test email", Configuration["TestEmail"]);
 
         // Commented out as this will actually send emails to whomever we pass through. Use the Test configuration above to determine if functionality is working as expected
         // await service.SendEmail(nameOfSender, $"Hey there! {selectedPet.Owner.FirstName} I was wondering if you would like to meetup for a play date with our furry friends. I see {selectedPet.PetName} would be a great match to meetup with.", selectedPet.Owner.Email);
-        await inviteUserService.CreateInvitedUser(newInvite) ;
     }
 }

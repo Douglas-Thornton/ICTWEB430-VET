@@ -166,7 +166,6 @@ namespace VETAPPAPI.Controllers
                     _dbContext.InvitedUsers.Add(invitedUser);
                     await _dbContext.SaveChangesAsync();
 
-                    response.Content = invitedUser;
                     response.IsSuccess = true;
                 }
                 catch (Exception ex)
@@ -242,6 +241,35 @@ namespace VETAPPAPI.Controllers
 
                 return response;
             }
+
+            [HttpPut("acceptInvite")]
+            public async Task<MainResponse> AcceptInvite(AcceptMeetingResponse meetingResponse)
+            {
+                var response = new MainResponse();
+                try
+                {
+                    var invitedUser = _dbContext.InvitedUsers.FirstOrDefault(x => x.UserID == meetingResponse.UserID && x.Accepted == null);
+                    if (invitedUser == null)
+                    {
+                        response.ErrorMessage = $"Invited user with ID {meetingResponse.UserID} not found.";
+                        response.IsSuccess = false;
+                    }
+                    invitedUser.Accepted = meetingResponse.Accepted;
+                    _dbContext.Update(invitedUser);
+
+                    await _dbContext.SaveChangesAsync();
+
+                    response.IsSuccess = true;
+                }
+                catch (Exception ex)
+                {
+                    response.ErrorMessage = ex.Message;
+                    response.IsSuccess = false;
+                }
+
+                return response;
+            }
+
 
         }
     }

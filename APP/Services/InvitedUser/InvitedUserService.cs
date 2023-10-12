@@ -53,8 +53,32 @@ public class InvitedUserService: IInvitedUserService
             var deserilizeResponse = JsonConvert.DeserializeObject<MainResponseModel>(response);
 
             var users = JsonConvert.DeserializeObject<List<InvitedUser>>(deserilizeResponse.Content.ToString());
-            
+
             return users;
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
+
+    public async Task<HttpResponseMessage> AcceptOrRejectInvite(AcceptMeetingResponse response)
+    {
+        try
+        {
+            using var client = new HttpClient();
+
+            string url = $"{_baseUrl}api/invitedUserController/acceptInvite";
+            var json = JsonConvert.SerializeObject(response);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var apiResponse = await client.PutAsync(url, content);
+
+            if (!apiResponse.IsSuccessStatusCode)
+            {
+                throw new Exception("Failed to create invited user");
+            }
+
+            return apiResponse;
         }
         catch (Exception)
         {

@@ -13,9 +13,14 @@
 
         @if (loggedUserState.LoggedUser != null)
         {
-            @if(notifications)
+            @if(notifications && !hasResponded)
             {
-                
+                <div>
+                    <p>You have been invited for a puppy playdate check your emails for more details and press select or reject to respond</p>
+                    <button class="btn btn-success" @onclick="AcceptClicked">Accept</button>
+                    <button class="btn btn-danger" @onclick="RejectClicked">Reject</button>
+                </div>
+
             }
 
             <button class="btn btn-primary" @onclick="Logout"> Logout</button>
@@ -56,11 +61,40 @@
 {
     private bool notifications = false;
     private bool Loading = false;
+    private bool hasResponded = false;
 
     private LoginRequest loginRequest = new LoginRequest();
     private List<InvitedUser> users;
     public string backgroundImagePath = "./Images/Background_Images/Dog_Background1.jpg";
-    
+
+    [Parameter]
+    public EventCallback<bool> OnAccept { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnReject { get; set; }
+
+    private async Task AcceptClicked()
+    {
+        AcceptMeetingResponse response = new()
+        {
+            Accepted = true,
+            UserID = loggedUserState.LoggedUser.UserID
+        };
+        await invitedUserService.AcceptOrRejectInvite(response);
+        hasResponded = true;
+    }
+
+    private async Task RejectClicked()
+    {
+        AcceptMeetingResponse response = new()
+        {
+            Accepted = false,
+            UserID = loggedUserState.LoggedUser.UserID
+        };
+        await invitedUserService.AcceptOrRejectInvite(response);
+        hasResponded = true;
+    }
+
     protected override async Task OnInitializedAsync()
     {
         backgroundImagePath = loggedUserState.GetBackgroundImage();
@@ -80,6 +114,7 @@
         loggedUserState.LoggedUser = await userService.LoginUser(loginRequest);
         backgroundImagePath = loggedUserState.GetBackgroundImage();
         Loading = false;
+        await GetInvitedUsers();
         StateHasChanged();
     }
 

@@ -12,8 +12,10 @@ public class MeetingService : IMeetingService
     {
         using var client = new HttpClient();
         string url = $"{_baseUrl}api/meetingController/createMeeting";
-        var jsonContent = JsonConvert.SerializeObject(meeting);
-        var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+        var json = JsonConvert.SerializeObject(meeting);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+
         var apiResponse = await client.PostAsync(url, content);
 
         if(!apiResponse.IsSuccessStatusCode) { throw new Exception("failed to create meeting");  }

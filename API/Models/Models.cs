@@ -130,3 +130,9 @@ public class CreatedMeetingResponse
     public int MeetingID { get; set; }
     public string Message { get; set; }
 }
+
+public class AcceptMeetingResponse
+{
+    public bool Accepted { get; set; }
+    public int UserID { get; set; }
+}
