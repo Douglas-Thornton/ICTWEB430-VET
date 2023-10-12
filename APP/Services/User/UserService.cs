@@ -5,18 +5,15 @@ using APP.Interfaces;
 using System.Text;
 using System;
 using Microsoft.Extensions.Configuration;
-using APP.Shared;
 
 namespace APP.Services;
 
 public class UserService : IUserService
 {
     private readonly IConfiguration configuration;
-    private readonly PasswordHasher passwordHasher;
 
-    public UserService(IConfiguration configuration, PasswordHasher password)
+    public UserService(IConfiguration configuration)
     {
-        this.passwordHasher = password;
         this.configuration = configuration;
     }
 
@@ -55,14 +52,9 @@ public class UserService : IUserService
         {
             var returnResponse = new User();
             using var client = new HttpClient();
-            LoginRequest newLoginRequest = new LoginRequest();
-            newLoginRequest.LoginPassword = loginRequest.LoginPassword;
-            newLoginRequest.LoginUsername = loginRequest.LoginUsername;
-
-            loginRequest.LoginPassword = passwordHasher.HashPassword(newLoginRequest.LoginPassword);
 
             string url = $"{_baseUrl}api/userController/login";
-            HttpResponseMessage apiResponse = await client.PostAsJsonAsync(url, newLoginRequest);
+            HttpResponseMessage apiResponse = await client.PostAsJsonAsync(url, loginRequest);
 
             if (apiResponse.IsSuccessStatusCode)
             {
@@ -90,8 +82,6 @@ public class UserService : IUserService
         {
             var createdUser = new User();
             using var client = new HttpClient();
-
-            userToCreate.LoginPassword = passwordHasher.HashPassword(userToCreate.LoginPassword);
 
             string url = $"{_baseUrl}api/userController/create";
             var json = JsonConvert.SerializeObject(userToCreate);
@@ -142,7 +132,6 @@ public class UserService : IUserService
         {
             var updatedUser = new User();
             using var client = new HttpClient();
-            userToUpdate.LoginPassword = passwordHasher.HashPassword(userToUpdate.LoginPassword);
 
             string url = $"{_baseUrl}api/userController/update";
             var json = JsonConvert.SerializeObject(userToUpdate);
