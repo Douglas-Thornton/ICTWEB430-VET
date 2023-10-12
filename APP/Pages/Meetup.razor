@@ -8,6 +8,7 @@
 @inject MeetingService meetingService;
 @inject LoggedUserState loggedUserState
 @inject InvitedUserService inviteUserService;
+@inject PetService petService;
 
 @if(loggedUserState.LoggedUser == null)
 {
@@ -54,23 +55,33 @@ else{
 
 @code 
 {
-    string message;
-    string location = string.Empty;
+    public event PropertyChangedEventHandler PropertyChanged;
+    private string message = string.Empty;
+    private string location = string.Empty;
+    private string backgroundImagePath = string.Empty;
+
     DateTime date = new();
     Pet selectedPet = new();
-    public string backgroundImagePath = "./Images/Background_Images/Dog_Background1.jpg";
     List<Pet> petList = new();
-    IPetService petService = new PetService();
+
     protected override async Task OnInitializedAsync()
     {
         try
         {
+            loggedUserState.PropertyChanged += OnloggedUserStateChanged;
+
+            // Subscribe to the PropertyChanged event of AppPreferences
+            if (loggedUserState.LoggedUser != null && loggedUserState.LoggedUser.AppPreferences != null)
+            {
+                loggedUserState.LoggedUser.AppPreferences.PropertyChanged += OnAppPreferencesChanged;
+            }
+
             await LoadDataAsync();
             backgroundImagePath = loggedUserState.GetBackgroundImage();
         }
-        catch(Exception)
+        catch(Exception e)
         {
-
+            Console.WriteLine(e.Message);
         }
     }
 
@@ -79,22 +90,7 @@ else{
         petList = await petService.GetAllPets();
     }
 
-    public event PropertyChangedEventHandler PropertyChanged;
 
-    /// <summary>
-    /// On initialized setup propertyChanged event and load the page data.
-    /// </summary>
-    protected override void OnInitialized()
-    {
-        loggedUserState.PropertyChanged += OnloggedUserStateChanged;
-
-        // Subscribe to the PropertyChanged event of AppPreferences
-        if (loggedUserState.LoggedUser != null && loggedUserState.LoggedUser.AppPreferences != null)
-        {
-            loggedUserState.LoggedUser.AppPreferences.PropertyChanged += OnAppPreferencesChanged;
-        }
-        backgroundImagePath = loggedUserState.GetBackgroundImage();
-    }
 
     /// <summary>
     /// If the user logs in; update the data on this page.
