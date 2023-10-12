@@ -6,13 +6,18 @@
 
 @inject IUserService userService;
 @inject LoggedUserState loggedUserState
-
+@inject IInvitedUserService invitedUserService;
 <div class="background-container">
     <img src=@backgroundImagePath alt="@backgroundImagePath" class="background-image"/>
     <div class="card">
 
         @if (loggedUserState.LoggedUser != null)
         {
+            @if(notifications)
+            {
+                
+            }
+
             <button class="btn btn-primary" @onclick="Logout"> Logout</button>
         }
         else
@@ -49,11 +54,11 @@
 
 @code 
 {
-
+    private bool notifications = false;
     private bool Loading = false;
 
     private LoginRequest loginRequest = new LoginRequest();
-    private List<User> users;
+    private List<InvitedUser> users;
     public string backgroundImagePath = "./Images/Background_Images/Dog_Background1.jpg";
     
     protected override async Task OnInitializedAsync()
@@ -61,6 +66,12 @@
         backgroundImagePath = loggedUserState.GetBackgroundImage();
     }
 
+    public async Task GetInvitedUsers()
+    {
+        users = await invitedUserService.GetInvitedUserById(loggedUserState.LoggedUser.UserID);
+        users = users.Where(invite => invite.Accepted == null).ToList();
+        notifications = users[0] != null ? true : false;
+    }
 
     private async Task HandleValidLoginSubmit()
     {

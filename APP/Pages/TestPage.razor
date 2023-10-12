@@ -4,25 +4,24 @@
 @using Newtonsoft.Json;
 
 @inject IInvitedUserService invitedUserService;
+@inject IUserService userService;
+@inject LoggedUserState userState;
 @inject IMeetingService meetingService;
+
 <h3>TestPage</h3>
 
-<p>UserId: @user.UserID</p>
-@foreach(var meeting in meetings)
-{
-    if(meeting.MeetingID == user.MeetingID)
-    {
-    <p>Message: @meeting.MeetingMessage</p>
-    }
-}
+<p>Username: @userState.LoggedUser.LoginUsername</p>
+
 
 @code {
-    List<InvitedUser> users = new();
-    User user = new();
+    List<InvitedUser> users;
     List<Meeting> meetings = new();
+    bool? notification = null;
     public async Task GetInvitedUsers()
     {
-        users = await invitedUserService.GetInvitedUserById(1);
+        users = await invitedUserService.GetInvitedUserById(userState.LoggedUser.UserID);
+        users = users.Where(invite => invite.Accepted == null).ToList();
+        notification = users[0] != null ? true : false;
     }
 
     public string ConvertToString(InvitedUser user)

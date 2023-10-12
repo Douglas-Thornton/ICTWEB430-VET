@@ -4,5 +4,5 @@ namespace APP.Services;
 
 public interface IInvitedUserService
 {
-    public Task<List<InvitedUser>> GetInvitedUserById(int meetingId);
+    public Task<List<InvitedUser>> GetInvitedUserById(int id);
 }

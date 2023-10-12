@@ -1,6 +1,6 @@
 ﻿using APP.Data.Models;
 
-namespace APP.Interfaces;
+namespace APP.Services;
 
 public interface IUserService
 {
