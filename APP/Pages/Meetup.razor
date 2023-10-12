@@ -7,12 +7,13 @@
 @using APP.States;
 @using System.ComponentModel;
 @inject IConfiguration Configuration;
-@inject IMeetingService meetingService;
 @inject LoggedUserState loggedUserState;
-@inject IInvitedUserService inviteUserService;
+@inject IMeetingService meetingService;
+@inject IUserService userService;
 @inject IPetService petService;
+@inject IInvitedUserService inviteUserService;
 
-@if(loggedUserState.LoggedUser == null)
+@if (loggedUserState.LoggedUser == null)
 {
     <div class="background-container">
         <img src=@backgroundImagePath alt="@backgroundImagePath" class="background-image" />
@@ -21,84 +22,162 @@
         </div>
     </div>
 }
-else{
-    @if(error)
+else
+{
+    if (CancellationModalOpen)
     {
-        <div class="background-container">
-            <img src=@backgroundImagePath alt="@backgroundImagePath" class="background-image" />
-            <div class="card" style="@loggedUserState.PStyleTagCSS">
-                <p>@errorMessage</p>
+
+        <Modal OnClose="CloseCancellationModal" ModalTitle="Cancel Meeting">
+            <div>
+                <h1>Are you sure you want to cancel this meeting?</h1>
+                <button class="btn btn-danger btn-lg p-1 m-1" @onclick="() => CancelMeeting(editMeeting)"> Cancel Meeting</button>
+            </div>
+        </Modal>
+    }
+
+    if (MeetingModalOpen)
+    {
+        <Modal OnClose="CloseMeetingModal" ModalTitle="@(MeetingModalMode == ModalMode.Create ? "Create Meeting" : "Edit Meeting")" ModalWidth="modal-90">
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                        <EditForm class="form-container" Model="CurrentMeeting" OnValidSubmit="HandleValidMeetingSubmit">
+
+                            <DataAnnotationsValidator />
+                            <ValidationMessage For="@(() => CurrentMeeting.MeetingName)" />
+                            <ValidationMessage For="@(() => CurrentMeeting.MeetingLocation)" />
+                            <ValidationMessage For="@(() => CurrentMeeting.MeetingMessage)" />
+                            <ValidationMessage For="@(() => CurrentMeeting.MeetingDate)" />
+
+                            <div>
+                                <label for="MeetingName">Name:</label>
+                                <InputText id="MeetingName" class="form-control" @bind-Value="CurrentMeeting.MeetingName" />
+                            </div>
+
+                            <div>
+                                <label for="MeetingLocation">Location:</label>
+                                <InputText id="MeetingLocation" class="form-control" @bind-Value="CurrentMeeting.MeetingLocation" />
+                            </div>
+
+                            <div>
+                                <label for="MeetingMessage">Message:</label>
+                                <InputText id="MeetingMessage" class="form-control" @bind-Value="CurrentMeeting.MeetingMessage" />
+                            </div>
+
+                            <div>
+                                <label for="MeetingDate">Date:</label>
+                                <InputDate id="MeetingDate" class="form-control" @bind-Value="CurrentMeeting.MeetingDate" />
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <button class="btn btn-primary" type="submit">Save Changes</button>
+                                </div>
+                            </div>
+                        </EditForm>
+
+                    </div>
+
+                    <div class="col">
+                        <h3>Invited pets:</h3>
+                        <div class="scrollable-container">
+                            @if (CurrentMeeting.InvitedUsers != null)
+                            {
+                                foreach (InvitedUser invitedUser in CurrentMeeting.InvitedUsers)
+                                {
+                                    foreach (InvitedPet invitedPet in invitedUser.InvitedPets)
+                                    {
+                                        var pet = petList.SingleOrDefault(p => p.PetID == invitedPet.PetID);
+                                        <PetTile pet="pet" DeleteEnabled=true EditEnabled=false ShowVisability="false" OnDelete="()=>DeletePet(pet)"></PetTile>
+
+                                    }
+                                }
+                            }
+                        </div>
+                    </div>
+                    <div class="col">
+                        <h3>Inviteable pets:</h3>
+                        @if (petList != null)
+                        {
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" id="petSearch" placeholder="Search for a pet" @onchange=SearchPets>
+                                <label for="petSearch">Search:</label>
+                            </div>
+                            <div class="scrollable-container">
+
+                                @foreach (Pet pet in FilteredPetList)
+                                {
+                                    <PetTile pet="pet" InviteEnabled="true" ShowVisability="false" OnInvite="()=>InvitePet(pet)"></PetTile>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </Modal>
+    }
+
+    <div class="background-container">
+        <img src=@backgroundImagePath alt="@backgroundImagePath" class="background-image" />
+        <div class="card wide-card" style="@loggedUserState.PStyleTagCSS">
+            @if (Loading)
+            {
+                <LoadingSpinner></LoadingSpinner>
+            }
+
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                        @if (meetingsCreatedByLoggedUser != null)
+                        {
+                            <h2>Meetings you have created</h2>
+                            <button class="btn btn-primary p-1 m-1" @onclick=CreateNewMeeting>Create a new meeting</button>
+
+                            @foreach (Meeting meeting in meetingsCreatedByLoggedUser.OrderByDescending(x => x.MeetingCreationDate))
+                            {
+                                <MeetupTile meeting="meeting" EditEnabled=true OnEdit="EditMeeting" CancelEnabled=true OnCancel="OpenCancelMeetingModal"></MeetupTile>
+                            }
+
+                        }
+                    </div>
+                </div>
             </div>
         </div>
-    }
-    else
-    {
-        <div class="background-container">
-            <img src=@backgroundImagePath alt="@backgroundImagePath" class="background-image" />
-            <div class="card" style="@loggedUserState.PStyleTagCSS">
-                <h1 style="@loggedUserState.H1StyleTagCSS">Meetup</h1>
-                <label>Your Name</label>
-                <input placeholder="Insert your name here" />
-                <label>Your Pets Name</label>
-                <input placeholder="Insert your pets name here" />
-                <label>Is your pet a dog or cat?</label>
-                <select>
-                    <option>Select an option</option>
-                    <option value="dog">Dog</option>
-                    <option value="cat">Cat</option>
-                </select>
-                <label>Select your playdate</label>
-                <select @bind="selectedPet">
-                    <option value="none">select</option>
-                    @foreach (var pet in petList)
-                    {
-                        <option value="@pet.PetID">@pet.PetName</option>
-                    }
-                </select>
-                <label for="datePicker">Date:</label>
-                <InputDate id="datePicker" @bind-Value="selectedDate" />
-                Address: <input type="text" class="form-control" asp-for="location" />
-                <label>Message</label>
-                <input @bind-value="message" placeholder="input message you want to send to the owner" />
-                <button @onclick="SendEmail">Submit</button>
-            </div>
-        </div>
-    }
-    
+    </div>
 }
 
 
-@code 
+@code
 {
-    private string message = string.Empty;
-    private string location = string.Empty;
-    private string backgroundImagePath = string.Empty;
-    private string errorMessage = string.Empty;
-    private DateTime? selectedDate;
-
-    bool error = false;
-
-    string userInput;
-    Pet selectedPet;
+    public string backgroundImagePath = "./Images/Background_Images/Dog_Background1.jpg";
+    string nameOfSender = string.Empty;
+    public Meeting newMeeting = new Meeting();
+    public Meeting editMeeting = new Meeting();
+    public ModalMode MeetingModalMode = ModalMode.Create;
+    public bool Loading = false;
+    public Meeting CurrentMeeting => MeetingModalMode == ModalMode.Create ? newMeeting : editMeeting;
+    public bool error;
     List<Pet> petList = new();
-    public event PropertyChangedEventHandler PropertyChanged;
+    List<Pet> FilteredPetList = new();
 
+    List<User> Users = new();
+
+    public bool CancellationModalOpen = false;
+    public bool MeetingModalOpen = false;
+
+    public string searchPet = string.Empty;
+
+    List<Meeting> meetingsCreatedByLoggedUser = new List<Meeting>();
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            loggedUserState.PropertyChanged += OnloggedUserStateChanged;
-
-            // Subscribe to the PropertyChanged event of AppPreferences
-            if (loggedUserState.LoggedUser != null && loggedUserState.LoggedUser.AppPreferences != null)
+            if (loggedUserState.LoggedUser != null)
             {
-                loggedUserState.LoggedUser.AppPreferences.PropertyChanged += OnAppPreferencesChanged;
+                await LoadDataAsync();
+                backgroundImagePath = loggedUserState.GetBackgroundImage();
             }
-
-            await LoadDataAsync();
-            backgroundImagePath = loggedUserState.GetBackgroundImage();
         }
-        catch(Exception e)
+        catch (Exception)
         {
             error = true;
         }
@@ -106,17 +185,67 @@ else{
 
     public async Task LoadDataAsync()
     {
-        petList = await petService.GetAllPets();
+        try
+        {
+            if (loggedUserState.LoggedUser != null)
+            {
+
+                
+
+                petList = await petService.GetAllPets();
+                List<int> usedpetIds = new List<int>();
+                if (CurrentMeeting.InvitedUsers != null)
+                {
+                    usedpetIds = CurrentMeeting.InvitedUsers.SelectMany(iu => iu.InvitedPets.Select(ip => ip.PetID)).ToList();
+                }
+                var unused = petList.Where(p => !usedpetIds.Contains(p.PetID)).ToList();
+
+                if (!string.IsNullOrEmpty(searchPet))
+                {
+                    FilteredPetList = unused.Where(p => p.PetName.ToLower().Contains(searchPet.ToLower()) || p.PetBreed.ToLower().Contains(searchPet.ToLower())).ToList();
+                }
+                else
+                {
+                    FilteredPetList = unused;
+                }
+
+
+                Users = await userService.GetAllUsersList();
+                meetingsCreatedByLoggedUser = await meetingService.GetMeetingsByCreatedUserId(loggedUserState.LoggedUser.UserID);
+            }
+        }
+        catch (Exception ex)
+        {
+
+
+        }
+        var test = string.Empty;
     }
 
+    public event PropertyChangedEventHandler PropertyChanged;
 
+    /// <summary>
+    /// On initialized setup propertyChanged event and load the page data.
+    /// </summary>
+    protected override void OnInitialized()
+    {
+        loggedUserState.PropertyChanged += OnloggedUserStateChanged;
+
+        // Subscribe to the PropertyChanged event of AppPreferences
+        if (loggedUserState.LoggedUser != null && loggedUserState.LoggedUser.AppPreferences != null)
+        {
+            loggedUserState.LoggedUser.AppPreferences.PropertyChanged += OnAppPreferencesChanged;
+            CurrentMeeting.UserCreated = loggedUserState.LoggedUser.UserID;
+        }
+        backgroundImagePath = loggedUserState.GetBackgroundImage();
+    }
 
     /// <summary>
     /// If the user logs in; update the data on this page.
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private void OnloggedUserStateChanged(object sender, PropertyChangedEventArgs e)
+    private async void OnloggedUserStateChanged(object sender, PropertyChangedEventArgs e)
     {
         // Check if the property that changed is "LoggedUser"
         if (e.PropertyName == nameof(loggedUserState.LoggedUser))
@@ -124,8 +253,10 @@ else{
             if (loggedUserState.LoggedUser != null)
             {
                 loggedUserState.LoggedUser.AppPreferences.PropertyChanged += OnAppPreferencesChanged;
+                CurrentMeeting.UserCreated = loggedUserState.LoggedUser.UserID;
             }
             backgroundImagePath = loggedUserState.GetBackgroundImage();
+            await LoadDataAsync();
             StateHasChanged();
         }
     }
@@ -159,37 +290,196 @@ else{
         EmailService service = new(Configuration);
         var now = DateTime.Now.Date;
 
-        if(!selectedDate.HasValue) 
-        { 
-            error = true;
-            errorMessage = "please input a valid date";
-            return;
+        switch (MeetingModalMode)
+        {
+            case ModalMode.Create:
+                @foreach (var invitedUser in CurrentMeeting.InvitedUsers)
+                {
+                    await service.SendEmail(loggedUserState.LoggedUser.LoginUsername, "New Meeting Invite",CurrentMeeting.MeetingMessage, invitedUser.User.Email);
+                }
+                break;
+            case ModalMode.Edit:
+                @foreach (var invitedUser in CurrentMeeting.InvitedUsers)
+                {
+                    await service.SendEmail(loggedUserState.LoggedUser.LoginUsername, "A existing meeting you were invited to has been modified.", CurrentMeeting.MeetingMessage, invitedUser.User.Email);
+                }
+                break;
         }
 
-        // Successfully parsed, now you can use 'parsedDatetime' for further processing or save it to the database
-        // For example, call a service to save it to the database
-        Meeting meeting = new()
+        //await service.SendEmail(Configuration["TestEmailName"], "This is a test email", Configuration["TestEmail"]);
+
+         //Commented out as this will actually send emails to whomever we pass through. Use the Test configuration above to determine if functionality is working as expected
+
+
+    }
+
+    private async void HandleValidMeetingSubmit()
+    {
+        switch (MeetingModalMode)
+        {
+            case ModalMode.Create:
+                CurrentMeeting.MeetingCreationDate = DateTime.Now;
+                await meetingService.CreateMeetingAsync(CurrentMeeting);
+                break;
+            case ModalMode.Edit:
+                await meetingService.UpdateMeetingAsync(editMeeting);
+                break;
+        }
+        await SendEmail();
+        await LoadDataAsync();
+        CloseMeetingModal();
+    }
+
+    /// <summary>
+    /// Remove a pet from the meeting invite list.
+    /// </summary>
+    /// <param name="petToDelete"></param>
+    private void DeletePet(Pet petToDelete)
+    {
+        // Find all InvitedUsers that contain the petToDelete
+        var invitedUsersContainingPet = CurrentMeeting.InvitedUsers.Where(iu => iu.InvitedPets.Any(ip => ip.PetID == petToDelete.PetID)).ToList();
+
+        foreach (var invitedUser in invitedUsersContainingPet)
+        {
+            // Find the invitedPetToDelete within the InvitedUser's list of pets
+            var invitedPetToDelete = invitedUser.InvitedPets.SingleOrDefault(ip => ip.PetID == petToDelete.PetID);
+
+            if (invitedPetToDelete != null)
             {
-                UserCreated = loggedUserState.LoggedUser.UserID,
-                MeetingDate = selectedDate.Value,
-                MeetingLocation = location,
-                MeetingCreationDate = now,
-                MeetingCancelledDate = now.AddDays(10),
-                MeetingName = $"Meeting with {selectedPet.PetName}",
-                MeetingMessage = message
-            };
-        var meetingResponse = await meetingService.CreateMeeting(meeting);
+                // Remove the invitedPetToDelete from the InvitedUser's list of pets
+                invitedUser.InvitedPets.Remove(invitedPetToDelete);
 
-        InvitedUser newInvite = new()
+                // If the InvitedUser no longer has any pets, remove the InvitedUser from the meeting
+                if (invitedUser.InvitedPets.Count == 0)
+                {
+                    CurrentMeeting.InvitedUsers.Remove(invitedUser);
+                }
+            }
+        }
+    }
+    /// <summary>
+    /// Invite a pet to the meeting.
+    /// </summary>
+    /// <param name="petToInvite"></param>
+    private void InvitePet(Pet petToInvite)
+    {
+        if (CurrentMeeting.InvitedUsers == null)
+        {
+            CurrentMeeting.InvitedUsers = new List<InvitedUser>();
+        }
+
+        var invitedUser = CurrentMeeting.InvitedUsers.FirstOrDefault(u => u.UserID == petToInvite.OwnerID);
+
+        if (invitedUser == null)
+        {
+            invitedUser = new InvitedUser()
+                {
+                    UserID = petToInvite.OwnerID,
+                    InvitedPets = new List<InvitedPet>()
+                };
+            CurrentMeeting.InvitedUsers.Add(invitedUser);
+        }
+
+        invitedUser.InvitedPets.Add(new InvitedPet()
             {
-                UserID = selectedPet.OwnerID,
-                MeetingID = meetingResponse.MeetingID,
+                PetID = petToInvite.PetID
+            });
+    }
+
+
+    /// <summary>
+    /// Open tbe meeting modal in edit mode.
+    /// </summary>
+    private void CreateNewMeeting()
+    {
+        newMeeting = new Meeting();
+        newMeeting.UserCreated = loggedUserState.LoggedUser.UserID;
+        MeetingModalMode = ModalMode.Create;
+        MeetingModalOpen = true;
+    }
+
+    /// <summary>
+    /// Open tbe meeting modal in edit mode.
+    /// </summary>
+    /// <param name="meetingToEdit"></param>
+    private void EditMeeting(Meeting meetingToEdit)
+    {
+        editMeeting = new Meeting
+            {
+                MeetingName = meetingToEdit.MeetingName,
+                MeetingLocation = meetingToEdit.MeetingLocation,
+                MeetingCancellationDate = meetingToEdit.MeetingCancellationDate,
+                MeetingCreationDate = meetingToEdit.MeetingCreationDate,
+                MeetingDate = meetingToEdit.MeetingDate,
+                MeetingMessage = meetingToEdit.MeetingMessage,
+                MeetingID = meetingToEdit.MeetingID,
+                InvitedUsers = meetingToEdit.InvitedUsers,
+                UserCreated = meetingToEdit.UserCreated
             };
-        await inviteUserService.CreateInvitedUser(newInvite);
 
-        await service.SendEmail(Configuration["TestEmailName"], "This is a test email", Configuration["TestEmail"]);
+        MeetingModalMode = ModalMode.Edit;
+        MeetingModalOpen = true;
+    }
 
-        // Commented out as this will actually send emails to whomever we pass through. Use the Test configuration above to determine if functionality is working as expected
-        // await service.SendEmail(nameOfSender, $"Hey there! {selectedPet.Owner.FirstName} I was wondering if you would like to meetup for a play date with our furry friends. I see {selectedPet.PetName} would be a great match to meetup with.", selectedPet.Owner.Email);
+    /// <summary>
+    /// Remove a pet from the user's pet list.
+    /// </summary>
+    /// <param name="meetingToCancel"></param>
+    private void OpenCancelMeetingModal(Meeting meetingToCancel)
+    {
+        editMeeting = new Meeting
+            {
+                MeetingName = meetingToCancel.MeetingName,
+                MeetingLocation = meetingToCancel.MeetingLocation,
+                MeetingCancellationDate = meetingToCancel.MeetingCancellationDate,
+                MeetingCreationDate = meetingToCancel.MeetingCreationDate,
+                MeetingDate = meetingToCancel.MeetingDate,
+                MeetingMessage = meetingToCancel.MeetingMessage,
+                MeetingID = meetingToCancel.MeetingID,
+                InvitedUsers = meetingToCancel.InvitedUsers,
+                UserCreated = meetingToCancel.UserCreated
+            };
+        CancellationModalOpen = true;
+    }
+
+    /// <summary>
+    /// Remove a pet from the user's pet list.
+    /// </summary>
+    /// <param name="meetingToCancel"></param>
+    private async Task CancelMeeting(Meeting meetingToCancel)
+    {
+        meetingToCancel.MeetingCancellationDate = DateTime.Now;
+        await meetingService.UpdateMeetingAsync(meetingToCancel);
+        await LoadDataAsync();
+        CloseCancellationModal();
+    }
+
+    /// <summary>
+    /// Close the modal and clear the edit and new pets.
+    /// </summary>
+    private void CloseMeetingModal()
+    {
+        editMeeting = new Meeting();
+        newMeeting = new Meeting();
+        MeetingModalOpen = false;
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Close the modal and clear the edit and new pets.
+    /// </summary>
+    private void CloseCancellationModal()
+    {
+        editMeeting = new Meeting();
+        MeetingModalOpen = false;
+        CancellationModalOpen = false;
+        StateHasChanged();
+    }
+
+    public async Task SearchPets(ChangeEventArgs e)
+    {
+        searchPet = e.Value.ToString();
+        await LoadDataAsync();
+        StateHasChanged();
     }
 }

@@ -11,14 +11,14 @@ public class EmailService : IEmailService
     {
         this.configuration = configuration;
     }
-    public async Task SendEmail(string senderName, string message, string recipientsEmail)
+    public async Task SendEmail(string senderName, string emailSubject, string message, string recipientsEmail)
     {
         // Sender's email address and credentials
         string senderEmail = configuration["EmailSender"];
         string senderPassword = configuration["EmailPassword"];
 
         // Recipient's email address
-        string subject = $"Play Date: {senderName}";
+        string subject = emailSubject;
         string body = message;
         // Mail server (SMTP) and port
         string smtpServer = "smtp.gmail.com";

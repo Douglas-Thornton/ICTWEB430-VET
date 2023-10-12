@@ -62,14 +62,14 @@ public class InvitedUserService: IInvitedUserService
         }
     }
 
-    public async Task<HttpResponseMessage> AcceptOrRejectInvite(AcceptMeetingResponse response)
+    public async Task<HttpResponseMessage> AcceptOrRejectInvite(InvitedUser invitedUser)
     {
         try
         {
             using var client = new HttpClient();
 
             string url = $"{_baseUrl}api/invitedUserController/acceptInvite";
-            var json = JsonConvert.SerializeObject(response);
+            var json = JsonConvert.SerializeObject(invitedUser);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var apiResponse = await client.PutAsync(url, content);
 

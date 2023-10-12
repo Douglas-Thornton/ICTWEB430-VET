@@ -18,7 +18,7 @@ namespace VETAPPAPI.Controllers
         }
 
         /// <summary>
-        /// Get all pets.
+        /// Get all discoverable pets.
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -28,6 +28,7 @@ namespace VETAPPAPI.Controllers
             try
             {
                 response.Content = _dbContext.Pets
+                .Where(p => p.PetDiscoverability)
                 .Include(p => p.Owner)
                 .Select(p => new Pet
                 {
@@ -38,6 +39,7 @@ namespace VETAPPAPI.Controllers
                     PetGender = p.PetGender,
                     PetPhoto = p.PetPhoto,
                     PetDiscoverability = p.PetDiscoverability,
+                    OwnerID = p.OwnerID,
                     Owner = new User
                     {
                         UserID = p.Owner.UserID,
@@ -54,7 +56,6 @@ namespace VETAPPAPI.Controllers
                     {
                         InvitedPetID = p.InvitedPetID,
                         InviteID = p.InviteID,
-                        MeetingID = p.MeetingID,
                         PetID = p.PetID
                     }).ToList()
                 })
@@ -110,7 +111,6 @@ namespace VETAPPAPI.Controllers
                         {
                             InvitedPetID = p.InvitedPetID,
                             InviteID = p.InviteID,
-                            MeetingID = p.MeetingID,
                             PetID = p.PetID
                         }).ToList()
                     })

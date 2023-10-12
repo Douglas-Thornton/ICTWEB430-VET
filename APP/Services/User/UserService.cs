@@ -3,11 +3,20 @@ using Newtonsoft.Json;
 using System.Net.Http.Json;
 using APP.Interfaces;
 using System.Text;
+using System;
+using Microsoft.Extensions.Configuration;
 
 namespace APP.Services;
 
 public class UserService : IUserService
 {
+    private readonly IConfiguration configuration;
+
+    public UserService(IConfiguration configuration)
+    {
+        this.configuration = configuration;
+    }
+
     private readonly string _baseUrl = "https://localhost:7020/";
 
     public async Task<List<User>> GetAllUsersList()
@@ -96,7 +105,7 @@ public class UserService : IUserService
                 else 
                 { 
                     serviceResponse.success= false;
-                    serviceResponse.Response = "Failed to login to new user";
+                    serviceResponse.Response = "Failed to create new user";
                 }
             }
             else
@@ -146,7 +155,7 @@ public class UserService : IUserService
                 else
                 {
                     serviceResponse.success = false;
-                    serviceResponse.Response = "Failed to login to new user";
+                    serviceResponse.Response = "Failed to update user";
                 }
             }
             else
@@ -165,9 +174,79 @@ public class UserService : IUserService
         }
     }
 
-    //public async Task<bool> ValidateAddress(User userToValidate) 
-    //{ 
-    
+    public async Task<ServiceResponse> ValidateAddress(User userToValidate)
+    {
 
-    //}
+        ServiceResponse serviceResponse = new ServiceResponse { };
+
+        String AddressAPI_Secret = configuration["AddressAPISecret"];
+        String AddressAPI_Key = configuration["AddressAPIKey"];
+        string AddressToValidate = "";
+
+        if (!string.IsNullOrEmpty(userToValidate.AddressLine1))
+        {
+            AddressToValidate += userToValidate.AddressLine1 + " ";
+        }
+
+        if (!string.IsNullOrEmpty(userToValidate.AddressLine2))
+        {
+            AddressToValidate += userToValidate.AddressLine2 + " ";
+        }
+
+        if (!string.IsNullOrEmpty(userToValidate.Suburb))
+        {
+            AddressToValidate += userToValidate.Suburb + " ";
+        }
+
+        if (!string.IsNullOrEmpty(userToValidate.State))
+        {
+            AddressToValidate += userToValidate.State;
+        }
+
+        AddressToValidate = AddressToValidate.ToUpper();
+        AddressToValidate = AddressToValidate.Replace(" ", "%");
+
+
+        try
+        {
+            var updatedUser = new User();
+            using var client = new HttpClient();
+
+            string url = $"https://api.addressfinder.io/api/au/address/v2/verification/?key={AddressAPI_Key}&format=json&q={AddressToValidate}&gnaf=1&paf=1";
+            client.DefaultRequestHeaders.Add("Authorization", AddressAPI_Secret);
+            
+            var apiResponse = await client.GetAsync(url);
+
+            if (apiResponse.IsSuccessStatusCode)
+            {
+
+                string response = await apiResponse.Content.ReadAsStringAsync();
+                AddressVerificationResponse deserializeResponse = JsonConvert.DeserializeObject<AddressVerificationResponse>(response);
+
+                if (deserializeResponse.Success && deserializeResponse.Matched)
+                {
+                    serviceResponse.Response = response;
+                    serviceResponse.success = true;
+                }
+                else
+                {
+                    serviceResponse.success = false;
+                    serviceResponse.Response = "Failed to login to new user";
+                }
+            }
+            else
+            {
+                // Handle errors if necessary
+                serviceResponse.Response = await apiResponse.Content.ReadAsStringAsync();
+                serviceResponse.success = false;
+            }
+
+            return serviceResponse;
+        }
+        catch (Exception)
+        {
+            serviceResponse.success = false;
+            return serviceResponse;
+        }
+    }
 }

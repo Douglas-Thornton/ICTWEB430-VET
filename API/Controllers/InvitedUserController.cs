@@ -30,6 +30,9 @@ namespace VETAPPAPI.Controllers
                     response.Content = _dbContext.InvitedUsers
                         .Include(ip => ip.User)
                         .Include(ip => ip.Meeting)
+                        .Include(ip => ip.InvitedPets)
+                        .ThenInclude(p => p.Pet)
+                        .ThenInclude(o => o.Owner)
                         .Select(m => new InvitedUser
                         {
                             InviteID = m.InviteID,
@@ -59,7 +62,24 @@ namespace VETAPPAPI.Controllers
                                 MeetingCancellationDate = m.Meeting.MeetingCancellationDate,
                                 MeetingName = m.Meeting.MeetingName,
                                 MeetingMessage = m.Meeting.MeetingMessage
-                            }
+                            },
+                            InvitedPets = m.InvitedPets.Select(p => new InvitedPet
+                            {
+                                PetID = p.PetID,
+                                InvitedPetID = p.InvitedPetID,
+                                InviteID = p.InviteID,
+                                Pet = new Pet 
+                                {
+                                    PetID = p.Pet.PetID,
+                                    PetName = p.Pet.PetName,
+                                    PetBreed = p.Pet.PetBreed,
+                                    PetAge = p.Pet.PetAge,
+                                    PetGender = p.Pet.PetGender,
+                                    PetPhoto = p.Pet.PetPhoto,
+                                    PetDiscoverability = p.Pet.PetDiscoverability,
+                                    OwnerID = p.Pet.OwnerID
+                                }
+                            }).ToList()
                         }).Where(user => user.UserID == id).ToList();
 
                     response.IsSuccess = true;
@@ -243,19 +263,20 @@ namespace VETAPPAPI.Controllers
             }
 
             [HttpPut("acceptInvite")]
-            public async Task<MainResponse> AcceptInvite(AcceptMeetingResponse meetingResponse)
+            public async Task<MainResponse> AcceptInvite(InvitedUser invitedUser)
             {
                 var response = new MainResponse();
                 try
                 {
-                    var invitedUser = _dbContext.InvitedUsers.FirstOrDefault(x => x.UserID == meetingResponse.UserID && x.Accepted == null);
-                    if (invitedUser == null)
+                    var existingInvite = await _dbContext.InvitedUsers.FindAsync(invitedUser.MeetingID);
+                    if (existingInvite == null)
                     {
-                        response.ErrorMessage = $"Invited user with ID {meetingResponse.UserID} not found.";
-                        response.IsSuccess = false;
+                        throw new Exception($"Meeting with ID {invitedUser.MeetingID} not found.");
                     }
-                    invitedUser.Accepted = meetingResponse.Accepted;
-                    _dbContext.Update(invitedUser);
+
+                    // Update the invites's properties with the new values
+                    existingInvite.ResponseDate = invitedUser.ResponseDate;
+                    existingInvite.Accepted = invitedUser.Accepted;
 
                     await _dbContext.SaveChangesAsync();
 
