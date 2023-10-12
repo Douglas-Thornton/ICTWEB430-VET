@@ -333,8 +333,8 @@ namespace VETAPPAPI.Controllers
             return Ok(response);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateMeeting(Meeting meeting)
+        [HttpPost("/createMeeting")]
+        public async Task<IActionResult> CreateMeeting([FromBody] Meeting meeting)
         {
             try
             {
@@ -345,8 +345,13 @@ namespace VETAPPAPI.Controllers
 
                 _dbContext.Meetings.Add(meeting);
                 await _dbContext.SaveChangesAsync();
+                CreatedMeetingResponse response = new()
+                {
+                    MeetingID = meeting.MeetingID,
+                    Message = $"Meeting created successfully with ID: {meeting.MeetingID}"
+                };
 
-                return Ok($"Meeting created successfully with ID: {meeting.MeetingID}");
+                return Ok(response);
             }
             catch (Exception ex)
             {
@@ -407,6 +412,8 @@ namespace VETAPPAPI.Controllers
                 return StatusCode(500, $"Error deleting meeting with ID {id}. {ex.Message}");
             }
         }
+
+
 
     }
 }

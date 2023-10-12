@@ -5,7 +5,9 @@
 @using APP.States;
 @using System.ComponentModel;
 @inject IConfiguration Configuration;
+@inject MeetingService meetingService;
 @inject LoggedUserState loggedUserState
+@inject InvitedUserService inviteUserService;
 
 @if(loggedUserState.LoggedUser == null)
 {
@@ -22,7 +24,7 @@ else{
         <div class="card" style="@loggedUserState.PStyleTagCSS">
             <h1 style="@loggedUserState.H1StyleTagCSS">Meetup</h1>
             <label>Your Name</label>
-            <input @bind-value="nameOfSender" placeholder="Insert your name here" />
+            <input placeholder="Insert your name here" />
             <label>Your Pets Name</label>
             <input placeholder="Insert your pets name here" />
             <label>Is your pet a dog or cat?</label>
@@ -39,7 +41,12 @@ else{
                     <option value="@pet.PetID">@pet.PetName</option>
                 }
             </select>
+            Date: <input type="datetime" class="form-control" asp-for="date" asp-format="{0:yyyy-MM-ddTHH:mm}" />
+            Address: <input type="text" class="form-control" asp-for="location" />
+            <label>Message</label>
+            <input @bind-value="message" placeholder="input message you want to send to the owner" />
             <button @onclick="SendEmail">Submit</button>
+
         </div>
     </div>
 }
@@ -47,9 +54,11 @@ else{
 
 @code 
 {
+    string message;
+    string location = string.Empty;
+    DateTime date = new();
     Pet selectedPet = new();
     public string backgroundImagePath = "./Images/Background_Images/Dog_Background1.jpg";
-    string nameOfSender = string.Empty;
     List<Pet> petList = new();
     IPetService petService = new PetService();
     protected override async Task OnInitializedAsync()
@@ -133,8 +142,28 @@ else{
     public async Task SendEmail()
     {
         EmailService service = new(Configuration);
+        var now = DateTime.Now.Date;
+        Meeting meeting = new()
+        {
+            UserCreated = loggedUserState.LoggedUser.UserID,
+            MeetingDate = date,
+            MeetingLocation = location,
+            MeetingCreationDate = now,
+            MeetingCancelledDate = now.AddDays(10),
+            MeetingName = $"Meeting with {selectedPet.PetName}",
+            MeetingMessage = message
+        };
+        var meetingResponse = await meetingService.CreateMeeting(meeting);
+
+        InvitedUser newInvite = new()
+        {
+           UserID = selectedPet.OwnerID,
+           MeetingID = meetingResponse.MeetingID,
+        };
         await service.SendEmail(Configuration["TestEmailName"], "This is a test email", Configuration["TestEmail"]);
+
         // Commented out as this will actually send emails to whomever we pass through. Use the Test configuration above to determine if functionality is working as expected
         // await service.SendEmail(nameOfSender, $"Hey there! {selectedPet.Owner.FirstName} I was wondering if you would like to meetup for a play date with our furry friends. I see {selectedPet.PetName} would be a great match to meetup with.", selectedPet.Owner.Email);
+        await inviteUserService.CreateInvitedUser(newInvite) ;
     }
 }

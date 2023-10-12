@@ -277,3 +277,9 @@ public enum MixedImages
     [Description("./Images/Background_Images/Mixed_3.jpg")]
     mixedImage3
 }
+
+public class CreatedMeetingResponse
+{
+    public int MeetingID { get; set; }
+    public string Message { get; set; }
+}
