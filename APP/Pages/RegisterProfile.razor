@@ -127,15 +127,7 @@
                                     }
 
                                     <DataAnnotationsValidator />
-                                    @if(CurrentUser.ErrorMessages != null)
-                                    {
-                                        @foreach(string message in CurrentUser.ErrorMessages)
-                                        {
-                                            <div class="alert alert-danger">
-                                                @message
-                                            </div>
-                                        }
-                                    }
+
                                     <div>
                                         <label for="firstName">First Name:</label>
                                         <InputText id="firstName" class="form-control" @bind-Value="CurrentUser.FirstName" />
@@ -159,27 +151,13 @@
                                         <InputText id="email" class="form-control" @bind-Value="CurrentUser.Email" />
                                         <ValidationMessage For="@(() => CurrentUser.Email)" />
                                     </div>
-                                    <div>
-                                        <label for="AddressLine1">Address Line 1:</label>
-                                        <InputText id="AddressLine1" class="form-control" @bind-Value="CurrentUser.AddressLine1" />
-                                        <ValidationMessage For="@(() => CurrentUser.AddressLine1)" />
-                                    </div>                                    
-                                    <div>
-                                        <label for="AddressLine1">Address Line 2:</label>
-                                        <InputText id="AddressLine2" class="form-control" @bind-Value="CurrentUser.AddressLine2" />
-                                        <ValidationMessage For="@(() => CurrentUser.AddressLine2)" />
-                                    </div>
 
                                     <div>
                                         <label for="suburb">Suburb:</label>
                                         <InputText id="suburb" class="form-control" @bind-Value="CurrentUser.Suburb" />
                                         <ValidationMessage For="@(() => CurrentUser.Suburb)" />
                                     </div>
-                                    <div>
-                                        <label for="State">State:</label>
-                                        <InputText id="State" class="form-control" @bind-Value="CurrentUser.State" />
-                                        <ValidationMessage For="@(() => CurrentUser.State)" />
-                                    </div>
+
                                     <div>
                                         <label for="postcode">Postcode:</label>
                                         <InputText id="postcode" class="form-control" @bind-Value="CurrentUser.Postcode" />
@@ -256,39 +234,28 @@
         if (!isDogModalOpen && !isUserPreferencesModalOpen)
         {
             Loading = true;
-            CurrentUser.ErrorMessages = new List<string>();
             StateHasChanged();
-            var CreateUpdateUserResponse = new ServiceResponse() { };
+            var response = new ServiceResponse() { };
 
-            ServiceResponse AddressValidationResponse = await userService.ValidateAddress(CurrentUser);
-            if (AddressValidationResponse.success)
+            if (loggedUserState.LoggedUser != null)
             {
-                if (loggedUserState.LoggedUser != null)
-                {
-                    EditUser.Pets = Pets;
-                    CreateUpdateUserResponse = await userService.UpdateUserAsync(CurrentUser);
-                }
-                else
-                {
-                    NewUser.Pets = Pets;
-                    CreateUpdateUserResponse = await userService.CreateUserAsync(CurrentUser);
-                }
-                Loading = false;
-                StateHasChanged();
-                if (CreateUpdateUserResponse.success)
-                {
-                    loggedUserState.LoggedUser = CreateUpdateUserResponse.User;
-                    NewUser = new User();
-                    EditUser = new User();
-                    Pets = new List<Pet>();
-                    loadPage();
-                }             
-            } 
+                EditUser.Pets = Pets;
+                response = await userService.UpdateUserAsync(EditUser);
+            }
             else
             {
-                CurrentUser.ErrorMessages.Add("Invalid Address, please check entered address");
-                Loading = false;
-                StateHasChanged();
+                NewUser.Pets = Pets;
+                response = await userService.CreateUserAsync(NewUser);
+            }
+            Loading = false;
+            StateHasChanged();
+            if (response.success)
+            {
+                loggedUserState.LoggedUser = response.User;
+                NewUser = new User();
+                EditUser = new User();
+                Pets = new List<Pet>();
+                loadPage();
             }
         }
     }
@@ -378,17 +345,13 @@
         petToUpload.PetPhoto = null;
         try
         {
-
-            var maxSizeBytes = 10 * 1024 * 1024; // 10 MB in bytes
-            byte[] fileData = null;
             petToUpload.PetPhotoUpload = e.File;
-            using (var stream = petToUpload.PetPhotoUpload.OpenReadStream(maxSizeBytes))
-            using (var memoryStream = new MemoryStream())
+            using (MemoryStream memoryStream = new MemoryStream())
             {
-                // Use CopyToAsync to copy data from the input stream to the memory stream
-                await stream.CopyToAsync(memoryStream);
+                // Read the content of the IBrowserFile into the MemoryStream
+                await petToUpload.PetPhotoUpload.OpenReadStream().CopyToAsync(memoryStream);
 
-                // Extract the byte array from the memory stream
+                // Assign the byte[] to the Pet's PetPhoto property
                 petToUpload.PetPhoto = memoryStream.ToArray();
             }
         }
@@ -416,17 +379,15 @@
     {
         TempPet = new Pet
             {
-                Owner = petToEdit.Owner,
                 PetName = petToEdit.PetName,
                 PetBreed = petToEdit.PetBreed,
                 PetAge = petToEdit.PetAge,
                 PetGender = petToEdit.PetGender,
-                PetID = petToEdit.PetID,
+                PetID = PetToEdit.PetID,
                 PetPhotoUpload = petToEdit.PetPhotoUpload,
                 PetPhoto = petToEdit.PetPhoto,
                 PetDiscoverability = petToEdit.PetDiscoverability,
-                PetPhotoFileLocation = PetToEdit.PetPhotoFileLocation,
-                OwnerID = petToEdit.OwnerID
+                PetPhotoFileLocation = PetToEdit.PetPhotoFileLocation
             };
 
         PetToEdit = petToEdit;

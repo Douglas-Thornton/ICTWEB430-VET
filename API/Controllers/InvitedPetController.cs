@@ -29,10 +29,12 @@ public class InvitedPetController : ControllerBase
             response.Content = _dbContext.InvitedPets
                 .Include(ip => ip.Pet)
                 .Include(ip => ip.InvitedUser)
+                .Include(ip => ip.Meeting)
                 .Select(m => new InvitedPet
                 {
                     InvitedPetID = m.InvitedPetID,
                     PetID = m.PetID,
+                    MeetingID = m.MeetingID,
                     InviteID = m.InviteID,
                     Pet = new Pet
                     {
@@ -44,6 +46,17 @@ public class InvitedPetController : ControllerBase
                         PetGender = m.Pet.PetGender,
                         PetPhoto = m.Pet.PetPhoto,
                         PetDiscoverability = m.Pet.PetDiscoverability                                
+                    },
+                    Meeting = new Meeting
+                    {
+                        MeetingID = m.Meeting.MeetingID,
+                        UserCreated = m.Meeting.UserCreated,
+                        MeetingDate = m.Meeting.MeetingDate,
+                        MeetingLocation = m.Meeting.MeetingLocation,
+                        MeetingCreationDate = m.Meeting.MeetingCreationDate,
+                        MeetingCancellationDate = m.Meeting.MeetingCancellationDate,
+                        MeetingName = m.Meeting.MeetingName,
+                        MeetingMessage = m.Meeting.MeetingMessage 
                     },
                     InvitedUser = new InvitedUser 
                     { 
@@ -159,29 +172,29 @@ public class InvitedPetController : ControllerBase
         return response;
     }
 
-    //[HttpGet("bymeeting/{meetingId:int}")]
-    //public async Task<MainResponse> GetInvitedPetsByMeetingId(int meetingId)
-    //{
-    //    var response = new MainResponse();
-    //    try
-    //    {
-    //        response.Content = _dbContext.InvitedPets
-    //            .Include(ip => ip.Pet)
-    //            .Include(ip => ip.InvitedUser)
-    //            .Include(ip => ip.Meeting)
-    //            .Where(ip => ip.MeetingID == meetingId)
-    //            .ToList();
+    [HttpGet("bymeeting/{meetingId:int}")]
+    public async Task<MainResponse> GetInvitedPetsByMeetingId(int meetingId)
+    {
+        var response = new MainResponse();
+        try
+        {
+            response.Content = _dbContext.InvitedPets
+                .Include(ip => ip.Pet)
+                .Include(ip => ip.InvitedUser)
+                .Include(ip => ip.Meeting)
+                .Where(ip => ip.MeetingID == meetingId)
+                .ToList();
 
-    //        response.IsSuccess = true;
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        response.ErrorMessage = ex.Message;
-    //        response.IsSuccess = false;
-    //    }
+            response.IsSuccess = true;
+        }
+        catch (Exception ex)
+        {
+            response.ErrorMessage = ex.Message;
+            response.IsSuccess = false;
+        }
 
-    //    return response;
-    //}
+        return response;
+    }
 
 }
 

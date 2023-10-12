@@ -87,25 +87,6 @@ a, .btn-link {
     height: 420px; /* Set a fixed height */
     overflow-y: auto; /* Enable vertical scrollbar */
 }
-.scrollable-invite-container {
-    height: 300px; /* Set a fixed height */
-    overflow-y: auto; /* Enable vertical scrollbar */
-}
-
-.invite-Container 
-{
-    background-color: white;
-    border-radius: 15px;
-    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.5);
-    display: flex;
-    top: 10vh;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    padding: 30px;
-    max-width: 60vw;
-    max-height: 80vh;
-    margin: 20px auto;
-}
 
 .small-scrollable-container {
     height: 100px; /* Set a fixed height */

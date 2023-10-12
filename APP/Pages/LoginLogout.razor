@@ -3,101 +3,68 @@
 @using APP.Interfaces;
 @using APP.States;
 @using APP.Data.Models;
-@using Microsoft.Extensions.Configuration;
 
 @inject IUserService userService;
 @inject LoggedUserState loggedUserState
 @inject IInvitedUserService invitedUserService;
-
 <div class="background-container">
-    <img src=@backgroundImagePath alt="@backgroundImagePath" class="background-image" />
+    <img src=@backgroundImagePath alt="@backgroundImagePath" class="background-image"/>
+    <div class="card">
 
-    <div class="invite-Container">
-        <div class="contrainer">
-            <div class="row">
-                @if (pendingInvites != null && pendingInvites.Count > 0)
-                {
-                    <h2>Pending Invites:</h2>
-                    <div class="scrollable-invite-container">
-                        @foreach (var invite in pendingInvites)
-                        {
-                            <div class="alert alert-primary" role="alert">
-                                <div>
-                                    <b>Meeting Name:</b> @invite.Meeting.MeetingName
-                                </div>
-                                <div>
-                                    <b> Message: </b>@invite.Meeting.MeetingMessage
-                                </div>
-                                <div>
-                                    <b>Location:</b> @invite.Meeting.MeetingLocation
-                                </div>
-                                <div>
-                                    <b> Date: </b>@invite.Meeting.MeetingDate
-                                </div>
-                                <div>
-                                    <ul>
-                                        @foreach (InvitedPet invitedpet in invite.InvitedPets)
-                                        {
-                                            <li>
-                                                <b>@invitedpet.Pet.PetName</b> - @invitedpet.Pet.PetBreed
-                                            </li>
-                                        }
-                                    </ul>
-                                </div>
-                                <button class="btn btn-primary" @onclick="() => AcceptClicked(invite)">Accept</button>
-                                <button class="btn btn-danger" @onclick="() => RejectClicked(invite)">Reject</button>
-                            </div>
-                        }
-                    </div>
-                }
+        @if (loggedUserState.LoggedUser != null)
+        {
+            @if(notifications && !hasResponded)
+            {
+                <div>
+                    <p>You have been invited for a puppy playdate check your emails for more details and press select or reject to respond</p>
+                    <button class="btn btn-success" @onclick="AcceptClicked">Accept</button>
+                    <button class="btn btn-danger" @onclick="RejectClicked">Reject</button>
+                </div>
+
+            }
+
+            <button class="btn btn-primary" @onclick="Logout"> Logout</button>
+        }
+        else
+        {
+            <div class="centered title">
+                <h1 style="@loggedUserState.H1StyleTagCSS">Login Page</h1>
             </div>
-            <div class="row">
-                @if (loggedUserState.LoggedUser != null)
+            <EditForm class="form-container" Model="loginRequest" OnValidSubmit="HandleValidLoginSubmit">
+                @if(Loading)
                 {
-                    <button class="btn btn-primary mt-1" @onclick="Logout"> Logout</button>
+                    <LoadingSpinner></LoadingSpinner>
                 }
-                else
-                {
-                    <div class="centered title">
-                        <h1 style="@loggedUserState.H1StyleTagCSS">Login Page</h1>
+                <div class="centered">
+                    <div style="@loggedUserState.PStyleTagCSS">
+                        <label for="loginUsername">Username:</label>
+                        <InputText id="loginUsername" class="inputs" @bind-Value="loginRequest.LoginUsername" />
+                        <ValidationMessage For="@(() => loginRequest.LoginUsername)" />
                     </div>
-                    <EditForm class="form-container" Model="loginRequest" OnValidSubmit="HandleValidLoginSubmit">
-                        @if (Loading)
-                        {
-                            <LoadingSpinner></LoadingSpinner>
-                        }
-                        <div class="centered">
-                            <div style="@loggedUserState.PStyleTagCSS">
-                                <label for="loginUsername">Username:</label>
-                                <InputText id="loginUsername" class="inputs" @bind-Value="loginRequest.LoginUsername" />
-                                <ValidationMessage For="@(() => loginRequest.LoginUsername)" />
-                            </div>
-                        </div>
-                        <div class="row-cols centered">
-                            <div style="@loggedUserState.PStyleTagCSS">
-                                <label for="loginPassword">Password:</label>
-                                <InputText type="password" id="loginPassword" class="inputs" @bind-Value="loginRequest.LoginPassword" />
-                                <ValidationMessage For="@(() => loginRequest.LoginPassword)" />
-                            </div>
-                        </div>
-                        <div class="row-cols centered">
-                            <button style="@loggedUserState.PStyleTagCSS" class="login-button" type="submit">Login</button>
-                        </div>
-                    </EditForm>
-                }
-            </div>
-            
-        </div>
+                </div>
+                <div class="row-cols centered">
+                    <div style="@loggedUserState.PStyleTagCSS">
+                        <label for="loginPassword">Password:</label>
+                        <InputText type="password" id="loginPassword" class="inputs" @bind-Value="loginRequest.LoginPassword" />
+                        <ValidationMessage For="@(() => loginRequest.LoginPassword)" />
+                    </div>
+                </div>
+                <div class="row-cols centered">
+                    <button style="@loggedUserState.PStyleTagCSS" class="login-button" type="submit">Login</button>
+                </div>
+            </EditForm>
+        }
     </div>
 </div>
 
-@code
+@code 
 {
     private bool notifications = false;
     private bool Loading = false;
+    private bool hasResponded = false;
 
     private LoginRequest loginRequest = new LoginRequest();
-    private List<InvitedUser> pendingInvites;
+    private List<InvitedUser> users;
     public string backgroundImagePath = "./Images/Background_Images/Dog_Background1.jpg";
 
     [Parameter]
@@ -106,22 +73,26 @@
     [Parameter]
     public EventCallback<bool> OnReject { get; set; }
 
-    private async Task AcceptClicked(InvitedUser invite)
+    private async Task AcceptClicked()
     {
-        invite.Accepted = true;
-        invite.ResponseDate = DateTime.Now;
-        await invitedUserService.AcceptOrRejectInvite(invite);
-        await GetInvitedUsers();
-        StateHasChanged();
+        AcceptMeetingResponse response = new()
+        {
+            Accepted = true,
+            UserID = loggedUserState.LoggedUser.UserID
+        };
+        await invitedUserService.AcceptOrRejectInvite(response);
+        hasResponded = true;
     }
 
-    private async Task RejectClicked(InvitedUser invite)
+    private async Task RejectClicked()
     {
-        invite.Accepted = false;
-        invite.ResponseDate = DateTime.Now;
-        await invitedUserService.AcceptOrRejectInvite(invite);
-        await GetInvitedUsers();
-        StateHasChanged();
+        AcceptMeetingResponse response = new()
+        {
+            Accepted = false,
+            UserID = loggedUserState.LoggedUser.UserID
+        };
+        await invitedUserService.AcceptOrRejectInvite(response);
+        hasResponded = true;
     }
 
     protected override async Task OnInitializedAsync()
@@ -131,11 +102,9 @@
 
     public async Task GetInvitedUsers()
     {
-        if (loggedUserState.LoggedUser != null)
-        {
-            var allInvites = await invitedUserService.GetInvitedUserById(loggedUserState.LoggedUser.UserID);
-            pendingInvites = allInvites.Where(invite => invite.Accepted == null).ToList();
-        }
+        users = await invitedUserService.GetInvitedUserById(loggedUserState.LoggedUser.UserID);
+        users = users.Where(invite => invite.Accepted == null).ToList();
+        notifications = users[0] != null ? true : false;
     }
 
     private async Task HandleValidLoginSubmit()
@@ -159,7 +128,6 @@
     public void Logout()
     {
         loggedUserState.LoggedUser = null;
-        pendingInvites = null;
         backgroundImagePath = loggedUserState.GetBackgroundImage();
         StateHasChanged();
     }

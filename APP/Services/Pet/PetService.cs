@@ -7,43 +7,30 @@ namespace APP.Services;
 public class PetService : IPetService
 {
     private readonly string _baseUrl = "https://localhost:7020/";
-
     public async Task<List<Pet>> GetAllPets()
     {
-
-        List<Pet> pets = new List<Pet>();
         try
         {
-
+            var returnResponse = new List<Pet>();
             using var client = new HttpClient();
-
             string url = $"{_baseUrl}api/petController";
+            HttpResponseMessage apiResponse = await client.GetAsync(url);
 
-            var apiResponse = await client.GetAsync(url);
-
-            if (!apiResponse.IsSuccessStatusCode)
+            if (apiResponse.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                throw new Exception("failed to get pets");
+                string response = await apiResponse.Content.ReadAsStringAsync();
+                var deserilizeResponse = JsonConvert.DeserializeObject<MainResponseModel>(response);
+
+                if (deserilizeResponse.IsSuccess)
+                {
+                    returnResponse = JsonConvert.DeserializeObject<List<Pet>>(deserilizeResponse.Content.ToString());
+                }
             }
-
-            string response = await apiResponse.Content.ReadAsStringAsync();
-            MainResponseModel deserializeResponse = JsonConvert.DeserializeObject<MainResponseModel>(response);
-
-            if (deserializeResponse.IsSuccess)
-            {
-                pets = JsonConvert.DeserializeObject<List<Pet>>(deserializeResponse.Content.ToString());
-            }
-            else
-            {
-                ;
-
-            }
-
-            return pets;
+            return returnResponse;
         }
         catch (Exception)
         {
-            throw;
+            return new List<Pet>();
         }
     }
 }
