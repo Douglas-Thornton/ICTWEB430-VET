@@ -67,7 +67,7 @@ public class UserService : IUserService
 
     public async Task<ServiceResponse> CreateUserAsync(User userToCreate)
     {
-        ServiceResponse serviceResponse = new ServiceResponse { };
+        ServiceResponse serviceResponse = new() { };
 
         try
         {
@@ -117,7 +117,7 @@ public class UserService : IUserService
 
     public async Task<ServiceResponse> UpdateUserAsync(User userToUpdate)
     {
-        ServiceResponse serviceResponse = new ServiceResponse { };
+        ServiceResponse serviceResponse = new() { };
 
         try
         {
