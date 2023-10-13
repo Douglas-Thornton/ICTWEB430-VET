@@ -289,22 +289,25 @@ else
     {
         EmailService service = new(Configuration);
         var now = DateTime.Now.Date;
+        //if (CurrentMeeting.InvitedUsers != null && CurrentMeeting.InvitedUsers.Count() > 0)
+        //{
 
-        switch (MeetingModalMode)
-        {
-            case ModalMode.Create:
-                @foreach (var invitedUser in CurrentMeeting.InvitedUsers)
-                {
-                    await service.SendEmail(loggedUserState.LoggedUser.LoginUsername, "New Meeting Invite",CurrentMeeting.MeetingMessage, invitedUser.User.Email);
-                }
-                break;
-            case ModalMode.Edit:
-                @foreach (var invitedUser in CurrentMeeting.InvitedUsers)
-                {
-                    await service.SendEmail(loggedUserState.LoggedUser.LoginUsername, "A existing meeting you were invited to has been modified.", CurrentMeeting.MeetingMessage, invitedUser.User.Email);
-                }
-                break;
-        }
+        //    switch (MeetingModalMode)
+        //    {
+        //        case ModalMode.Create:
+        //            @foreach (var invitedUser in CurrentMeeting.InvitedUsers)
+        //            {
+        //                await service.SendEmail(loggedUserState.LoggedUser.LoginUsername, "New Meeting Invite",CurrentMeeting.MeetingMessage, invitedUser.User.Email);
+        //            }
+        //            break;
+        //        case ModalMode.Edit:
+        //            @foreach (var invitedUser in CurrentMeeting.InvitedUsers)
+        //            {
+        //                await service.SendEmail(loggedUserState.LoggedUser.LoginUsername, "A existing meeting you were invited to has been modified.", CurrentMeeting.MeetingMessage, invitedUser.User.Email);
+        //            }
+        //            break;
+        //        }
+        //}
 
         //await service.SendEmail(Configuration["TestEmailName"], "This is a test email", Configuration["TestEmail"]);
 

@@ -1,4 +1,5 @@
 ﻿@page "/register-profile"
+@using APP.Helper;
 @using APP.Services;
 @using APP.Shared.Components
 @using APP.States;
@@ -239,6 +240,7 @@
     public bool isDogModalOpen = false;
     public bool isUserPreferencesModalOpen = false;
     public ModalMode DogModalMode = ModalMode.Edit;
+    public PasswordHasher passwordHasher = new PasswordHasher();
 
     public event PropertyChangedEventHandler PropertyChanged;
 

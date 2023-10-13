@@ -1,4 +1,5 @@
 ﻿@page "/login-logout"
+@using APP.Helper;
 @using APP.Services;
 @using APP.Interfaces;
 @using APP.States;
@@ -100,6 +101,9 @@
     private List<InvitedUser> pendingInvites;
     public string backgroundImagePath = "./Images/Background_Images/Dog_Background1.jpg";
 
+    public PasswordHasher passwordHasher = new PasswordHasher();
+
+
     [Parameter]
     public EventCallback<bool> OnAccept { get; set; }
 
@@ -142,6 +146,9 @@
     {
         Loading = true;
         StateHasChanged();
+
+
+
         loggedUserState.LoggedUser = await userService.LoginUser(loginRequest);
         backgroundImagePath = loggedUserState.GetBackgroundImage();
         Loading = false;

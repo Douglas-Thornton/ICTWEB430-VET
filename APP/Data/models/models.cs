@@ -27,7 +27,7 @@ public class User : INotifyPropertyChanged
     public string LoginPassword { get; set; }
     public List<string> ErrorMessages { get; set; }
 
-    public virtual ICollection<Pet> Pets { get; set; }
+    public virtual ICollection<Pet> Pets { get; set; } = new List<Pet>();
 
     private AppPreferences? _appPreferences = new();
 

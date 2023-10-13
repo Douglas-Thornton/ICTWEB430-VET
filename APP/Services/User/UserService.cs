@@ -5,12 +5,14 @@ using APP.Interfaces;
 using System.Text;
 using System;
 using Microsoft.Extensions.Configuration;
+using APP.Helper;
 
 namespace APP.Services;
 
 public class UserService : IUserService
 {
     private readonly IConfiguration configuration;
+    public PasswordHasher passwordHasher = new PasswordHasher();
 
     public UserService(IConfiguration configuration)
     {
@@ -53,8 +55,14 @@ public class UserService : IUserService
             var returnResponse = new User();
             using var client = new HttpClient();
 
+            LoginRequest hashedLogin = new LoginRequest()
+            {
+                LoginUsername = loginRequest.LoginUsername,
+                LoginPassword = passwordHasher.ComputeSha512Hash(loginRequest.LoginPassword)
+            };
+
             string url = $"{_baseUrl}api/userController/login";
-            HttpResponseMessage apiResponse = await client.PostAsJsonAsync(url, loginRequest);
+            HttpResponseMessage apiResponse = await client.PostAsJsonAsync(url, hashedLogin);
 
             if (apiResponse.IsSuccessStatusCode)
             {
@@ -63,7 +71,9 @@ public class UserService : IUserService
 
                 if (deserializeResponse.IsSuccess)
                 {
-                    return returnResponse = JsonConvert.DeserializeObject<List<User>>(deserializeResponse.Content.ToString()).FirstOrDefault();
+                    returnResponse = JsonConvert.DeserializeObject<List<User>>(deserializeResponse.Content.ToString()).FirstOrDefault();
+                    returnResponse.LoginPassword = string.Empty;
+                    return returnResponse;
                 }
             }
             return null; // Handle other status codes or response scenarios
@@ -83,8 +93,28 @@ public class UserService : IUserService
             var createdUser = new User();
             using var client = new HttpClient();
 
+            User hashedUserToCreate = new User
+            {
+                UserID = userToCreate.UserID,
+                FirstName = userToCreate.FirstName,
+                Surname = userToCreate.Surname,
+                PhoneNumber = userToCreate.PhoneNumber,
+                Email = userToCreate.Email,
+                AddressLine1 = userToCreate.AddressLine1,
+                AddressLine2 = userToCreate.AddressLine2,
+                Suburb = userToCreate.Suburb,
+                State = userToCreate.State,
+                Postcode = userToCreate.Postcode,
+                LoginUsername = userToCreate.LoginUsername,
+                LoginPassword = passwordHasher.ComputeSha512Hash(userToCreate.LoginPassword),
+                ErrorMessages = userToCreate.ErrorMessages,
+                AppPreferences = userToCreate.AppPreferences,
+                Pets = userToCreate.Pets
+            };
+
+
             string url = $"{_baseUrl}api/userController/create";
-            var json = JsonConvert.SerializeObject(userToCreate);
+            var json = JsonConvert.SerializeObject(hashedUserToCreate);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             var apiResponse = await client.PostAsync(url, content);
@@ -99,6 +129,7 @@ public class UserService : IUserService
                 if (deserializeResponse.IsSuccess)
                 {
                     createdUser = JsonConvert.DeserializeObject<List<User>>(deserializeResponse.Content.ToString()).FirstOrDefault();
+                    createdUser.LoginPassword = string.Empty;
                     serviceResponse.User = createdUser;
                     serviceResponse.success = true;
                 }
@@ -133,8 +164,27 @@ public class UserService : IUserService
             var updatedUser = new User();
             using var client = new HttpClient();
 
+            User hashedUserToCreate = new User
+            {
+                UserID = userToUpdate.UserID,
+                FirstName = userToUpdate.FirstName,
+                Surname = userToUpdate.Surname,
+                PhoneNumber = userToUpdate.PhoneNumber,
+                Email = userToUpdate.Email,
+                AddressLine1 = userToUpdate.AddressLine1,
+                AddressLine2 = userToUpdate.AddressLine2,
+                Suburb = userToUpdate.Suburb,
+                State = userToUpdate.State,
+                Postcode = userToUpdate.Postcode,
+                LoginUsername = userToUpdate.LoginUsername,
+                LoginPassword = passwordHasher.ComputeSha512Hash(userToUpdate.LoginPassword),
+                ErrorMessages = userToUpdate.ErrorMessages,
+                AppPreferences = userToUpdate.AppPreferences,
+                Pets = userToUpdate.Pets
+            };
+
             string url = $"{_baseUrl}api/userController/update";
-            var json = JsonConvert.SerializeObject(userToUpdate);
+            var json = JsonConvert.SerializeObject(hashedUserToCreate);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             var apiResponse = await client.PutAsync(url, content);
@@ -149,6 +199,7 @@ public class UserService : IUserService
                 if (deserializeResponse.IsSuccess)
                 {
                     updatedUser = JsonConvert.DeserializeObject<List<User>>(deserializeResponse.Content.ToString()).FirstOrDefault();
+                    updatedUser.LoginPassword = string.Empty;
                     serviceResponse.User = updatedUser;
                     serviceResponse.success = true;
                 }
