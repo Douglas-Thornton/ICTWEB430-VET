@@ -16,43 +16,6 @@
     <div class="invite-Container">
         <div class="contrainer">
             <div class="row">
-                @if (pendingInvites != null && pendingInvites.Count > 0)
-                {
-                    <h2>Pending Invites:</h2>
-                    <div class="scrollable-invite-container">
-                        @foreach (var invite in pendingInvites)
-                        {
-                            <div class="alert alert-primary" role="alert">
-                                <div>
-                                    <b>Meeting Name:</b> @invite.Meeting.MeetingName
-                                </div>
-                                <div>
-                                    <b> Message: </b>@invite.Meeting.MeetingMessage
-                                </div>
-                                <div>
-                                    <b>Location:</b> @invite.Meeting.MeetingLocation
-                                </div>
-                                <div>
-                                    <b> Date: </b>@invite.Meeting.MeetingDate
-                                </div>
-                                <div>
-                                    <ul>
-                                        @foreach (InvitedPet invitedpet in invite.InvitedPets)
-                                        {
-                                            <li>
-                                                <b>@invitedpet.Pet.PetName</b> - @invitedpet.Pet.PetBreed
-                                            </li>
-                                        }
-                                    </ul>
-                                </div>
-                                <button class="btn btn-primary" @onclick="() => AcceptClicked(invite)">Accept</button>
-                                <button class="btn btn-danger" @onclick="() => RejectClicked(invite)">Reject</button>
-                            </div>
-                        }
-                    </div>
-                }
-            </div>
-            <div class="row">
                 @if (loggedUserState.LoggedUser != null)
                 {
                     <button class="btn btn-primary mt-1" @onclick="Logout"> Logout</button>
@@ -103,42 +66,27 @@
 
     public PasswordHasher passwordHasher = new PasswordHasher();
 
+    public event PropertyChangedEventHandler PropertyChanged;
 
-    [Parameter]
-    public EventCallback<bool> OnAccept { get; set; }
-
-    [Parameter]
-    public EventCallback<bool> OnReject { get; set; }
-
-    private async Task AcceptClicked(InvitedUser invite)
-    {
-        invite.Accepted = true;
-        invite.ResponseDate = DateTime.Now;
-        await invitedUserService.AcceptOrRejectInvite(invite);
-        await GetInvitedUsers();
-        StateHasChanged();
-    }
-
-    private async Task RejectClicked(InvitedUser invite)
-    {
-        invite.Accepted = false;
-        invite.ResponseDate = DateTime.Now;
-        await invitedUserService.AcceptOrRejectInvite(invite);
-        await GetInvitedUsers();
-        StateHasChanged();
-    }
-
+   
     protected override async Task OnInitializedAsync()
     {
+        loggedUserState.PropertyChanged += OnloggedUserStateChanged;
         backgroundImagePath = loggedUserState.GetBackgroundImage();
     }
 
-    public async Task GetInvitedUsers()
+
+    /// <summary>
+    /// If the user logs in; update the data on this page.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void OnloggedUserStateChanged(object sender, PropertyChangedEventArgs e)
     {
-        if (loggedUserState.LoggedUser != null)
+        // Check if the property that changed is "LoggedUser"
+        if (e.PropertyName == nameof(loggedUserState.LoggedUser))
         {
-            var allInvites = await invitedUserService.GetInvitedUserById(loggedUserState.LoggedUser.UserID);
-            pendingInvites = allInvites.Where(invite => invite.Accepted == null).ToList();
+            StateHasChanged();
         }
     }
 
@@ -152,15 +100,7 @@
         loggedUserState.LoggedUser = await userService.LoginUser(loginRequest);
         backgroundImagePath = loggedUserState.GetBackgroundImage();
         Loading = false;
-        await GetInvitedUsers();
         StateHasChanged();
-    }
-
-    private void HandleValidNewUserSubmit()
-    {
-
-        // Perform further processing, such as saving the user data
-        // You can access user.Username, user.Email, etc.
     }
 
     public void Logout()
