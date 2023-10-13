@@ -85,6 +85,9 @@ namespace VETAPPAPI.Controllers
                     PhoneNumber = u.PhoneNumber,
                     Email = u.Email,
                     Suburb = u.Suburb,
+                    AddressLine1 = u.AddressLine1,
+                    AddressLine2 = u.AddressLine2,
+                    State = u.State,
                     Postcode = u.Postcode,
                     LoginUsername = u.LoginUsername,
                     LoginPassword = u.LoginPassword,
@@ -133,6 +136,9 @@ namespace VETAPPAPI.Controllers
                     PhoneNumber = u.PhoneNumber,
                     Email = u.Email,
                     Suburb = u.Suburb,
+                    AddressLine1 = u.AddressLine1,
+                    AddressLine2 = u.AddressLine2,
+                    State = u.State,
                     Postcode = u.Postcode,
                     LoginUsername = u.LoginUsername,
                     LoginPassword = u.LoginPassword,
@@ -228,6 +234,9 @@ namespace VETAPPAPI.Controllers
                 existingUser.Surname = updatedUser.Surname;
                 existingUser.PhoneNumber = updatedUser.PhoneNumber;
                 existingUser.Email = updatedUser.Email;
+                existingUser.AddressLine1 = updatedUser.AddressLine1;
+                existingUser.AddressLine2 = updatedUser.AddressLine2;
+                existingUser.State = updatedUser.State;
                 existingUser.Suburb = updatedUser.Suburb;
                 existingUser.Postcode = updatedUser.Postcode;
                 existingUser.LoginUsername = updatedUser.LoginUsername;
@@ -315,6 +324,9 @@ namespace VETAPPAPI.Controllers
                                    Email = u.Email,
                                    Suburb = u.Suburb,
                                    Postcode = u.Postcode,
+                                   AddressLine1 = u.AddressLine1,
+                                   AddressLine2 = u.AddressLine2,
+                                   State = u.State,
                                    LoginUsername = u.LoginUsername,
                                    LoginPassword = u.LoginPassword,
                                    Pets = u.Pets.Select(p => new Pet

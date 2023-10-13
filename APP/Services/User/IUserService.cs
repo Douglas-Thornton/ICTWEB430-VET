@@ -1,6 +1,6 @@
 ﻿using APP.Data.Models;
 
-namespace APP.Interfaces;
+namespace APP.Services;
 
 public interface IUserService
 {
@@ -11,5 +11,6 @@ public interface IUserService
     public Task<ServiceResponse> CreateUserAsync(User userToCreate);
 
     public Task<ServiceResponse> UpdateUserAsync(User userToCreate);
-    //public Task<bool> ValidateAddress(User userToCreate);
+    
+    public Task<ServiceResponse> ValidateAddress(User userToCreate);
 }
